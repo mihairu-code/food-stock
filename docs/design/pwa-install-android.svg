@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1600" viewBox="0 0 1080 1600" role="img" aria-labelledby="title desc">
+<title id="title">Как установить приложение на Android</title><desc id="desc">Иллюстрированная инструкция: открыть сайт в Chrome, выбрать установить приложение, подтвердить установку.</desc>
+<defs><pattern id="paper" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="#f4eedf"/><circle cx="3" cy="4" r=".7" fill="#d8cfbb" opacity=".55"/><path d="M0 17.5H18" stroke="#d8cfbb" stroke-width=".45" opacity=".5"/></pattern><filter id="shadow" x="-20%" y="-20%" width="150%" height="160%"><feDropShadow dx="5" dy="7" stdDeviation="0" flood-color="#c8bda6"/></filter></defs>
+<rect width="1080" height="1600" fill="#e9e0ce"/>
+<text x="72" y="76" fill="#4f6848" font-family="Arial,sans-serif" font-size="18" font-weight="700" letter-spacing="3">ДОМАШНИЕ ЗАПАСЫ · УСТАНОВКА</text>
+<text x="72" y="145" fill="#30352e" font-family="Georgia,serif" font-size="54">Android</text>
+<text x="72" y="192" fill="#66675d" font-family="Arial,sans-serif" font-size="22">Установите сайт из Chrome — значок появится среди приложений.</text>
+<!-- step 1 -->
+<g filter="url(#shadow)"><rect x="72" y="250" width="936" height="340" rx="14" fill="url(#paper)" stroke="#d8cfbb" stroke-width="2"/></g>
+<circle cx="126" cy="304" r="26" fill="#4f6848"/><text x="118" y="313" fill="#fffdf5" font-family="Arial" font-weight="700" font-size="24">1</text>
+<text x="174" y="300" fill="#30352e" font-family="Georgia,serif" font-size="28">Откройте сайт в Chrome</text>
+<text x="174" y="338" fill="#66675d" font-family="Arial,sans-serif" font-size="18">Введите адрес приложения в строке браузера.</text>
+<rect x="130" y="370" width="400" height="175" rx="22" fill="#fff" stroke="#30352e" stroke-width="3"/>
+<rect x="148" y="383" width="364" height="23" rx="10" fill="#f1f3f4"/><text x="164" y="400" fill="#666" font-family="Arial" font-size="12">9:41　●●●</text>
+<rect x="151" y="415" width="319" height="33" rx="17" fill="#eef0f2"/><text x="169" y="437" fill="#4c5054" font-family="Arial" font-size="14">🔒  адрес-приложения.ru</text><circle cx="490" cy="431" r="14" fill="#e9edf0"/><text x="486" y="437" fill="#4c5054" font-family="Arial" font-size="17">⋮</text>
+<rect x="148" y="460" width="364" height="72" rx="7" fill="#f4eedf"/><text x="168" y="490" fill="#4f6848" font-family="Arial" font-size="12" font-weight="700">ДОМ · 2 УЧАСТНИКА</text><text x="168" y="520" fill="#30352e" font-family="Georgia" font-size="22">Домашние запасы</text>
+<text x="585" y="405" fill="#30352e" font-family="Arial,sans-serif" font-size="20"><tspan x="585" dy="0">Убедитесь, что открыли</tspan><tspan x="585" dy="30">сайт приложения именно</tspan><tspan x="585" dy="30">в браузере Chrome.</tspan></text>
+<text x="585" y="525" fill="#7a5c1a" font-family="Arial,sans-serif" font-size="16" font-weight="700">Нужен интернет и актуальный Chrome.</text>
+<!-- step 2 -->
+<g filter="url(#shadow)"><rect x="72" y="620" width="936" height="390" rx="14" fill="url(#paper)" stroke="#d8cfbb" stroke-width="2"/></g>
+<circle cx="126" cy="674" r="26" fill="#4f6848"/><text x="118" y="683" fill="#fffdf5" font-family="Arial" font-weight="700" font-size="24">2</text>
+<text x="174" y="670" fill="#30352e" font-family="Georgia,serif" font-size="28">Откройте меню ⋮</text>
+<text x="174" y="708" fill="#66675d" font-family="Arial,sans-serif" font-size="18">Нажмите на три точки справа от адресной строки.</text>
+<rect x="130" y="740" width="400" height="230" rx="22" fill="#fff" stroke="#30352e" stroke-width="3"/>
+<rect x="148" y="753" width="364" height="23" rx="10" fill="#f1f3f4"/><text x="164" y="770" fill="#666" font-family="Arial" font-size="12">9:41　●●●</text><rect x="151" y="785" width="319" height="33" rx="17" fill="#eef0f2"/><text x="169" y="807" fill="#4c5054" font-family="Arial" font-size="14">🔒  адрес-приложения.ru</text><circle cx="490" cy="801" r="14" fill="#e9edf0"/><text x="486" y="807" fill="#4c5054" font-family="Arial" font-size="17">⋮</text>
+<rect x="292" y="818" width="220" height="140" rx="10" fill="#fff" stroke="#c8cbd0"/><text x="311" y="844" fill="#444" font-family="Arial" font-size="14">Новая вкладка</text><text x="311" y="871" fill="#444" font-family="Arial" font-size="14">Закладки</text><rect x="300" y="882" width="204" height="37" rx="5" fill="#e8eddf" stroke="#4f6848" stroke-width="2"/><text x="311" y="906" fill="#30352e" font-family="Arial" font-size="13" font-weight="700">Установить приложение</text><text x="311" y="942" fill="#444" font-family="Arial" font-size="14">Версия для ПК</text>
+<path d="M505 900 C548 900 550 850 574 850" fill="none" stroke="#4f6848" stroke-width="3"/><circle cx="505" cy="900" r="6" fill="#4f6848"/>
+<text x="585" y="790" fill="#30352e" font-family="Arial,sans-serif" font-size="20"><tspan x="585" dy="0">В меню выберите</tspan><tspan x="585" dy="31" font-weight="700" fill="#4f6848">«Установить приложение».</tspan><tspan x="585" dy="42">Если пункта нет, обновите</tspan><tspan x="585" dy="30">страницу или проверьте,</tspan><tspan x="585" dy="30">что открыли ссылку в Chrome.</tspan></text>
+<!-- step 3 -->
+<g filter="url(#shadow)"><rect x="72" y="1040" width="936" height="390" rx="14" fill="url(#paper)" stroke="#d8cfbb" stroke-width="2"/></g>
+<circle cx="126" cy="1094" r="26" fill="#4f6848"/><text x="118" y="1103" fill="#fffdf5" font-family="Arial" font-weight="700" font-size="24">3</text>
+<text x="174" y="1090" fill="#30352e" font-family="Georgia,serif" font-size="28">Подтвердите установку</text>
+<text x="174" y="1128" fill="#66675d" font-family="Arial,sans-serif" font-size="18">Нажмите «Установить» в появившемся окне.</text>
+<rect x="130" y="1160" width="400" height="230" rx="22" fill="#fff" stroke="#30352e" stroke-width="3"/>
+<rect x="148" y="1173" width="364" height="23" rx="10" fill="#f1f3f4"/><text x="164" y="1190" fill="#666" font-family="Arial" font-size="12">9:41　●●●</text>
+<rect x="171" y="1214" width="318" height="155" rx="15" fill="#fff" stroke="#b7bbc2"/><circle cx="330" cy="1251" r="22" fill="#e8eddf"/><text x="316" y="1260" fill="#4f6848" font-family="Arial" font-size="24">⌂</text><text x="330" y="1290" text-anchor="middle" fill="#30352e" font-family="Arial" font-size="18" font-weight="700">Установить приложение?</text><text x="330" y="1315" text-anchor="middle" fill="#666" font-family="Arial" font-size="13">Домашние запасы</text><text x="330" y="1348" text-anchor="middle" fill="#4f6848" font-family="Arial" font-size="15" font-weight="700">Отмена　　　 Установить</text>
+<text x="585" y="1235" fill="#30352e" font-family="Arial,sans-serif" font-size="20"><tspan x="585" dy="0">Готово! Значок приложения</tspan><tspan x="585" dy="31">появится на главном экране</tspan><tspan x="585" dy="31">и в списке приложений.</tspan></text>
+<rect x="585" y="1340" width="347" height="54" rx="8" fill="#e8eddf"/><text x="607" y="1374" fill="#4f6848" font-family="Arial" font-size="17" font-weight="700">Откройте «Дом» как обычное приложение</text>
+<text x="72" y="1500" fill="#66675d" font-family="Arial,sans-serif" font-size="16">Отдельное PWA устанавливают Chrome с Google Play Services и Samsung Internet на Galaxy.</text>
+<text x="72" y="1530" fill="#66675d" font-family="Arial,sans-serif" font-size="16">Яндекс.Браузер, Firefox, Edge, Opera и Chrome без Google Play Services добавляют ярлык сайта.</text>
+<text x="72" y="1570" fill="#4f6848" font-family="Arial,sans-serif" font-size="13" font-weight="700">СХЕМАТИЧНЫЕ ЭКРАНЫ · названия пунктов зависят от браузера и версии Android.</text>
+</svg>
