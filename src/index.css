@@ -444,6 +444,69 @@ button {
   padding-right: 8px;
 }
 
+/* ---------- Свайп ---------- */
+
+.swipe {
+  position: relative;
+  overflow: hidden;
+}
+
+.list > .swipe:first-child .row {
+  border-top: 0;
+}
+
+.swipe:not([data-active='true']) .swipe-under {
+  visibility: hidden;
+}
+
+.swipe-under {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  padding-right: 18px;
+  background: var(--red);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.swipe-content {
+  position: relative;
+  touch-action: pan-y;
+  transition: transform 0.18s ease;
+}
+
+/* Пока строку ведёт палец, она идёт за ним без запаздывания. */
+.swipe-content[data-dragging='true'] {
+  transition: none;
+}
+
+/* Кнопка удаления — альтернатива свайпу: появляется при фокусе с клавиатуры
+   и при наведении мышью. */
+.row-delete {
+  width: 0;
+  margin-left: -10px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.row-delete:focus-visible {
+  width: 44px;
+  margin-left: 0;
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .row:hover .row-delete {
+    width: 44px;
+    margin-left: 0;
+    opacity: 1;
+  }
+}
+
 /* ---------- Шторка ---------- */
 
 .sheet {

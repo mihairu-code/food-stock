@@ -1,4 +1,5 @@
 import { X } from 'lucide-react'
+import { SwipeRow } from '@/components/SwipeRow'
 import type { Product } from '@/domain/types'
 
 interface ProductRowProps {
@@ -18,27 +19,29 @@ export function ProductRow({ product, onToggleStock, onDelete }: ProductRowProps
   const meta = !available ? 'Закончилось · в покупках' : staple ? 'Постоянный' : 'Разовый'
 
   return (
-    <div className="row" data-missing={!available}>
-      <span className="emoji" aria-hidden="true">
-        {product.icon || '📦'}
-      </span>
-      <div className="row-text">
-        <div className="row-name">{name}</div>
-        <div className="row-meta">{meta}</div>
+    <SwipeRow onDelete={onDelete}>
+      <div className="row" data-missing={!available}>
+        <span className="emoji" aria-hidden="true">
+          {product.icon || '📦'}
+        </span>
+        <div className="row-text">
+          <div className="row-name">{name}</div>
+          <div className="row-meta">{meta}</div>
+        </div>
+        <button
+          className="stock-toggle"
+          type="button"
+          aria-pressed={available}
+          aria-label={available ? `Отметить, что «${name}» закончилось` : `Отметить, что «${name}» снова есть`}
+          onClick={onToggleStock}
+        >
+          <span className="box" aria-hidden="true" />
+          {available ? 'Есть' : 'Нет'}
+        </button>
+        <button className="icon-btn row-delete" type="button" aria-label={`Удалить «${name}»`} onClick={onDelete}>
+          <X size={18} />
+        </button>
       </div>
-      <button
-        className="stock-toggle"
-        type="button"
-        aria-pressed={available}
-        aria-label={available ? `Отметить, что «${name}» закончилось` : `Отметить, что «${name}» снова есть`}
-        onClick={onToggleStock}
-      >
-        <span className="box" aria-hidden="true" />
-        {available ? 'Есть' : 'Нет'}
-      </button>
-      <button className="icon-btn row-delete" type="button" aria-label={`Удалить «${name}»`} onClick={onDelete}>
-        <X size={18} />
-      </button>
-    </div>
+    </SwipeRow>
   )
 }
