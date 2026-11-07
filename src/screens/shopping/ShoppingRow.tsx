@@ -1,0 +1,34 @@
+import { X } from 'lucide-react'
+
+interface ShoppingRowProps {
+  name: string
+  meta: string
+  icon: string | null
+  /** Продукта дома уже нет: строка приглушена. */
+  missing?: boolean
+  /** Подпись кнопки удаления для скринридера. */
+  removeLabel: string
+  onBuy: () => void
+  onRemove: () => void
+}
+
+/** Строка покупок: иконка, название, «Куплено» и удаление. */
+export function ShoppingRow({ name, meta, icon, missing = false, removeLabel, onBuy, onRemove }: ShoppingRowProps) {
+  return (
+    <div className="row" data-missing={missing}>
+      <span className="emoji" aria-hidden="true">
+        {icon || '🛒'}
+      </span>
+      <div className="row-text">
+        <div className="row-name">{name}</div>
+        <div className="row-meta">{meta}</div>
+      </div>
+      <button className="btn small" type="button" aria-label={`«${name}» куплено`} onClick={onBuy}>
+        Куплено
+      </button>
+      <button className="icon-btn row-delete" type="button" aria-label={removeLabel} onClick={onRemove}>
+        <X size={18} />
+      </button>
+    </div>
+  )
+}

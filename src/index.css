@@ -434,6 +434,16 @@ button {
   font-size: 13px;
 }
 
+/* Список покупок: первая строка без верхней линии. */
+.list > .row:first-child {
+  border-top: 0;
+}
+
+.list .row {
+  min-height: 66px;
+  padding-right: 8px;
+}
+
 /* ---------- Шторка ---------- */
 
 .sheet {
