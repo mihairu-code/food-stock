@@ -24,6 +24,24 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Тёмная тема — тот же «бумажный» лист, только ночью. data-theme ставит src/lib/theme.ts. */
+:root[data-theme='dark'] {
+  --bg: #171815;
+  --paper: #22231f;
+  --ink: #f1f0e9;
+  --muted: #a3a69c;
+  --line: #383a33;
+  --accent: #98c49c;
+  --accent-soft: #2a382d;
+  --on-accent: #142017;
+  --orange: #e7a576;
+  --orange-soft: #3b2e25;
+  --red: #f0907f;
+  --shadow: 0 -12px 36px rgb(0 0 0 / 40%);
+
+  color-scheme: dark;
+}
+
 *,
 *::before,
 *::after {
@@ -593,4 +611,62 @@ button {
 .emoji-option[aria-pressed='true'] {
   border-color: var(--accent);
   background: var(--accent-soft);
+}
+
+/* ---------- Настройки ---------- */
+
+.group-label {
+  margin: 14px 6px 0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.group-label:first-child {
+  margin-top: 0;
+}
+
+.setting-row {
+  display: flex;
+  width: 100%;
+  min-height: 62px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: transparent;
+  text-align: left;
+}
+
+.setting-row:first-child {
+  border-top: 0;
+}
+
+.setting-row .row-name,
+.setting-row .row-meta {
+  display: block;
+}
+
+.chevron {
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+
+.inline-select {
+  max-width: 50%;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--bg);
+  font-size: 16px;
+}
+
+.settings-note {
+  margin: 0 6px;
+  color: var(--muted);
+  font-size: 13px;
 }
