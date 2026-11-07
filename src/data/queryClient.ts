@@ -1,0 +1,8 @@
+import { QueryClient } from '@tanstack/react-query'
+
+/** Один кэш запросов на приложение. */
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { staleTime: 15_000, retry: 1 },
+  },
+})
