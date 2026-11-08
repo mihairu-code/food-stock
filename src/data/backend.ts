@@ -1,4 +1,7 @@
 import type {
+  IncomingInvite,
+  Invite,
+  Member,
   Membership,
   Product,
   ProductKind,
@@ -32,13 +35,33 @@ export interface NewShoppingItem {
 
 /**
  * Единственная граница между интерфейсом и хранилищем.
- * Реализации: localBackend (демо без сервера) и, позже, Supabase.
+ * Реализации: localBackend (демо без сервера) и supabaseBackend (общий дом).
  */
 export interface Backend {
   readonly mode: 'local' | 'supabase'
 
+  /** Пользователь этого устройства или null, если он не вошёл. */
   currentUser(): Promise<User | null>
+  /** Сессия изменилась (вход, выход) — пользователя нужно перечитать. */
+  onAuthChange(callback: () => void): () => void
+  /** Отправляет на почту одноразовый код для входа. */
+  sendEmailCode(email: string): Promise<void>
+  verifyEmailCode(email: string, code: string): Promise<void>
+  signOut(): Promise<void>
+
   listMemberships(): Promise<Membership[]>
+  /** Создаёт дом и делает текущего пользователя владельцем; возвращает id дома. */
+  createHousehold(name: string): Promise<string>
+
+  listMembers(householdId: string): Promise<Member[]>
+  removeMember(householdId: string, userId: string): Promise<void>
+
+  listInvites(householdId: string): Promise<Invite[]>
+  createInvite(householdId: string, email: string): Promise<void>
+  deleteInvite(inviteId: string): Promise<void>
+  listMyInvites(): Promise<IncomingInvite[]>
+  /** Принять приглашение; возвращает id дома. */
+  acceptInvite(inviteId: string): Promise<string>
 
   listSections(householdId: string): Promise<Section[]>
   listProducts(householdId: string): Promise<Product[]>

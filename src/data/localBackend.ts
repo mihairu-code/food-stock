@@ -107,12 +107,34 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
   }
 
   const now = () => new Date().toISOString()
+  const notSupported = () => Promise.reject(new Error('Недоступно в локальном режиме'))
 
   return {
     mode: 'local',
 
     currentUser: async () => LOCAL_USER,
+    onAuthChange: () => () => {},
+    sendEmailCode: notSupported,
+    verifyEmailCode: notSupported,
+    signOut: notSupported,
+
     listMemberships: async () => [{ household: read().household, role: 'owner' }],
+    createHousehold: async (name) => {
+      update((s) => ({ ...s, household: { ...s.household, name } }))
+      return read().household.id
+    },
+
+    listMembers: async () => {
+      const { household } = read()
+      return [{ household_id: household.id, user_id: LOCAL_USER.id, role: 'owner', email: '', created_at: household.created_at }]
+    },
+    removeMember: notSupported,
+
+    listInvites: async () => [],
+    createInvite: notSupported,
+    deleteInvite: notSupported,
+    listMyInvites: async () => [],
+    acceptInvite: notSupported,
 
     listSections: async () => read().sections,
     listProducts: async () => read().products,

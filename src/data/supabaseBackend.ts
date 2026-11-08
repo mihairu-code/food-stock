@@ -1,5 +1,15 @@
 import { createClient, type PostgrestError } from '@supabase/supabase-js'
-import type { Household, Membership, Product, Role, Section, ShoppingItem } from '@/domain/types'
+import type {
+  Household,
+  IncomingInvite,
+  Invite,
+  Member,
+  Membership,
+  Product,
+  Role,
+  Section,
+  ShoppingItem,
+} from '@/domain/types'
 import type { Backend } from './backend'
 
 const REALTIME_TABLES = [
@@ -36,6 +46,22 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       const user = data.session?.user
       return user ? { id: user.id, email: user.email ?? null } : null
     },
+    onAuthChange: (callback) => {
+      const { data } = supabase.auth.onAuthStateChange((event) => {
+        // Вызов откладывается: внутри обработчика нельзя обращаться к supabase.auth.
+        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') window.setTimeout(callback, 0)
+      })
+      return () => data.subscription.unsubscribe()
+    },
+    sendEmailCode: async (email) => {
+      check(await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: true } }))
+    },
+    verifyEmailCode: async (email, code) => {
+      check(await supabase.auth.verifyOtp({ email, token: code, type: 'email' }))
+    },
+    signOut: async () => {
+      check(await supabase.auth.signOut())
+    },
 
     listMemberships: async () => {
       const { data: session } = await supabase.auth.getSession()
@@ -50,6 +76,41 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       ) as unknown as { role: Role; households: Household }[]
       return rows.map((row): Membership => ({ household: row.households, role: row.role }))
     },
+    createHousehold: async (name) =>
+      unwrap(await supabase.rpc('create_household', { p_name: name })) as string,
+
+    listMembers: async (householdId) =>
+      unwrap(
+        await supabase.from('household_members').select('*').eq('household_id', householdId).order('created_at'),
+      ) as Member[],
+    removeMember: async (householdId, userId) => {
+      check(await supabase.from('household_members').delete().eq('household_id', householdId).eq('user_id', userId))
+    },
+
+    listInvites: async (householdId) =>
+      unwrap(
+        await supabase
+          .from('household_invites')
+          .select('id, household_id, email, created_at')
+          .eq('household_id', householdId)
+          .order('created_at'),
+      ) as Invite[],
+    createInvite: async (householdId, email) => {
+      const { data } = await supabase.auth.getSession()
+      check(
+        await supabase.from('household_invites').insert({
+          household_id: householdId,
+          email: email.trim().toLowerCase(),
+          invited_by: data.session?.user.id,
+        }),
+      )
+    },
+    deleteInvite: async (inviteId) => {
+      check(await supabase.from('household_invites').delete().eq('id', inviteId))
+    },
+    listMyInvites: async () => unwrap(await supabase.rpc('list_my_invites')) as IncomingInvite[],
+    acceptInvite: async (inviteId) =>
+      unwrap(await supabase.rpc('accept_invite', { p_invite_id: inviteId })) as string,
 
     listSections: async (householdId) =>
       unwrap(await supabase.from('sections').select('*').eq('household_id', householdId)) as Section[],
