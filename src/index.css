@@ -670,3 +670,63 @@ button {
   color: var(--muted);
   font-size: 13px;
 }
+
+.invite-form {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+}
+
+.invite-form input {
+  min-width: 0;
+  flex: 1;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--bg);
+  font-size: 16px;
+}
+
+.invite-form + .setting-row {
+  border-top: 1px solid var(--line);
+}
+
+.field-error {
+  margin: 0 6px;
+  color: var(--red);
+  font-size: 13px;
+}
+
+/* ---------- Вход ---------- */
+
+.auth,
+.notice {
+  display: grid;
+  max-width: 420px;
+  gap: 14px;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top) + 18dvh) 20px 40px;
+}
+
+.auth h1,
+.notice h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.auth-lead,
+.notice p {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.auth form {
+  display: grid;
+  gap: 10px;
+}
+
+.btn.wide {
+  width: 100%;
+}

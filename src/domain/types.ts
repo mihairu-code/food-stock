@@ -17,6 +17,31 @@ export interface Membership {
   role: Role
 }
 
+export interface Member {
+  household_id: string
+  user_id: string
+  role: Role
+  /** Почта на момент вступления: auth.users клиенту недоступна. */
+  email: string
+  created_at: string
+}
+
+/** Отправленное приглашение: принять его может только вошедший с этой почтой. */
+export interface Invite {
+  id: string
+  household_id: string
+  email: string
+  created_at: string
+}
+
+/** Приглашение, адресованное мне, — с названием дома, которого я ещё не вижу. */
+export interface IncomingInvite {
+  id: string
+  household_id: string
+  household_name: string
+  invited_by_email: string | null
+}
+
 export interface Section {
   id: string
   household_id: string
