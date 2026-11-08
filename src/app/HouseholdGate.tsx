@@ -4,10 +4,12 @@ import { backend } from '@/data'
 import { qk } from '@/data/keys'
 import type { User } from '@/domain/types'
 import { SessionContext, type Session } from './session'
+import { useRealtimeRefresh } from './useRealtimeRefresh'
 
 /** Находит дом пользователя; пока его нет — показывает заставку. */
 export function HouseholdGate({ user, children }: { user: User; children: ReactNode }) {
   const memberships = useQuery({ queryKey: qk.memberships, queryFn: () => backend.listMemberships() })
+  useRealtimeRefresh()
 
   const session = useMemo<Session | null>(() => {
     const first = memberships.data?.[0]
