@@ -724,3 +724,11 @@ button {
   font-size: 12px;
   overflow-wrap: anywhere;
 }
+
+.row-name.accent {
+  color: var(--accent);
+}
+
+.setting-row:disabled {
+  opacity: 0.5;
+}
