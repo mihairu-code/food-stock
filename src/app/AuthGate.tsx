@@ -1,24 +1,20 @@
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { backend } from '@/data'
 import { qk } from '@/data/keys'
-import { queryClient } from '@/data/queryClient'
 import type { User } from '@/domain/types'
-import { SignIn } from './SignIn'
 
-/** Решает, кто пользуется приложением: без входа показывает экран входа по почте. */
+/**
+ * Регистрации нет: если на устройстве уже есть сессия — берём её, иначе незаметно
+ * создаём анонимного пользователя.
+ */
 export function AuthGate({ children }: { children: (user: User) => ReactNode }) {
-  const user = useQuery({ queryKey: qk.user, queryFn: () => backend.currentUser(), staleTime: Infinity })
-
-  useEffect(
-    () =>
-      backend.onAuthChange(() => {
-        // Приватные данные не должны пережить смену пользователя.
-        queryClient.removeQueries({ predicate: (query) => query.queryKey[0] !== qk.user[0] })
-        void queryClient.invalidateQueries({ queryKey: qk.user })
-      }),
-    [],
-  )
+  const user = useQuery({
+    queryKey: qk.user,
+    queryFn: async () => (await backend.currentUser()) ?? (await backend.continueAnonymously()),
+    staleTime: Infinity,
+    retry: false,
+  })
 
   if (user.isPending) return <p className="status">Загрузка…</p>
   if (user.isError) {
@@ -26,13 +22,12 @@ export function AuthGate({ children }: { children: (user: User) => ReactNode }) 
       <div className="notice">
         <h2>Не удалось начать работу</h2>
         <p>Проверьте соединение и попробуйте ещё раз.</p>
+        <small className="notice-detail">{user.error.message}</small>
         <button className="btn" type="button" onClick={() => void user.refetch()}>
           Повторить
         </button>
       </div>
     )
   }
-  // Раньше здесь висела «Загрузка…» навсегда: null — это не «ещё грузится», а «не вошёл».
-  if (!user.data) return <SignIn />
   return children(user.data)
 }

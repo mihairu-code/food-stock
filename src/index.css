@@ -698,9 +698,8 @@ button {
   font-size: 13px;
 }
 
-/* ---------- Вход ---------- */
+/* ---------- Сообщение вместо экрана ---------- */
 
-.auth,
 .notice {
   display: grid;
   max-width: 420px;
@@ -709,24 +708,27 @@ button {
   padding: calc(env(safe-area-inset-top) + 18dvh) 20px 40px;
 }
 
-.auth h1,
 .notice h2 {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 30px;
   font-weight: 500;
 }
 
-.auth-lead,
 .notice p {
   color: var(--muted);
   font-size: 15px;
 }
 
-.auth form {
-  display: grid;
-  gap: 10px;
+.notice-detail {
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
 }
 
-.btn.wide {
-  width: 100%;
+.row-name.accent {
+  color: var(--accent);
+}
+
+.setting-row:disabled {
+  opacity: 0.5;
 }

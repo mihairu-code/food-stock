@@ -9,7 +9,7 @@ import type { Household, Product, Section, ShoppingItem, User } from '@/domain/t
 import type { Backend } from './backend'
 
 const STORAGE_KEY = 'home-stock:local:v1'
-const LOCAL_USER: User = { id: 'local-user', email: null }
+const LOCAL_USER: User = { id: 'local-user' }
 
 interface LocalState extends HomeData {
   household: Household
@@ -113,10 +113,7 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
     mode: 'local',
 
     currentUser: async () => LOCAL_USER,
-    onAuthChange: () => () => {},
-    sendEmailCode: notSupported,
-    verifyEmailCode: notSupported,
-    signOut: notSupported,
+    continueAnonymously: async () => LOCAL_USER,
 
     listMemberships: async () => [{ household: read().household, role: 'owner' }],
     createHousehold: async (name) => {
@@ -126,15 +123,17 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
 
     listMembers: async () => {
       const { household } = read()
-      return [{ household_id: household.id, user_id: LOCAL_USER.id, role: 'owner', email: '', created_at: household.created_at }]
+      return [
+        { household_id: household.id, user_id: LOCAL_USER.id, role: 'owner', display_name: '', created_at: household.created_at },
+      ]
     },
+    setDisplayName: notSupported,
     removeMember: notSupported,
 
     listInvites: async () => [],
     createInvite: notSupported,
     deleteInvite: notSupported,
-    listMyInvites: async () => [],
-    acceptInvite: notSupported,
+    joinHousehold: notSupported,
 
     listSections: async () => read().sections,
     listProducts: async () => read().products,

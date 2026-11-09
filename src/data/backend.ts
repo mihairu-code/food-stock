@@ -1,5 +1,4 @@
 import type {
-  IncomingInvite,
   Invite,
   Member,
   Membership,
@@ -40,28 +39,25 @@ export interface NewShoppingItem {
 export interface Backend {
   readonly mode: 'local' | 'supabase'
 
-  /** Пользователь этого устройства или null, если он не вошёл. */
+  /** Пользователь этого устройства или null, если человек ещё не начинал. */
   currentUser(): Promise<User | null>
-  /** Сессия изменилась (вход, выход) — пользователя нужно перечитать. */
-  onAuthChange(callback: () => void): () => void
-  /** Отправляет на почту одноразовый код для входа. */
-  sendEmailCode(email: string): Promise<void>
-  verifyEmailCode(email: string, code: string): Promise<void>
-  signOut(): Promise<void>
+  /** Начать без регистрации: создаёт анонимного пользователя на этом устройстве. */
+  continueAnonymously(): Promise<User>
 
   listMemberships(): Promise<Membership[]>
   /** Создаёт дом и делает текущего пользователя владельцем; возвращает id дома. */
-  createHousehold(name: string): Promise<string>
+  createHousehold(name: string, displayName: string): Promise<string>
 
   listMembers(householdId: string): Promise<Member[]>
+  setDisplayName(householdId: string, displayName: string): Promise<void>
   removeMember(householdId: string, userId: string): Promise<void>
 
   listInvites(householdId: string): Promise<Invite[]>
-  createInvite(householdId: string, email: string): Promise<void>
+  /** Создаёт одноразовую ссылку и возвращает её токен — больше его получить нельзя. */
+  createInvite(householdId: string): Promise<string>
   deleteInvite(inviteId: string): Promise<void>
-  listMyInvites(): Promise<IncomingInvite[]>
-  /** Принять приглашение; возвращает id дома. */
-  acceptInvite(inviteId: string): Promise<string>
+  /** Вступить в дом по токену из ссылки; возвращает идентификатор дома. */
+  joinHousehold(token: string, displayName: string): Promise<string>
 
   listSections(householdId: string): Promise<Section[]>
   listProducts(householdId: string): Promise<Product[]>

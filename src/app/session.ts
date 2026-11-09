@@ -5,6 +5,8 @@ export interface Session {
   user: User
   household: Household
   role: Role
+  /** Открыть другой дом — например, тот, в который только что вступили. */
+  selectHousehold: (householdId: string) => void
 }
 
 export const SessionContext = createContext<Session | null>(null)

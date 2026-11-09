@@ -1,9 +1,9 @@
 export type ProductKind = 'staple' | 'one_off'
 export type Role = 'owner' | 'member'
 
+/** Пользователь без регистрации: анонимный пользователь Supabase, живёт на этом устройстве. */
 export interface User {
   id: string
-  email: string | null
 }
 
 export interface Household {
@@ -21,25 +21,17 @@ export interface Member {
   household_id: string
   user_id: string
   role: Role
-  /** Почта на момент вступления: auth.users клиенту недоступна. */
-  email: string
+  /** Необязательное имя, которое участник задал сам. */
+  display_name: string
   created_at: string
 }
 
-/** Отправленное приглашение: принять его может только вошедший с этой почтой. */
+/** Действующая одноразовая ссылка-приглашение. Сам токен нигде не хранится. */
 export interface Invite {
   id: string
   household_id: string
-  email: string
   created_at: string
-}
-
-/** Приглашение, адресованное мне, — с названием дома, которого я ещё не вижу. */
-export interface IncomingInvite {
-  id: string
-  household_id: string
-  household_name: string
-  invited_by_email: string | null
+  expires_at: string
 }
 
 export interface Section {

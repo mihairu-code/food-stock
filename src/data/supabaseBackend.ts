@@ -1,7 +1,6 @@
 import { createClient, type PostgrestError } from '@supabase/supabase-js'
 import type {
   Household,
-  IncomingInvite,
   Invite,
   Member,
   Membership,
@@ -9,6 +8,7 @@ import type {
   Role,
   Section,
   ShoppingItem,
+  User,
 } from '@/domain/types'
 import type { Backend } from './backend'
 
@@ -31,11 +31,18 @@ function check(result: { error: { message: string } | null }): void {
 }
 
 /**
- * Общий дом на Supabase: Postgres + Auth + Realtime. Доступ ограничивают политики RLS
- * из supabase/migrations — клиент знает только публичный ключ и никогда service-role.
+ * Общий дом на Supabase: Postgres + Auth + Realtime.
+ *
+ * Регистрации нет: при первом запуске создаётся анонимный пользователь, сессия которого
+ * хранится на устройстве. Доступ ограничивают политики RLS из supabase/migrations —
+ * клиент знает только публичный ключ и никогда service-role.
  */
 export function createSupabaseBackend(url: string, publicKey: string): Backend {
   const supabase = createClient(url, publicKey)
+
+  // Одновременные вызовы (например, двойной эффект StrictMode) не должны
+  // создать двух анонимных пользователей.
+  let pendingAnonymous: Promise<User> | null = null
 
   return {
     mode: 'supabase',
@@ -43,24 +50,21 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
     currentUser: async () => {
       const { data, error } = await supabase.auth.getSession()
       if (error) throw new Error(error.message)
-      const user = data.session?.user
-      return user ? { id: user.id, email: user.email ?? null } : null
+      return data.session ? { id: data.session.user.id } : null
     },
-    onAuthChange: (callback) => {
-      const { data } = supabase.auth.onAuthStateChange((event) => {
-        // Вызов откладывается: внутри обработчика нельзя обращаться к supabase.auth.
-        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') window.setTimeout(callback, 0)
+    continueAnonymously: () => {
+      pendingAnonymous ??= (async () => {
+        const existing = await supabase.auth.getSession()
+        if (existing.data.session) return { id: existing.data.session.user.id }
+        const created = await supabase.auth.signInAnonymously()
+        if (created.error || !created.data.user) {
+          throw new Error(created.error?.message ?? 'Не удалось создать пользователя')
+        }
+        return { id: created.data.user.id }
+      })().finally(() => {
+        pendingAnonymous = null
       })
-      return () => data.subscription.unsubscribe()
-    },
-    sendEmailCode: async (email) => {
-      check(await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: true } }))
-    },
-    verifyEmailCode: async (email, code) => {
-      check(await supabase.auth.verifyOtp({ email, token: code, type: 'email' }))
-    },
-    signOut: async () => {
-      check(await supabase.auth.signOut())
+      return pendingAnonymous
     },
 
     listMemberships: async () => {
@@ -76,13 +80,23 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       ) as unknown as { role: Role; households: Household }[]
       return rows.map((row): Membership => ({ household: row.households, role: row.role }))
     },
-    createHousehold: async (name) =>
-      unwrap(await supabase.rpc('create_household', { p_name: name })) as string,
+    createHousehold: async (name, displayName) =>
+      unwrap(await supabase.rpc('create_household', { p_name: name, p_display_name: displayName })) as string,
 
     listMembers: async (householdId) =>
       unwrap(
         await supabase.from('household_members').select('*').eq('household_id', householdId).order('created_at'),
       ) as Member[],
+    setDisplayName: async (householdId, displayName) => {
+      const { data } = await supabase.auth.getSession()
+      check(
+        await supabase
+          .from('household_members')
+          .update({ display_name: displayName })
+          .eq('household_id', householdId)
+          .eq('user_id', data.session?.user.id ?? ''),
+      )
+    },
     removeMember: async (householdId, userId) => {
       check(await supabase.from('household_members').delete().eq('household_id', householdId).eq('user_id', userId))
     },
@@ -91,26 +105,19 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       unwrap(
         await supabase
           .from('household_invites')
-          .select('id, household_id, email, created_at')
+          // Столбец token_hash клиенту недоступен, поэтому столбцы перечислены явно.
+          .select('id, household_id, created_at, expires_at')
           .eq('household_id', householdId)
+          .gt('expires_at', new Date().toISOString())
           .order('created_at'),
       ) as Invite[],
-    createInvite: async (householdId, email) => {
-      const { data } = await supabase.auth.getSession()
-      check(
-        await supabase.from('household_invites').insert({
-          household_id: householdId,
-          email: email.trim().toLowerCase(),
-          invited_by: data.session?.user.id,
-        }),
-      )
-    },
+    createInvite: async (householdId) =>
+      unwrap(await supabase.rpc('create_invite', { p_household_id: householdId })) as string,
     deleteInvite: async (inviteId) => {
       check(await supabase.from('household_invites').delete().eq('id', inviteId))
     },
-    listMyInvites: async () => unwrap(await supabase.rpc('list_my_invites')) as IncomingInvite[],
-    acceptInvite: async (inviteId) =>
-      unwrap(await supabase.rpc('accept_invite', { p_invite_id: inviteId })) as string,
+    joinHousehold: async (token, displayName) =>
+      unwrap(await supabase.rpc('join_household', { p_token: token, p_display_name: displayName })) as string,
 
     listSections: async (householdId) =>
       unwrap(await supabase.from('sections').select('*').eq('household_id', householdId)) as Section[],
