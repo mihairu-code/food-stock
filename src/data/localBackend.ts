@@ -141,7 +141,6 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
 
     createSection: async (householdId, input) => {
       const section: Section = {
-        id: crypto.randomUUID(),
         household_id: householdId,
         created_at: now(),
         ...input,
@@ -165,7 +164,6 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
         throw new Error('Раздел не найден')
       }
       const product: Product = {
-        id: crypto.randomUUID(),
         household_id: householdId,
         is_available: true,
         created_at: now(),
@@ -185,7 +183,6 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
 
     createShoppingItem: async (householdId, input) => {
       const item: ShoppingItem = {
-        id: crypto.randomUUID(),
         household_id: householdId,
         created_at: now(),
         created_by: LOCAL_USER.id,

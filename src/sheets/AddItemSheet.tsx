@@ -12,7 +12,7 @@ export function AddItemSheet({ onSave, onClose }: { onSave: (input: NewShoppingI
     event.preventDefault()
     const trimmed = name.trim()
     if (!trimmed) return
-    onSave({ name: trimmed, icon: icon || null })
+    onSave({ id: crypto.randomUUID(), name: trimmed, icon: icon || null })
     onClose()
   }
 

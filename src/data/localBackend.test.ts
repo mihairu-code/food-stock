@@ -35,7 +35,7 @@ describe('домашние запасы: основные потоки', () => {
   })
 
   it('создаёт, переименовывает и удаляет раздел', async () => {
-    const section = await backend.createSection(hid, { name: 'Шкаф', icon: null, sort_order: 0 })
+    const section = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Шкаф', icon: null, sort_order: 0 })
     await backend.updateSection(section.id, { name: 'Кладовка', icon: '📦' })
     expect((await snapshot()).sections).toMatchObject([{ name: 'Кладовка', icon: '📦' }])
     await backend.deleteSection(section.id)
@@ -43,14 +43,14 @@ describe('домашние запасы: основные потоки', () => {
   })
 
   it('разделы идут по sort_order', async () => {
-    await backend.createSection(hid, { name: 'Второй', icon: null, sort_order: 2 })
-    await backend.createSection(hid, { name: 'Первый', icon: null, sort_order: 1 })
+    await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Второй', icon: null, sort_order: 2 })
+    await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Первый', icon: null, sort_order: 1 })
     expect(sortSections((await snapshot()).sections).map((s) => s.name)).toEqual(['Первый', 'Второй'])
   })
 
   it('постоянный продукт: закончился → ровно один раз в покупках → куплен → снова дома', async () => {
-    const fridge = await backend.createSection(hid, { name: 'Холодильник', icon: null, sort_order: 0 })
-    const milk = await backend.createProduct(hid, { section_id: fridge.id, name: 'Молоко', icon: '🥛', kind: 'staple' })
+    const fridge = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Холодильник', icon: null, sort_order: 0 })
+    const milk = await backend.createProduct(hid, { id: crypto.randomUUID(), section_id: fridge.id, name: 'Молоко', icon: '🥛', kind: 'staple' })
     expect((await snapshot()).shopping).toEqual([])
 
     await backend.setAvailability(milk.id, false)
@@ -67,16 +67,16 @@ describe('домашние запасы: основные потоки', () => {
   })
 
   it('разовый продукт нельзя отметить закончившимся — только удалить', async () => {
-    const fridge = await backend.createSection(hid, { name: 'Холодильник', icon: null, sort_order: 0 })
-    const cake = await backend.createProduct(hid, { section_id: fridge.id, name: 'Торт', icon: '🎂', kind: 'one_off' })
+    const fridge = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Холодильник', icon: null, sort_order: 0 })
+    const cake = await backend.createProduct(hid, { id: crypto.randomUUID(), section_id: fridge.id, name: 'Торт', icon: '🎂', kind: 'one_off' })
     await expect(backend.setAvailability(cake.id, false)).rejects.toThrow()
     await backend.deleteProduct(cake.id)
     expect((await snapshot()).products).toEqual([])
   })
 
   it('ручная позиция: куплена без галочки → разовый продукт в выбранном разделе', async () => {
-    const cupboard = await backend.createSection(hid, { name: 'Шкаф', icon: null, sort_order: 0 })
-    const item = await backend.createShoppingItem(hid, { name: 'Батарейки', icon: '🔋' })
+    const cupboard = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Шкаф', icon: null, sort_order: 0 })
+    const item = await backend.createShoppingItem(hid, { id: crypto.randomUUID(), name: 'Батарейки', icon: '🔋' })
     expect((await snapshot()).shopping).toMatchObject([{ type: 'manual', item: { id: item.id } }])
 
     await backend.purchaseShoppingItem(item.id, cupboard.id, false)
@@ -88,25 +88,25 @@ describe('домашние запасы: основные потоки', () => {
   })
 
   it('ручная позиция: куплена с галочкой → постоянный продукт', async () => {
-    const cupboard = await backend.createSection(hid, { name: 'Шкаф', icon: null, sort_order: 0 })
-    const item = await backend.createShoppingItem(hid, { name: 'Чай', icon: null })
+    const cupboard = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Шкаф', icon: null, sort_order: 0 })
+    const item = await backend.createShoppingItem(hid, { id: crypto.randomUUID(), name: 'Чай', icon: null })
     await backend.purchaseShoppingItem(item.id, cupboard.id, true)
     expect((await snapshot()).products).toMatchObject([{ name: 'Чай', kind: 'staple' }])
   })
 
   it('удаление продукта убирает его и из покупок', async () => {
-    const fridge = await backend.createSection(hid, { name: 'Холодильник', icon: null, sort_order: 0 })
-    const milk = await backend.createProduct(hid, { section_id: fridge.id, name: 'Молоко', icon: null, kind: 'staple' })
+    const fridge = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Холодильник', icon: null, sort_order: 0 })
+    const milk = await backend.createProduct(hid, { id: crypto.randomUUID(), section_id: fridge.id, name: 'Молоко', icon: null, kind: 'staple' })
     await backend.setAvailability(milk.id, false)
     await backend.deleteProduct(milk.id)
     expect((await snapshot()).shopping).toEqual([])
   })
 
   it('удаление раздела удаляет его продукты, ручные покупки остаются', async () => {
-    const fridge = await backend.createSection(hid, { name: 'Холодильник', icon: null, sort_order: 0 })
-    const milk = await backend.createProduct(hid, { section_id: fridge.id, name: 'Молоко', icon: null, kind: 'staple' })
+    const fridge = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Холодильник', icon: null, sort_order: 0 })
+    const milk = await backend.createProduct(hid, { id: crypto.randomUUID(), section_id: fridge.id, name: 'Молоко', icon: null, kind: 'staple' })
     await backend.setAvailability(milk.id, false)
-    await backend.createShoppingItem(hid, { name: 'Хлеб', icon: null })
+    await backend.createShoppingItem(hid, { id: crypto.randomUUID(), name: 'Хлеб', icon: null })
 
     await backend.deleteSection(fridge.id)
     const state = await snapshot()
@@ -115,7 +115,7 @@ describe('домашние запасы: основные потоки', () => {
   })
 
   it('покупка в несуществующий раздел не теряет позицию', async () => {
-    const item = await backend.createShoppingItem(hid, { name: 'Хлеб', icon: null })
+    const item = await backend.createShoppingItem(hid, { id: crypto.randomUUID(), name: 'Хлеб', icon: null })
     await expect(backend.purchaseShoppingItem(item.id, 'нет-такого', false)).rejects.toThrow()
     expect((await snapshot()).shoppingItems).toMatchObject([{ id: item.id }])
   })

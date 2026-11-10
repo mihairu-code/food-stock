@@ -22,7 +22,7 @@ export function ProductSheet({ sections, sectionId: initialSectionId, onSave, on
     event.preventDefault()
     const trimmed = name.trim()
     if (!trimmed || !sectionId) return
-    onSave({ section_id: sectionId, name: trimmed, icon: icon || null, kind: staple ? 'staple' : 'one_off' })
+    onSave({ id: crypto.randomUUID(), section_id: sectionId, name: trimmed, icon: icon || null, kind: staple ? 'staple' : 'one_off' })
     onClose()
   }
 

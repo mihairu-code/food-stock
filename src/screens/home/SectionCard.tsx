@@ -35,11 +35,10 @@ export function SectionCard({ section, count, open, onToggle, onEdit, children }
           <Pencil size={16} />
         </button>
       </div>
-      {open && (
-        <div className="section-body" id={panelId}>
-          {children}
-        </div>
-      )}
+      {/* Содержимое не размонтируется: высота плавно сворачивается, а inert убирает его из фокуса. */}
+      <div className="section-body" id={panelId} inert={!open}>
+        <div className="section-products">{children}</div>
+      </div>
     </section>
   )
 }

@@ -9,7 +9,11 @@ import type {
   User,
 } from '@/domain/types'
 
+/* Идентификатор новой записи выдаёт клиент: так строку можно показать в списке
+   сразу, не дожидаясь ответа сервера, и она не «переедет» после сохранения. */
+
 export interface NewSection {
+  id: string
   name: string
   icon: string | null
   sort_order: number
@@ -21,6 +25,7 @@ export interface SectionPatch {
 }
 
 export interface NewProduct {
+  id: string
   section_id: string
   name: string
   icon: string | null
@@ -28,6 +33,7 @@ export interface NewProduct {
 }
 
 export interface NewShoppingItem {
+  id: string
   name: string
   icon: string | null
 }
