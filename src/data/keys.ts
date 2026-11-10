@@ -2,6 +2,7 @@
 export const qk = {
   user: ['user'] as const,
   memberships: ['memberships'] as const,
+  googleAvailable: ['google-available'] as const,
   home: (hid: string) => ['hh', hid] as const,
   sections: (hid: string) => ['hh', hid, 'sections'] as const,
   products: (hid: string) => ['hh', hid, 'products'] as const,

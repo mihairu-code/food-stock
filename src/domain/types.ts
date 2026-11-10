@@ -1,9 +1,16 @@
 export type ProductKind = 'staple' | 'one_off'
 export type Role = 'owner' | 'member'
 
-/** Пользователь без регистрации: анонимный пользователь Supabase, живёт на этом устройстве. */
+/**
+ * Пользователь. Без аккаунта он анонимный и существует только на этом устройстве;
+ * после входа через Google это один и тот же человек на всех его устройствах.
+ */
 export interface User {
   id: string
+  isAnonymous: boolean
+  email: string | null
+  /** Имя из аккаунта Google, если есть. */
+  name: string | null
 }
 
 export interface Household {

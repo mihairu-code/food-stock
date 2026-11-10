@@ -47,8 +47,15 @@ export interface Backend {
 
   /** Пользователь этого устройства или null, если человек ещё не начинал. */
   currentUser(): Promise<User | null>
-  /** Начать без регистрации: создаёт анонимного пользователя на этом устройстве. */
+  /** Начать без аккаунта: создаёт анонимного пользователя на этом устройстве. */
   continueAnonymously(): Promise<User>
+  /** Сессия изменилась (вход, выход) — пользователя нужно перечитать. */
+  onAuthChange(callback: () => void): () => void
+
+  /** Настроен ли на сервере вход через Google. */
+  googleAvailable(): Promise<boolean>
+  /** Уводит на страницу Google; после возврата currentUser() вернёт аккаунт. */
+  signInWithGoogle(): Promise<void>
 
   listMemberships(): Promise<Membership[]>
   /** Создаёт дом и делает текущего пользователя владельцем; возвращает id дома. */

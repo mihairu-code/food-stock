@@ -12,6 +12,7 @@ import { ConfirmSheet } from '@/sheets/ConfirmSheet'
 import { InviteLinkSheet } from '@/sheets/InviteLinkSheet'
 import { JoinSheet } from '@/sheets/JoinSheet'
 import { NameSheet } from '@/sheets/NameSheet'
+import { AccountGroup } from './AccountGroup'
 
 const THEME_LABELS: Record<ThemeSetting, string> = {
   auto: 'Как на устройстве',
@@ -140,6 +141,8 @@ export function SettingsScreen() {
               </button>
             )}
           </div>
+
+          <AccountGroup />
 
           <h2 className="group-label">Вы</h2>
           <div className="card">

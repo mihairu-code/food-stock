@@ -9,7 +9,7 @@ import type { Household, Product, Section, ShoppingItem, User } from '@/domain/t
 import type { Backend } from './backend'
 
 const STORAGE_KEY = 'home-stock:local:v1'
-const LOCAL_USER: User = { id: 'local-user' }
+const LOCAL_USER: User = { id: 'local-user', isAnonymous: true, email: null, name: null }
 
 interface LocalState extends HomeData {
   household: Household
@@ -114,6 +114,9 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
 
     currentUser: async () => LOCAL_USER,
     continueAnonymously: async () => LOCAL_USER,
+    onAuthChange: () => () => {},
+    googleAvailable: async () => false,
+    signInWithGoogle: notSupported,
 
     listMemberships: async () => [{ household: read().household, role: 'owner' }],
     createHousehold: async (name) => {
