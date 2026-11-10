@@ -109,3 +109,70 @@ One more bug: a signed-out user got an endless "Loading…". `currentUser()` ret
 there's always a user there.
 
 v0.1 is done. It works, but email sign-in hurts. Looks like that's the next thing to fix.
+
+## Nov 9, Mon
+
+Email goes out. I tried inviting someone into a home and it hurt: the email didn't
+arrive (Supabase's built-in mail only sends to its own people), and when it did, you
+still had to copy the code without mixing up apps. Overkill for a home list.
+
+I weighed the alternatives in [0003](decisions/0003-anonymous-users.md). Settled on
+Supabase anonymous users: `signInAnonymously()` gives a proper `auth.uid()`, and all my
+RLS stays as it was — that's the key part. The second person is invited with a link.
+
+A link is basically a key to the home, so:
+- it works once and lives 7 days;
+- the database only keeps sha256 of the token, the token itself can't be read back;
+- the hash column isn't granted to the client at all (column-level `grant select (id, …)`).
+
+The token goes into the hash `#join=…`, not the query — the hash never reaches the
+hosting server and doesn't end up in logs.
+
+A separate iPhone trap: Safari and the home screen app have different storage. A link
+from a messenger opens in Safari, the person joins the home there, and in their
+"installed" version they're a brand new empty user. Hence "Join by link" in settings —
+you just paste the link there.
+
+One more thing I almost forgot: a home is created automatically on first launch, so if
+someone arrived straight from a link they'd keep an empty "Our home". `join_household`
+now deletes the empty auto-created home after joining someone else's.
+
+Deployed to Vercel. Right away: the bot that renders link previews in a messenger
+honestly opens the site — and creates an anonymous user with a home. Every time.
+I check `navigator.webdriver` and show such visitors the demo. Plus `noindex`, search
+engines have nothing to do here.
+
+## Nov 10, Tue
+
+Morning — small things that annoyed me on the phone.
+
+**Icons.** The form used to have a fixed set of emoji. Now they follow the name:
+a dictionary of word stems ("молок", "сухар") so Russian cases and diminutives match,
+plus groups — if there's no exact icon I show the neighbours: "сухарики" gives
+🥨 🍟 🥜 🍿. One typo is forgiven (Levenshtein ≤ 1, only for stems of 4+ letters,
+otherwise "кол" matches anything). The word list itself was drafted by an AI tool and
+I went through it and cleaned it up — by hand it's an hour of dull work.
+
+**Optimistic updates.** The lag after a tap was really annoying. Now `useHomeMutation`
+patches the TanStack Query cache first, then sends the request; on error — rollback and
+a toast. The important bit: all mutations of one home share one `scope`, so they run
+strictly in order. Otherwise "added a product and immediately marked it out" could reach
+the server the other way round. And I only refetch after the last mutation in the
+queue, or the server's answer to the first one overwrites the optimistic state of the
+second — you can see the row blink.
+
+For that, new ids are generated on the client (`crypto.randomUUID()`), otherwise the row
+"moves" when the real id arrives.
+
+**memo.** Went through the profiler: marking one product re-rendered every row. Rows are
+in `memo` now, actions are one object from `useMemo` — it's stable, and a row only
+re-renders when its own product changes. Realtime events are batched (one change = a few
+events in a row) — one refetch after 150 ms.
+
+Toasts go through a context for now. Works, but calling a hook just to show a toast is
+meh, I'll redo it later.
+
+Then I sat down and wrote the update rules ([0004](decisions/0004-safe-updates.md)) —
+after realising that in `0003` I happily dropped tables only because the database was
+empty. Real people live there now. The main ones: migrations only add, and no
+`React.lazy` — an old tab will ask for a chunk that's gone after a deploy.

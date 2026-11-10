@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0 — 2026-11-10
+
+- No sign-up: an anonymous user and a home are created on first launch.
+- One-time invite links (7 days, stored as a hash), revoke, join by pasting a link.
+- Member display names; the owner can remove members.
+- Emoji suggestions by product name.
+- Optimistic updates with rollback and toasts; client-generated ids.
+- Memoized rows, batched realtime refetch, screen and section transitions.
+- Vercel config; demo mode for automated browsers; `noindex`.
+- Email sign-in and email invites removed.
+
 ## 0.1.0 — 2026-11-08
 
 First working version (MVP).

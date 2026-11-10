@@ -33,13 +33,18 @@ Without any settings the app starts in **demo mode**: data lives in the browser'
 1. Create a project on supabase.com.
 2. Apply the migrations from `supabase/migrations/` in order — in the SQL Editor or with
    `supabase db push`.
-3. Authentication → Email: put the code into the email templates (*Magic link* and
-   *Confirm signup*), e.g. `<p>Your code: <strong>{{ .Token }}</strong></p>`.
+3. Authentication → Sign In / Providers → turn on **Allow anonymous sign-ins**.
 4. Copy `.env.example` to `.env.local` and fill in `VITE_SUPABASE_URL` and
    `VITE_SUPABASE_ANON_KEY` (the public key only, never the service-role one).
 
-Supabase's built-in mail only delivers to members of your Supabase organisation and has
-a low hourly limit. For real users you'll need your own SMTP.
+No email setup is needed: there's no sign-up. A user and a home are created on first
+launch, other people join with a one-time link.
+
+## Updates
+
+A deploy replaces only the app files; data stays in Supabase. For a while the old and the
+new version work with the same database, so migrations only add, and there's no lazy
+loading. The rules are in [decision 0004](docs/en/decisions/0004-safe-updates.md).
 
 ## How it's built
 
@@ -51,6 +56,8 @@ src/
   screens/    Home, Shopping, Settings
   sheets/     bottom sheets with forms
   components/ small shared pieces
+  hooks/      shared hooks
+  lib/        small standalone helpers (theme, invite links, emoji suggestions)
 supabase/
   migrations/ schema, RLS policies, RPC
   tests/      migrations + RLS checked on PGlite
