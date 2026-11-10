@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
+import { signInWithGoogle } from '@/app/googleSignIn'
 import { useSession } from '@/app/session'
 import { backend } from '@/data'
 import { qk } from '@/data/keys'
@@ -16,7 +17,7 @@ export function AccountGroup() {
 
   function signIn() {
     setBusy(true)
-    backend.signInWithGoogle().catch(() => setBusy(false))
+    signInWithGoogle(user.id).catch(() => setBusy(false))
   }
 
   if (user.isAnonymous && !google.data) return null

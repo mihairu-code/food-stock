@@ -1,6 +1,7 @@
 /** Ссылка-приглашение: https://приложение/#join=<32 hex>. Токен в якоре не уходит на сервер хостинга. */
 
 const NAME_KEY = 'home-stock:name'
+const PENDING_INVITE_KEY = 'home-stock:pending-invite'
 
 export function inviteLink(token: string): string {
   return `${window.location.origin}/#join=${token}`
@@ -12,12 +13,22 @@ export function parseInviteToken(text: string): string | null {
   return match ? match[1].toLowerCase() : null
 }
 
+/**
+ * Токен приглашения: из адреса или отложенный перед уходом на страницу Google
+ * (после возврата якоря в адресе уже нет).
+ */
 export function readInviteToken(): string | null {
-  return parseInviteToken(window.location.hash)
+  return parseInviteToken(window.location.hash) ?? localStorage.getItem(PENDING_INVITE_KEY)
 }
 
-/** Убирает токен из адреса, чтобы он не остался в истории и не сработал повторно. */
+export function rememberInviteToken(): void {
+  const token = parseInviteToken(window.location.hash)
+  if (token) localStorage.setItem(PENDING_INVITE_KEY, token)
+}
+
+/** Убирает токен отовсюду, чтобы он не остался в истории и не сработал повторно. */
 export function clearInviteToken(): void {
+  localStorage.removeItem(PENDING_INVITE_KEY)
   if (window.location.hash.includes('join=')) {
     window.history.replaceState(null, '', window.location.pathname + window.location.search)
   }

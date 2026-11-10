@@ -4,6 +4,7 @@ import type {
   Invite,
   Member,
   Membership,
+  MergePreview,
   Product,
   Role,
   Section,
@@ -103,6 +104,15 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
           options: { redirectTo: `${window.location.origin}/` },
         }),
       )
+    },
+
+    createMergeTicket: async () => unwrap(await supabase.rpc('create_merge_ticket')) as string,
+    previewMerge: async (ticket) =>
+      unwrap(await supabase.rpc('preview_merge', { p_token: ticket })) as MergePreview,
+    completeMerge: async (ticket, keep) =>
+      unwrap(await supabase.rpc('complete_merge', { p_token: ticket, p_keep: keep })) as string | null,
+    syncProfile: async (device, displayName) => {
+      check(await supabase.rpc('sync_profile', { p_device: device, p_display_name: displayName }))
     },
 
     listMemberships: async () => {

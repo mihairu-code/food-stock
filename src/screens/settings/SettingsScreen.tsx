@@ -27,7 +27,10 @@ type SettingsSheet =
   | { type: 'join' }
   | { type: 'name' }
 
-const memberLabel = (member: Member) => member.display_name || (member.role === 'owner' ? 'Владелец' : 'Участник')
+const roleLabel = (member: Member) => (member.role === 'owner' ? 'Владелец' : 'Участник')
+const memberLabel = (member: Member) => member.display_name || roleLabel(member)
+/** Что отличает участника от остальных: почта аккаунта или, без аккаунта, его устройство. */
+const memberIdentity = (member: Member) => [roleLabel(member), member.account_email ?? member.device].filter(Boolean).join(' · ')
 
 export function SettingsScreen() {
   const { user, household, role, selectHousehold } = useSession()
@@ -91,9 +94,7 @@ export function SettingsScreen() {
                     {memberLabel(member)}
                     {member.user_id === user.id && ' (вы)'}
                   </span>
-                  {member.display_name && (
-                    <span className="row-meta">{member.role === 'owner' ? 'Владелец' : 'Участник'}</span>
-                  )}
+                  <span className="row-meta">{memberIdentity(member)}</span>
                 </span>
                 {isOwner && member.role !== 'owner' && (
                   <button

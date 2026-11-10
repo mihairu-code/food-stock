@@ -2,6 +2,8 @@ import type {
   Invite,
   Member,
   Membership,
+  MergeKeep,
+  MergePreview,
   Product,
   ProductKind,
   Section,
@@ -56,6 +58,18 @@ export interface Backend {
   googleAvailable(): Promise<boolean>
   /** Уводит на страницу Google; после возврата currentUser() вернёт аккаунт. */
   signInWithGoogle(): Promise<void>
+
+  /**
+   * Слияние анонимного пользователя устройства с аккаунтом. Билет берут до входа,
+   * а после входа им подтверждают, что данные устройства принадлежат тому же человеку.
+   */
+  createMergeTicket(): Promise<string>
+  previewMerge(ticket: string): Promise<MergePreview>
+  /** Возвращает дом, который стоит открыть; null — сливать было нечего. */
+  completeMerge(ticket: string, keep: MergeKeep | null): Promise<string | null>
+
+  /** Записывает устройство, почту и (если своё не задано) имя во все дома пользователя. */
+  syncProfile(device: string, displayName: string): Promise<void>
 
   listMemberships(): Promise<Membership[]>
   /** Создаёт дом и делает текущего пользователя владельцем; возвращает id дома. */

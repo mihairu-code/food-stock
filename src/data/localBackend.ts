@@ -117,6 +117,10 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
     onAuthChange: () => () => {},
     googleAvailable: async () => false,
     signInWithGoogle: notSupported,
+    createMergeTicket: notSupported,
+    previewMerge: notSupported,
+    completeMerge: notSupported,
+    syncProfile: async () => {},
 
     listMemberships: async () => [{ household: read().household, role: 'owner' }],
     createHousehold: async (name) => {
@@ -127,7 +131,7 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
     listMembers: async () => {
       const { household } = read()
       return [
-        { household_id: household.id, user_id: LOCAL_USER.id, role: 'owner', display_name: '', created_at: household.created_at },
+        { household_id: household.id, user_id: LOCAL_USER.id, role: 'owner', display_name: '', device: '', account_email: null, created_at: household.created_at },
       ]
     },
     setDisplayName: notSupported,

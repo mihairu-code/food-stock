@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { backend } from '@/data'
+import { signInWithGoogle } from './googleSignIn'
 
 /** Первое знакомство: войти через Google или начать без аккаунта. */
 export function Welcome({ onContinue }: { onContinue: () => void }) {
@@ -9,7 +9,8 @@ export function Welcome({ onContinue }: { onContinue: () => void }) {
   function signIn() {
     setBusy(true)
     setFailed(false)
-    backend.signInWithGoogle().catch(() => {
+    // Пользователя на устройстве ещё нет — переносить нечего, билет не нужен.
+    signInWithGoogle(null).catch(() => {
       setBusy(false)
       setFailed(true)
     })
