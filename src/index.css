@@ -594,9 +594,10 @@ button {
   font-size: 16px;
 }
 
+/* Подсказки иконок — ровно два ряда по пять: за край шторки ничего не выходит. */
 .emoji-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 6px;
 }
 

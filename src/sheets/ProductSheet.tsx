@@ -1,10 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import type { NewProduct } from '@/data/backend'
+import { useSuggestedEmoji } from '@/hooks/useSuggestedEmoji'
 import type { Section } from '@/domain/types'
 import { Sheet } from './Sheet'
-
-/** Частые продукты; своё эмодзи можно вписать в поле. */
-const PRODUCT_EMOJIS = ['🥛', '🥚', '🧀', '🍞', '☕', '🍚', '🍎', '🥦', '🍫', '🧻']
 
 interface ProductSheetProps {
   sections: Section[]
@@ -16,7 +14,7 @@ interface ProductSheetProps {
 
 export function ProductSheet({ sections, sectionId: initialSectionId, onSave, onClose }: ProductSheetProps) {
   const [name, setName] = useState('')
-  const [icon, setIcon] = useState('')
+  const { icon, setIcon, options } = useSuggestedEmoji(name)
   const [sectionId, setSectionId] = useState(initialSectionId ?? sections[0]?.id ?? '')
   const [staple, setStaple] = useState(true)
 
@@ -24,7 +22,7 @@ export function ProductSheet({ sections, sectionId: initialSectionId, onSave, on
     event.preventDefault()
     const trimmed = name.trim()
     if (!trimmed || !sectionId) return
-    onSave({ section_id: sectionId, name: trimmed, icon: icon.trim() || null, kind: staple ? 'staple' : 'one_off' })
+    onSave({ section_id: sectionId, name: trimmed, icon: icon || null, kind: staple ? 'staple' : 'one_off' })
     onClose()
   }
 
@@ -44,7 +42,7 @@ export function ProductSheet({ sections, sectionId: initialSectionId, onSave, on
         <div className="field">
           <span>Иконка</span>
           <div className="emoji-grid">
-            {PRODUCT_EMOJIS.map((emoji) => (
+            {options.map((emoji) => (
               <button
                 key={emoji}
                 className="emoji-option"

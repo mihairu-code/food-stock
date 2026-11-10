@@ -1,17 +1,18 @@
 import { useState, type FormEvent } from 'react'
 import type { NewShoppingItem } from '@/data/backend'
+import { useSuggestedEmoji } from '@/hooks/useSuggestedEmoji'
 import { Sheet } from './Sheet'
 
 /** Позиция покупок, добавленная вручную: того, чего в разделах дома нет. Раздел не нужен. */
 export function AddItemSheet({ onSave, onClose }: { onSave: (input: NewShoppingItem) => void; onClose: () => void }) {
   const [name, setName] = useState('')
-  const [icon, setIcon] = useState('')
+  const { icon, setIcon, options } = useSuggestedEmoji(name)
 
   function submit(event: FormEvent) {
     event.preventDefault()
     const trimmed = name.trim()
     if (!trimmed) return
-    onSave({ name: trimmed, icon: icon.trim() || null })
+    onSave({ name: trimmed, icon: icon || null })
     onClose()
   }
 
@@ -28,10 +29,22 @@ export function AddItemSheet({ onSave, onClose }: { onSave: (input: NewShoppingI
             autoFocus
           />
         </label>
-        <label className="field">
-          <span>Эмодзи (необязательно)</span>
-          <input value={icon} maxLength={8} onChange={(e) => setIcon(e.target.value)} />
-        </label>
+        <div className="field">
+          <span>Иконка</span>
+          <div className="emoji-grid">
+            {options.map((emoji) => (
+              <button
+                key={emoji}
+                className="emoji-option"
+                type="button"
+                aria-pressed={icon === emoji}
+                onClick={() => setIcon(icon === emoji ? '' : emoji)}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="sheet-actions">
           <button className="btn subtle" type="button" onClick={onClose}>
             Отмена
