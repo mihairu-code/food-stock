@@ -40,6 +40,22 @@ Without any settings the app starts in **demo mode**: data lives in the browser'
 No email setup is needed: there's no sign-up. A user and a home are created on first
 launch, other people join with a one-time link.
 
+### Google sign-in (optional)
+
+Until the Google provider is enabled in Supabase, the app behaves as if it didn't exist.
+
+1. [Google Cloud Console](https://console.cloud.google.com/) → **APIs & Services →
+   OAuth consent screen**: External, app name and support email, then **Publish app**.
+2. **Credentials → Create credentials → OAuth client ID**, Web application. Authorized
+   redirect URI: `https://<project>.supabase.co/auth/v1/callback`.
+3. Supabase → Authentication → Sign In / Providers → **Google**: enable, paste the
+   Client ID and secret.
+4. Supabase → Authentication → URL Configuration: **Site URL** is the app address; add
+   `http://localhost:5173/**` to **Redirect URLs** for development.
+
+How the merge with a device's anonymous user works is in
+[decision 0005](docs/en/decisions/0005-google-account-merge.md).
+
 ## Updates
 
 A deploy replaces only the app files; data stays in Supabase. For a while the old and the

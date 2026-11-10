@@ -176,3 +176,36 @@ Then I sat down and wrote the update rules ([0004](decisions/0004-safe-updates.m
 after realising that in `0003` I happily dropped tables only because the database was
 empty. Real people live there now. The main ones: migrations only add, and no
 `React.lazy` — an old tab will ask for a chunk that's gone after a deploy.
+
+## Nov 10, evening
+
+Google account. Without it a person = a device, and that's already bitten me: install
+the app to the home screen and you're a new user there, separate from the one in Safari.
+One person — two home members, both called "Member".
+
+At first I wanted it simple, `linkIdentity`: attach Google to the current anonymous user.
+Works right up to the second device — the account is already taken there and linking
+fails. So the other way round: sign in with Google normally and **merge** the device's
+anonymous user into the account. Wrote it up in
+[0005](decisions/0005-google-account-merge.md).
+
+The interesting part is proving after the redirect that "this anonymous user" is me.
+I made a ticket: before going to Google the device takes a one-time token, only its hash
+is stored, the `private` schema isn't exposed. After coming back the account presents
+it and `complete_merge` moves the homes. If both sides have homes with data — I ask
+which to keep and say plainly what happens to the other. Nothing merges without a choice,
+data stays safe.
+
+The migration came out the fattest of them all — and it's the first one written under
+the "only add" rule. There are more tests than code: steal someone else's ticket, use
+your own twice, merge into a home other people live in (then you just leave it and the
+oldest member becomes the owner).
+
+For the member list I added a device label — "Safari · iPhone" — and the account email.
+The label is written in Russian for now, because the app is in Russian for now.
+
+A small thing that ate an hour: the invite link lives in the URL hash, and the hash is
+lost after the trip to Google. I park the token in `localStorage` before the redirect.
+
+No sign-out yet. I don't understand yet what should happen to the home on the device
+after signing out — need to think.

@@ -41,6 +41,22 @@ npm run dev
 Почта не нужна: регистрации нет. Пользователь и дом создаются при первом запуске,
 остальных зовут одноразовой ссылкой.
 
+### Вход через Google (необязательно)
+
+Пока провайдер Google в Supabase выключен, приложение ведёт себя так, будто его нет.
+
+1. [Google Cloud Console](https://console.cloud.google.com/) → **APIs & Services →
+   OAuth consent screen**: External, название и почта поддержки, затем **Publish app**.
+2. **Credentials → Create credentials → OAuth client ID**, Web application. Authorized
+   redirect URI: `https://<проект>.supabase.co/auth/v1/callback`.
+3. Supabase → Authentication → Sign In / Providers → **Google**: включить, вставить
+   Client ID и secret.
+4. Supabase → Authentication → URL Configuration: **Site URL** — адрес приложения;
+   в **Redirect URLs** добавьте `http://localhost:5173/**` для разработки.
+
+Как устроено слияние с анонимным пользователем устройства — в
+[решении 0005](docs/ru/decisions/0005-google-account-merge.md).
+
 ## Обновления
 
 Выкладка заменяет только файлы приложения, данные остаются в Supabase. Какое-то время

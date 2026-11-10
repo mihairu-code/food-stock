@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 — 2026-11-10
+
+- Optional Google sign-in: a welcome screen for new visitors, a button in settings.
+- Merging the device's anonymous user into the account via a one-time ticket.
+- A choice screen when both the device and the account have homes with data.
+- Device labels and account emails for members (`sync_profile`).
+- Invite links survive the redirect to Google.
+
 ## 0.2.0 — 2026-11-10
 
 - No sign-up: an anonymous user and a home are created on first launch.
