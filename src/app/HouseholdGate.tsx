@@ -5,8 +5,10 @@ import { qk } from '@/data/keys'
 import { queryClient } from '@/data/queryClient'
 import type { User } from '@/domain/types'
 import { preferredHousehold, rememberHousehold } from '@/lib/household'
+import { firstName } from '@/lib/firstName'
 import { clearInviteToken, readInviteToken, savedName } from '@/lib/invite'
 import { SessionContext, type Session } from './session'
+import { useProfileSync } from './useProfileSync'
 import { useRealtimeRefresh } from './useRealtimeRefresh'
 
 type Bootstrap = 'idle' | 'joining' | 'creating' | 'join-failed' | 'create-failed'
@@ -22,7 +24,9 @@ export function HouseholdGate({ user, children }: { user: User; children: ReactN
   const [status, setStatus] = useState<Bootstrap>('idle')
   // Ref, а не состояние: двойной вызов эффекта в StrictMode не должен создать два дома.
   const busy = useRef(false)
+  const displayName = savedName() || firstName(user.name)
   useRealtimeRefresh()
+  useProfileSync(user, memberships.data, displayName)
 
   const selectHousehold = useCallback((householdId: string) => {
     rememberHousehold(householdId)
@@ -51,9 +55,9 @@ export function HouseholdGate({ user, children }: { user: User; children: ReactN
       }
     }
 
-    if (inviteToken) void run('joining', () => backend.joinHousehold(inviteToken, savedName()))
-    else if (!hasHome && status === 'idle') void run('creating', () => backend.createHousehold('Наш дом', savedName()))
-  }, [memberships.isSuccess, hasHome, inviteToken, status, selectHousehold])
+    if (inviteToken) void run('joining', () => backend.joinHousehold(inviteToken, displayName))
+    else if (!hasHome && status === 'idle') void run('creating', () => backend.createHousehold('Наш дом', displayName))
+  }, [memberships.isSuccess, hasHome, inviteToken, status, displayName, selectHousehold])
 
   const session = useMemo<Session | null>(() => {
     const list = memberships.data

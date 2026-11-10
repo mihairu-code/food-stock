@@ -407,3 +407,278 @@ describe('миграции: доступ и RPC', () => {
   })
 })
 
+
+describe('аккаунт Google: слияние пользователя устройства с аккаунтом', () => {
+  let counter = 0
+
+  /** Новый пользователь: анонимный (устройство) или с почтой (аккаунт Google). */
+  async function newUser(email?: string): Promise<TestUser> {
+    const id = `10000000-0000-0000-0000-${String(++counter).padStart(12, '0')}`
+    await db.query(`insert into auth.users (id, email, is_anonymous) values ($1, $2, $3)`, [id, email ?? null, !email])
+    return { id, email }
+  }
+
+  /** Дом, в котором уже что-то завели. */
+  async function homeWithData(owner: TestUser, name: string): Promise<string> {
+    const home = await createHousehold(owner, name)
+    await as(owner, async () => {
+      const [section] = await rows<{ id: string }>(
+        `insert into public.sections (household_id, name) values ($1, 'Холодильник') returning id`,
+        [home],
+      )
+      await db.query(
+        `insert into public.products (household_id, section_id, name, kind) values ($1, $2, 'Молоко', 'staple')`,
+        [home, section.id],
+      )
+    })
+    return home
+  }
+
+  const ticketFor = (user: TestUser) =>
+    as(user, async () => (await rows<{ t: string }>(`select public.create_merge_ticket() as t`))[0].t)
+
+  const preview = (account: TestUser, ticket: string) =>
+    as(account, async () => {
+      const [row] = await rows<{ p: { needs_choice: boolean; device: { name: string }[]; account: { name: string }[] } }>(
+        `select public.preview_merge($1) as p`,
+        [ticket],
+      )
+      return row.p
+    })
+
+  const merge = (account: TestUser, ticket: string, keep: string | null = null) =>
+    as(account, async () => (await rows<{ id: string | null }>(`select public.complete_merge($1, $2) as id`, [ticket, keep]))[0].id)
+
+  const userExists = async (user: TestUser) =>
+    (await rows(`select 1 from auth.users where id = $1`, [user.id])).length === 1
+
+  const homesOf = (user: TestUser) =>
+    as(user, () => rows<{ name: string; role: string }>(
+      `select h.name, m.role from public.households h join public.household_members m on m.household_id = h.id and m.user_id = $1 order by h.name`,
+      [user.id],
+    ))
+
+  it('первый вход: всё, что было на устройстве, переходит к аккаунту', async () => {
+    const device = await newUser()
+    const account = await newUser('mike@example.com')
+    const home = await homeWithData(device, 'Логово')
+    const ticket = await ticketFor(device)
+
+    expect(await preview(account, ticket)).toMatchObject({ needs_choice: false, device: [{ name: 'Логово' }], account: [] })
+    expect(await merge(account, ticket)).toBe(home)
+
+    expect(await homesOf(account)).toEqual([{ name: 'Логово', role: 'owner' }])
+    expect(await as(account, () => rows(`select name from public.products where household_id = $1`, [home]))).toEqual([
+      { name: 'Молоко' },
+    ])
+    // Авторство записей перешло к аккаунту, анонимный пользователь удалён вместе с билетом.
+    expect(await rows(`select created_by from public.products where household_id = $1`, [home])).toEqual([
+      { created_by: account.id },
+    ])
+    expect(await userExists(device)).toBe(false)
+    expect(await rows(`select 1 from private.merge_tickets`)).toEqual([])
+    expect(
+      await rows(`select account_email from public.household_members where household_id = $1`, [home]),
+    ).toEqual([{ account_email: 'mike@example.com' }])
+  })
+
+  it('второе устройство того же человека: дубль в доме исчезает', async () => {
+    const browser = await newUser()
+    const pwa = await newUser()
+    const account = await newUser('anna@example.com')
+    const home = await homeWithData(browser, 'Дом Анны')
+    // PWA вошло в тот же дом по ссылке-приглашению как отдельный участник.
+    const invite = await as(browser, async () => (await rows<{ t: string }>(`select public.create_invite($1) as t`, [home]))[0].t)
+    await as(pwa, () => db.query(`select public.join_household($1, 'Анна')`, [invite]))
+    expect(await rows(`select 1 from public.household_members where household_id = $1`, [home])).toHaveLength(2)
+
+    await merge(account, await ticketFor(browser))
+    expect(await rows(`select 1 from public.household_members where household_id = $1`, [home])).toHaveLength(2)
+
+    const ticket = await ticketFor(pwa)
+    expect(await preview(account, ticket)).toMatchObject({ needs_choice: false, device: [], account: [] })
+    expect(await merge(account, ticket)).toBe(home)
+
+    expect(await rows(`select user_id, role from public.household_members where household_id = $1`, [home])).toEqual([
+      { user_id: account.id, role: 'owner' },
+    ])
+    expect(await userExists(pwa)).toBe(false)
+  })
+
+  it('участник с правами владельца на устройстве делает владельцем аккаунт', async () => {
+    const owner = await newUser()
+    const account = await newUser('owner@example.com')
+    const other = await newUser()
+    const home = await homeWithData(other, 'Чужой дом')
+    // Аккаунт — рядовой участник, а устройство того же человека — владелец другого его дома нет:
+    const invite = await as(other, async () => (await rows<{ t: string }>(`select public.create_invite($1) as t`, [home]))[0].t)
+    await as(account, () => db.query(`select public.join_household($1)`, [invite]))
+    const invite2 = await as(other, async () => (await rows<{ t: string }>(`select public.create_invite($1) as t`, [home]))[0].t)
+    await as(owner, () => db.query(`select public.join_household($1)`, [invite2]))
+    await db.query(`update public.household_members set role = 'owner' where household_id = $1 and user_id = $2`, [home, owner.id])
+
+    await merge(account, await ticketFor(owner))
+    expect(
+      await rows(`select role from public.household_members where household_id = $1 and user_id = $2`, [home, account.id]),
+    ).toEqual([{ role: 'owner' }])
+  })
+
+  describe('у устройства и у аккаунта разные дома с данными', () => {
+    it('без выбора слияние не выполняется, данные целы', async () => {
+      const device = await newUser()
+      const account = await newUser('choice@example.com')
+      await homeWithData(device, 'С устройства')
+      await homeWithData(account, 'Из аккаунта')
+      const ticket = await ticketFor(device)
+
+      expect(await preview(account, ticket)).toMatchObject({
+        needs_choice: true,
+        device: [{ name: 'С устройства', sections: 1, products: 1, members: 1 }],
+        account: [{ name: 'Из аккаунта', sections: 1, products: 1, members: 1 }],
+      })
+      await expect(merge(account, ticket)).rejects.toThrow(/Нужно выбрать/)
+      await expect(merge(account, ticket, 'что-то')).rejects.toThrow(/Нужно выбрать/)
+      expect(await userExists(device)).toBe(true)
+      expect(await homesOf(device)).toEqual([{ name: 'С устройства', role: 'owner' }])
+      expect(await homesOf(account)).toEqual([{ name: 'Из аккаунта', role: 'owner' }])
+    })
+
+    it('«оставить с устройства»: дом аккаунта удаляется', async () => {
+      const device = await newUser()
+      const account = await newUser('keep-device@example.com')
+      const deviceHome = await homeWithData(device, 'С устройства')
+      const accountHome = await homeWithData(account, 'Из аккаунта')
+
+      expect(await merge(account, await ticketFor(device), 'device')).toBe(deviceHome)
+      expect(await homesOf(account)).toEqual([{ name: 'С устройства', role: 'owner' }])
+      expect(await rows(`select 1 from public.households where id = $1`, [accountHome])).toEqual([])
+      expect(await rows(`select 1 from public.products where household_id = $1`, [accountHome])).toEqual([])
+      expect(await userExists(device)).toBe(false)
+    })
+
+    it('«оставить из аккаунта»: дом устройства удаляется', async () => {
+      const device = await newUser()
+      const account = await newUser('keep-account@example.com')
+      const deviceHome = await homeWithData(device, 'С устройства')
+      const accountHome = await homeWithData(account, 'Из аккаунта')
+
+      expect(await merge(account, await ticketFor(device), 'account')).toBe(accountHome)
+      expect(await homesOf(account)).toEqual([{ name: 'Из аккаунта', role: 'owner' }])
+      expect(await rows(`select 1 from public.households where id = $1`, [deviceHome])).toEqual([])
+      expect(await userExists(device)).toBe(false)
+    })
+
+    it('дом, где есть другие люди, не удаляется: человек из него выходит, владельцем становится старейший участник', async () => {
+      const device = await newUser()
+      const account = await newUser('shared@example.com')
+      const partner = await newUser()
+      await homeWithData(device, 'С устройства')
+      const shared = await homeWithData(account, 'Общий')
+      const invite = await as(account, async () => (await rows<{ t: string }>(`select public.create_invite($1) as t`, [shared]))[0].t)
+      await as(partner, () => db.query(`select public.join_household($1, 'Партнёр')`, [invite]))
+      // Приглашение, созданное аккаунтом, не мешает считать дом общим.
+      await merge(account, await ticketFor(device), 'device')
+
+      expect(await homesOf(account)).toEqual([{ name: 'С устройства', role: 'owner' }])
+      expect(await rows(`select user_id, role from public.household_members where household_id = $1`, [shared])).toEqual([
+        { user_id: partner.id, role: 'owner' },
+      ])
+      expect(await rows(`select name from public.products where household_id = $1`, [shared])).toEqual([{ name: 'Молоко' }])
+    })
+  })
+
+  it('пустые автоматически созданные дома не требуют выбора и не копятся', async () => {
+    // Свежее устройство с пустым домом входит в аккаунт, у которого дом уже есть.
+    const freshDevice = await newUser()
+    const account = await newUser('empty@example.com')
+    const emptyHome = await createHousehold(freshDevice, 'Наш дом')
+    const realHome = await homeWithData(account, 'Настоящий')
+    const ticket = await ticketFor(freshDevice)
+    expect((await preview(account, ticket)).needs_choice).toBe(false)
+    expect(await merge(account, ticket)).toBe(realHome)
+    expect(await rows(`select 1 from public.households where id = $1`, [emptyHome])).toEqual([])
+    expect(await homesOf(account)).toEqual([{ name: 'Настоящий', role: 'owner' }])
+
+    // Наоборот: у аккаунта пустой дом, а на устройстве настоящий.
+    const device = await newUser()
+    const newAccount = await newUser('fresh-account@example.com')
+    const accountEmpty = await createHousehold(newAccount, 'Наш дом')
+    const deviceHome = await homeWithData(device, 'С устройства')
+    expect(await merge(newAccount, await ticketFor(device))).toBe(deviceHome)
+    expect(await rows(`select 1 from public.households where id = $1`, [accountEmpty])).toEqual([])
+    expect(await homesOf(newAccount)).toEqual([{ name: 'С устройства', role: 'owner' }])
+
+    // Оба пустые: у аккаунта остаётся ровно один дом.
+    const d3 = await newUser()
+    const a3 = await newUser('both-empty@example.com')
+    await createHousehold(d3, 'Наш дом')
+    await createHousehold(a3, 'Наш дом')
+    await merge(a3, await ticketFor(d3))
+    expect(await homesOf(a3)).toHaveLength(1)
+
+    // У аккаунта домов нет вовсе: пустой дом устройства переходит к нему.
+    const d4 = await newUser()
+    const a4 = await newUser('no-homes@example.com')
+    const d4Home = await createHousehold(d4, 'Наш дом')
+    expect(await merge(a4, await ticketFor(d4))).toBe(d4Home)
+    expect(await homesOf(a4)).toEqual([{ name: 'Наш дом', role: 'owner' }])
+  })
+
+  it('билет нельзя использовать не по назначению', async () => {
+    const device = await newUser()
+    const anotherDevice = await newUser()
+    const account = await newUser('guard@example.com')
+    const stranger = await newUser('stranger@example.com')
+    await homeWithData(device, 'Дом')
+    const ticket = await ticketFor(device)
+
+    // Анонимный пользователь не может влить в себя другого анонимного.
+    await expect(merge(anotherDevice, ticket)).rejects.toThrow(/Нужен вход в аккаунт/)
+    await expect(preview(anotherDevice, ticket)).rejects.toThrow(/Нужен вход в аккаунт/)
+    // Без входа функции недоступны вовсе.
+    await as(null, async () => {
+      await expect(db.query(`select public.complete_merge($1)`, [ticket])).rejects.toThrow(/permission denied/)
+      await expect(db.query(`select public.create_merge_ticket()`)).rejects.toThrow(/permission denied/)
+    })
+    // Выдуманный и просроченный билеты не работают.
+    await expect(merge(account, '0123456789abcdef0123456789abcdef')).rejects.toThrow(/недействителен/)
+    await db.exec(`update private.merge_tickets set expires_at = now() - interval '1 minute'`)
+    await expect(merge(account, ticket)).rejects.toThrow(/истёк/)
+    expect(await userExists(device)).toBe(true)
+
+    // Билет аккаунта не позволяет другому аккаунту его поглотить.
+    await homeWithData(stranger, 'Дом постороннего')
+    const strangerTicket = await ticketFor(stranger)
+    await expect(merge(account, strangerTicket)).rejects.toThrow(/только пользователя без аккаунта/)
+    expect(await homesOf(stranger)).toEqual([{ name: 'Дом постороннего', role: 'owner' }])
+    // Свой собственный билет — сливать нечего.
+    expect(await merge(stranger, strangerTicket)).toBeNull()
+
+    // Таблица билетов закрыта от клиента.
+    await as(account, async () => {
+      await expect(db.query(`select 1 from private.merge_tickets`)).rejects.toThrow(/permission denied/)
+    })
+  })
+
+  it('sync_profile записывает устройство и почту, не затирая имя', async () => {
+    const device = await newUser()
+    const account = await newUser('profile@example.com')
+    const home = await createHousehold(device, 'Профиль')
+    const member = () =>
+      rows(`select display_name, device, account_email from public.household_members where household_id = $1`, [home])
+
+    await as(device, () => db.query(`select public.sync_profile('Safari · iPhone', '')`))
+    expect(await member()).toEqual([{ display_name: 'Хозяин', device: 'Safari · iPhone', account_email: null }])
+
+    await db.query(`update public.household_members set display_name = '' where household_id = $1`, [home])
+    await merge(account, await ticketFor(device))
+    await as(account, () => db.query(`select public.sync_profile('Приложение · iPhone', 'Михаил')`))
+    expect(await member()).toEqual([
+      { display_name: 'Михаил', device: 'Приложение · iPhone', account_email: 'profile@example.com' },
+    ])
+    // Имя, заданное человеком, имя из аккаунта не затирает.
+    await as(account, () => db.query(`select public.sync_profile('Приложение · iPhone', 'Другое имя')`))
+    expect((await member())[0]).toMatchObject({ display_name: 'Михаил' })
+  })
+})
+

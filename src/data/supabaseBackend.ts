@@ -1,9 +1,10 @@
-import { createClient, type PostgrestError } from '@supabase/supabase-js'
+import { createClient, type PostgrestError, type User as AuthUser } from '@supabase/supabase-js'
 import type {
   Household,
   Invite,
   Member,
   Membership,
+  MergePreview,
   Product,
   Role,
   Section,
@@ -30,19 +31,32 @@ function check(result: { error: { message: string } | null }): void {
   if (result.error) throw new Error(result.error.message)
 }
 
+function toUser(user: AuthUser): User {
+  const meta = user.user_metadata as { full_name?: string; name?: string } | undefined
+  return {
+    id: user.id,
+    isAnonymous: user.is_anonymous ?? false,
+    email: user.email ?? null,
+    name: meta?.full_name ?? meta?.name ?? null,
+  }
+}
+
 /**
  * Общий дом на Supabase: Postgres + Auth + Realtime.
  *
- * Регистрации нет: при первом запуске создаётся анонимный пользователь, сессия которого
- * хранится на устройстве. Доступ ограничивают политики RLS из supabase/migrations —
+ * Начать можно без регистрации — тогда создаётся анонимный пользователь, сессия
+ * которого хранится на устройстве. Вход через Google делает человека одним и тем же
+ * на всех устройствах. Доступ ограничивают политики RLS из supabase/migrations —
  * клиент знает только публичный ключ и никогда service-role.
  */
 export function createSupabaseBackend(url: string, publicKey: string): Backend {
-  const supabase = createClient(url, publicKey)
+  // PKCE: после возврата от Google в адресе только одноразовый код, а не токены.
+  const supabase = createClient(url, publicKey, { auth: { flowType: 'pkce' } })
 
   // Одновременные вызовы (например, двойной эффект StrictMode) не должны
   // создать двух анонимных пользователей.
   let pendingAnonymous: Promise<User> | null = null
+  let googleEnabled: Promise<boolean> | null = null
 
   return {
     mode: 'supabase',
@@ -50,21 +64,55 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
     currentUser: async () => {
       const { data, error } = await supabase.auth.getSession()
       if (error) throw new Error(error.message)
-      return data.session ? { id: data.session.user.id } : null
+      return data.session ? toUser(data.session.user) : null
     },
     continueAnonymously: () => {
       pendingAnonymous ??= (async () => {
         const existing = await supabase.auth.getSession()
-        if (existing.data.session) return { id: existing.data.session.user.id }
+        if (existing.data.session) return toUser(existing.data.session.user)
         const created = await supabase.auth.signInAnonymously()
         if (created.error || !created.data.user) {
           throw new Error(created.error?.message ?? 'Не удалось создать пользователя')
         }
-        return { id: created.data.user.id }
+        return toUser(created.data.user)
       })().finally(() => {
         pendingAnonymous = null
       })
       return pendingAnonymous
+    },
+    onAuthChange: (callback) => {
+      const { data } = supabase.auth.onAuthStateChange((event) => {
+        // Вызов откладывается: внутри обработчика нельзя обращаться к supabase.auth.
+        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
+          window.setTimeout(callback, 0)
+        }
+      })
+      return () => data.subscription.unsubscribe()
+    },
+
+    googleAvailable: () => {
+      googleEnabled ??= fetch(`${url}/auth/v1/settings`, { headers: { apikey: publicKey } })
+        .then((response) => response.json() as Promise<{ external?: { google?: boolean } }>)
+        .then((settings) => settings.external?.google === true)
+        .catch(() => false)
+      return googleEnabled
+    },
+    signInWithGoogle: async () => {
+      check(
+        await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: `${window.location.origin}/` },
+        }),
+      )
+    },
+
+    createMergeTicket: async () => unwrap(await supabase.rpc('create_merge_ticket')) as string,
+    previewMerge: async (ticket) =>
+      unwrap(await supabase.rpc('preview_merge', { p_token: ticket })) as MergePreview,
+    completeMerge: async (ticket, keep) =>
+      unwrap(await supabase.rpc('complete_merge', { p_token: ticket, p_keep: keep })) as string | null,
+    syncProfile: async (device, displayName) => {
+      check(await supabase.rpc('sync_profile', { p_device: device, p_display_name: displayName }))
     },
 
     listMemberships: async () => {

@@ -1,9 +1,16 @@
 export type ProductKind = 'staple' | 'one_off'
 export type Role = 'owner' | 'member'
 
-/** Пользователь без регистрации: анонимный пользователь Supabase, живёт на этом устройстве. */
+/**
+ * Пользователь. Без аккаунта он анонимный и существует только на этом устройстве;
+ * после входа через Google это один и тот же человек на всех его устройствах.
+ */
 export interface User {
   id: string
+  isAnonymous: boolean
+  email: string | null
+  /** Имя из аккаунта Google, если есть. */
+  name: string | null
 }
 
 export interface Household {
@@ -23,8 +30,31 @@ export interface Member {
   role: Role
   /** Необязательное имя, которое участник задал сам. */
   display_name: string
+  /** Откуда участник заходил в последний раз: «Safari · iPhone». */
+  device: string
+  /** Почта аккаунта Google; у участника без аккаунта — null. */
+  account_email: string | null
   created_at: string
 }
+
+/** Дом в предпросмотре слияния устройства с аккаунтом. */
+export interface MergeHome {
+  id: string
+  name: string
+  sections: number
+  products: number
+  shopping_items: number
+  members: number
+}
+
+export interface MergePreview {
+  /** У устройства и у аккаунта разные дома с данными — оставить можно только одни. */
+  needs_choice: boolean
+  device: MergeHome[]
+  account: MergeHome[]
+}
+
+export type MergeKeep = 'device' | 'account'
 
 /** Действующая одноразовая ссылка-приглашение. Сам токен нигде не хранится. */
 export interface Invite {

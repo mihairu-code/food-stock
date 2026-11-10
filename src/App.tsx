@@ -2,6 +2,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { AuthGate } from '@/app/AuthGate'
 import { HouseholdGate } from '@/app/HouseholdGate'
+import { MergeGate } from '@/app/MergeGate'
 import { ToastProvider } from '@/components/Toast'
 import { queryClient } from '@/data/queryClient'
 import { HomeScreen } from '@/screens/home/HomeScreen'
@@ -15,18 +16,20 @@ export default function App() {
       <ToastProvider>
         <AuthGate>
           {(user) => (
-            <HouseholdGate user={user} key={user.id}>
-              <BrowserRouter>
-                <Routes>
-                  <Route element={<Layout />}>
-                    <Route index element={<HomeScreen />} />
-                    <Route path="shopping" element={<ShoppingScreen />} />
-                    <Route path="settings" element={<SettingsScreen />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Route>
-                </Routes>
-              </BrowserRouter>
-            </HouseholdGate>
+            <MergeGate user={user} key={user.id}>
+              <HouseholdGate user={user}>
+                <BrowserRouter>
+                  <Routes>
+                    <Route element={<Layout />}>
+                      <Route index element={<HomeScreen />} />
+                      <Route path="shopping" element={<ShoppingScreen />} />
+                      <Route path="settings" element={<SettingsScreen />} />
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Route>
+                  </Routes>
+                </BrowserRouter>
+              </HouseholdGate>
+            </MergeGate>
           )}
         </AuthGate>
       </ToastProvider>

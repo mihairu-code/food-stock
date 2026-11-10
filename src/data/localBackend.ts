@@ -9,7 +9,7 @@ import type { Household, Product, Section, ShoppingItem, User } from '@/domain/t
 import type { Backend } from './backend'
 
 const STORAGE_KEY = 'home-stock:local:v1'
-const LOCAL_USER: User = { id: 'local-user' }
+const LOCAL_USER: User = { id: 'local-user', isAnonymous: true, email: null, name: null }
 
 interface LocalState extends HomeData {
   household: Household
@@ -114,6 +114,13 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
 
     currentUser: async () => LOCAL_USER,
     continueAnonymously: async () => LOCAL_USER,
+    onAuthChange: () => () => {},
+    googleAvailable: async () => false,
+    signInWithGoogle: notSupported,
+    createMergeTicket: notSupported,
+    previewMerge: notSupported,
+    completeMerge: notSupported,
+    syncProfile: async () => {},
 
     listMemberships: async () => [{ household: read().household, role: 'owner' }],
     createHousehold: async (name) => {
@@ -124,7 +131,7 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
     listMembers: async () => {
       const { household } = read()
       return [
-        { household_id: household.id, user_id: LOCAL_USER.id, role: 'owner', display_name: '', created_at: household.created_at },
+        { household_id: household.id, user_id: LOCAL_USER.id, role: 'owner', display_name: '', device: '', account_email: null, created_at: household.created_at },
       ]
     },
     setDisplayName: notSupported,

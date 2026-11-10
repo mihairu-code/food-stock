@@ -2,6 +2,8 @@ import type {
   Invite,
   Member,
   Membership,
+  MergeKeep,
+  MergePreview,
   Product,
   ProductKind,
   Section,
@@ -47,8 +49,27 @@ export interface Backend {
 
   /** Пользователь этого устройства или null, если человек ещё не начинал. */
   currentUser(): Promise<User | null>
-  /** Начать без регистрации: создаёт анонимного пользователя на этом устройстве. */
+  /** Начать без аккаунта: создаёт анонимного пользователя на этом устройстве. */
   continueAnonymously(): Promise<User>
+  /** Сессия изменилась (вход, выход) — пользователя нужно перечитать. */
+  onAuthChange(callback: () => void): () => void
+
+  /** Настроен ли на сервере вход через Google. */
+  googleAvailable(): Promise<boolean>
+  /** Уводит на страницу Google; после возврата currentUser() вернёт аккаунт. */
+  signInWithGoogle(): Promise<void>
+
+  /**
+   * Слияние анонимного пользователя устройства с аккаунтом. Билет берут до входа,
+   * а после входа им подтверждают, что данные устройства принадлежат тому же человеку.
+   */
+  createMergeTicket(): Promise<string>
+  previewMerge(ticket: string): Promise<MergePreview>
+  /** Возвращает дом, который стоит открыть; null — сливать было нечего. */
+  completeMerge(ticket: string, keep: MergeKeep | null): Promise<string | null>
+
+  /** Записывает устройство, почту и (если своё не задано) имя во все дома пользователя. */
+  syncProfile(device: string, displayName: string): Promise<void>
 
   listMemberships(): Promise<Membership[]>
   /** Создаёт дом и делает текущего пользователя владельцем; возвращает id дома. */
