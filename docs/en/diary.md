@@ -209,3 +209,55 @@ lost after the trip to Google. I park the token in `localStorage` before the red
 
 No sign-out yet. I don't understand yet what should happen to the home on the device
 after signing out — need to think.
+
+## Nov 11, Wed
+
+A couple of days of real use, and the thing I postponed on day one came back: "at home"
+and "need to buy" are glued together. Milk is still there but will run out tomorrow —
+can't put it on the list. Some junk we won't buy again ran out — it hangs on the list,
+and the only way to remove it is to delete the product. I went through the options in
+[0006](decisions/0006-independent-stock-and-to-buy.md) and picked a `to_buy` flag on the
+product: the list stays computed, no duplicates.
+
+The catch is the old version on people's phones. It only sends `is_available` and knows
+nothing about `to_buy`. Left alone, "ran out" would stop adding things to the list for
+it. I added a trigger: if stock changed and `to_buy` wasn't touched, `to_buy` follows
+stock by the old rule. The new client sends both fields, and the trigger leaves it alone.
+Plus an "upgrading an existing database" test: apply migrations up to `0005`, load data
+"like production", apply the rest — everything that was on the list is still there.
+
+UI: the in/out mark became a dot on the icon (the notebook checkbox from the mockup took
+half the row and got confused with the plus), tapping the row itself toggles stock, and
+"+ / −" sits on the right.
+
+Tabs. A bottom bar on an iPhone with the gesture strip looked heavy. I made three
+separate buttons floating over the content — borrowed from Pinterest. Translucent with
+`backdrop-filter`; the strip between them lets taps through (`pointer-events: none` on
+the container, `auto` on the buttons).
+
+Then i18n. Russian would do for home, but I wanted to do it properly while there are
+few strings — digging them out of the markup later would hurt more. No libraries:
+a dictionary object, `useT()` on `useSyncExternalStore`, plural forms via
+`Intl.PluralRules`, and a tiny function that turns `<b>…</b>` in a string into
+`<strong>`. `ru.ts` is the reference, the others are typed as `Messages` from it, so
+TypeScript won't let me forget a key. Plus a test that every dictionary has the same
+keys, placeholders and `<b>`.
+
+The English, Japanese and Vietnamese translations are an AI draft that I proofread.
+English with confidence, Japanese and Vietnamese as far as my knowledge goes — fixes from
+native speakers would help. All dictionaries ship in
+the bundle, no lazy loading (see [0004](decisions/0004-safe-updates.md)).
+
+Yesterday I stored device labels in Russian — a mistake. Now they go into the database
+in English ("App · iPhone") and get translated on display, and the old Russian labels
+are still understood.
+
+Emoji suggestions learned the other languages, and that turned out to be the most fun
+part: English needs plurals but must not match "eggplant" for "egg"; Japanese has no
+spaces — I search substrings and fold katakana into hiragana; Vietnamese only matches
+whole words ("sữa chua" is yogurt, not milk), and works without diacritics too, but then
+doesn't fill the icon by itself.
+
+In the evening — sign-out. I decided it only signs out this device (`scope: 'local'`),
+and Google always asks for the account — on a shared tablet the wrong person would sign
+in otherwise.

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0 — 2026-11-11
+
+- `to_buy` flag independent of stock (migration `0005`, trigger for older clients).
+- Stock dot on the product icon, "+ / −" to put on or take off the list.
+- Shopping shows "still at home" / "ran out"; swipe removes without buying.
+- One-off products can run out.
+- Floating tab buttons with a shopping counter.
+- i18n: Russian, English, Japanese, Vietnamese; plural forms, dates, language picker.
+- Emoji suggestions in all four languages.
+- Sign out for Google accounts; Google always shows the account picker.
+
 ## 0.3.0 — 2026-11-10
 
 - Optional Google sign-in: a welcome screen for new visitors, a button in settings.

@@ -1,9 +1,11 @@
 # food-stock
 
-A shared home pantry and shopping list, as a PWA for phones. [По-русски](README.ru.md)
+A shared home pantry and shopping list, as a PWA for phones. In Russian, English, Japanese
+and Vietnamese. [По-русски](README.ru.md)
 
-Every product has a stock mark: it's at home or it ran out. A *staple* that runs out goes
-to the shopping list by itself and comes back to its section once bought. Sections are
+Every product has two independent marks: whether it's at home (a dot on the icon) and
+whether it's on the shopping list (the "+ / −" button). A *staple* that runs out goes to
+the shopping list by itself and comes back to its section once bought. Sections are
 your own — "Fridge", "Pantry", "Snacks". Several people share one home and see each
 other's changes live.
 
@@ -74,6 +76,7 @@ src/
   components/ small shared pieces
   hooks/      shared hooks
   lib/        small standalone helpers (theme, invite links, emoji suggestions)
+  i18n/       dictionaries: ru.ts is the reference, en/ja/vi have the same keys
 supabase/
   migrations/ schema, RLS policies, RPC
   tests/      migrations + RLS checked on PGlite
