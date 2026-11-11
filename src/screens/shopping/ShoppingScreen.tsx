@@ -2,6 +2,7 @@ import { Plus } from 'lucide-react'
 import { memo, useCallback, useState } from 'react'
 import { useHouseholdId } from '@/app/session'
 import { EmptyState } from '@/components/EmptyState'
+import { StockIcon } from '@/components/StockIcon'
 import { useToast } from '@/components/toastContext'
 import { backend } from '@/data'
 import type { NewShoppingItem } from '@/data/backend'
@@ -15,7 +16,7 @@ import { useShoppingActions, type ShoppingActions } from './useShoppingActions'
 
 type ShoppingSheet = { type: 'add-item' } | { type: 'purchase'; item: ShoppingItem }
 
-/** Закончившийся постоянный продукт дома. memo — чтобы правка одной строки не перерисовывала список. */
+/** Продукт дома в покупках; точка на иконке — есть ли он ещё дома. memo — чтобы правка одной строки не перерисовывала список. */
 const ProductEntry = memo(function ProductEntry({
   product,
   section,
@@ -25,15 +26,16 @@ const ProductEntry = memo(function ProductEntry({
   section: Section | null
   actions: ShoppingActions
 }) {
+  const stock = product.is_available ? 'Есть дома' : 'Закончилось'
   return (
     <ShoppingRow
       name={product.name}
-      icon={product.icon}
-      meta={`${section?.name ?? ''} · Закончилось`}
-      missing
-      removeLabel={`Удалить «${product.name}»`}
+      icon={<StockIcon icon={product.icon} />}
+      meta={section ? `${section.name} · ${stock}` : stock}
+      missing={!product.is_available}
+      removeLabel={`Убрать «${product.name}» из покупок`}
       onBuy={() => actions.buyProduct(product)}
-      onRemove={() => actions.deleteProduct(product)}
+      onRemove={() => actions.dropProduct(product)}
     />
   )
 })
@@ -51,7 +53,11 @@ const ManualEntry = memo(function ManualEntry({
   return (
     <ShoppingRow
       name={item.name}
-      icon={item.icon}
+      icon={
+        <span className="emoji" aria-hidden="true">
+          {item.icon || '🛒'}
+        </span>
+      }
       meta="Добавлено вручную"
       removeLabel={`Убрать «${item.name}» из покупок`}
       onBuy={() => onBuy(item)}
@@ -93,7 +99,7 @@ export function ShoppingScreen() {
       </div>
 
       {entries.length === 0 ? (
-        <EmptyState emoji="🛒" title="Список пуст" text="Закончившиеся постоянные продукты появятся здесь сами." />
+        <EmptyState emoji="🛒" title="Список пуст" text="Закончившиеся постоянные продукты появятся здесь сами, остальное — по плюсу на продукте." />
       ) : (
         <div className="card list">
           {entries.map((entry) =>

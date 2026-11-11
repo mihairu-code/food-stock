@@ -2,7 +2,7 @@ import {
   purchaseManualItem,
   removeProduct,
   removeSection,
-  setAvailability,
+  setProductState,
   type HomeData,
 } from '@/domain/logic'
 import type { Household, Product, Section, ShoppingItem, User } from '@/domain/types'
@@ -46,6 +46,7 @@ function seed(): LocalState {
     icon,
     kind,
     is_available,
+    to_buy: !is_available,
     created_at: at(tick),
     updated_at: at(tick++),
     created_by: LOCAL_USER.id,
@@ -88,7 +89,13 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
     const raw = store.getItem(STORAGE_KEY)
     if (raw) {
       try {
-        return JSON.parse(raw) as LocalState
+        const state = JSON.parse(raw) as LocalState
+        // Данные, сохранённые до появления отметки «в покупках»: тогда в списке были
+        // закончившиеся постоянные продукты.
+        const products = state.products.map((p) =>
+          typeof p.to_buy === 'boolean' ? p : { ...p, to_buy: p.kind === 'staple' && !p.is_available },
+        )
+        return { ...state, products }
       } catch {
         // повреждённые данные — начинаем с демо-набора
       }
@@ -173,6 +180,7 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
       const product: Product = {
         household_id: householdId,
         is_available: true,
+        to_buy: false,
         created_at: now(),
         updated_at: now(),
         created_by: LOCAL_USER.id,
@@ -181,8 +189,8 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
       write({ ...state, products: [...state.products, product] })
       return product
     },
-    setAvailability: async (productId, available) => {
-      update((s) => ({ ...s, ...setAvailability(s, productId, available, now()) }))
+    setProductState: async (productId, state) => {
+      update((s) => ({ ...s, ...setProductState(s, productId, state, now()) }))
     },
     deleteProduct: async (productId) => {
       update((s) => ({ ...s, ...removeProduct(s, productId) }))

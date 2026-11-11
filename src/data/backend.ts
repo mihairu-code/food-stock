@@ -1,3 +1,4 @@
+import type { ProductState } from '@/domain/logic'
 import type {
   Invite,
   Member,
@@ -96,7 +97,8 @@ export interface Backend {
   deleteSection(sectionId: string): Promise<void>
 
   createProduct(householdId: string, input: NewProduct): Promise<Product>
-  setAvailability(productId: string, available: boolean): Promise<void>
+  /** Записывает обе отметки продукта сразу: наличие дома и «в покупках». */
+  setProductState(productId: string, state: ProductState): Promise<void>
   deleteProduct(productId: string): Promise<void>
 
   createShoppingItem(householdId: string, input: NewShoppingItem): Promise<ShoppingItem>

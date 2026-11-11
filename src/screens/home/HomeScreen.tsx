@@ -57,7 +57,7 @@ export function HomeScreen() {
       const now = new Date().toISOString()
       cache.products((list) => [
         ...list,
-        { ...input, household_id: hid, is_available: true, created_at: now, updated_at: now, created_by: user.id },
+        { ...input, household_id: hid, is_available: true, to_buy: false, created_at: now, updated_at: now, created_by: user.id },
       ])
     },
   )

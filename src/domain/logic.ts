@@ -10,6 +10,9 @@ export type ShoppingEntry =
   | { type: 'product'; key: string; product: Product; section: Section | null }
   | { type: 'manual'; key: string; item: ShoppingItem }
 
+/** Две независимые отметки продукта: есть ли он дома и лежит ли в покупках. */
+export type ProductState = Pick<Product, 'is_available' | 'to_buy'>
+
 const byTime = (a: string, b: string) => Date.parse(a) - Date.parse(b)
 
 export function sortSections(sections: Section[]): Section[] {
@@ -25,45 +28,57 @@ export function productsOf(products: Product[], sectionId: string): Product[] {
 }
 
 /**
- * Список покупок не хранится: это закончившиеся постоянные продукты плюс позиции,
- * добавленные вручную. Поэтому продукт не попадёт в список дважды, а удаление
- * продукта или раздела убирает его и из покупок.
+ * Список покупок — это продукты дома с отметкой `to_buy` плюс позиции, добавленные
+ * вручную. Продукт не копируется в список, поэтому не может попасть в него дважды,
+ * а удаление продукта или раздела убирает его и из покупок.
  */
 export function buildShoppingList(data: HomeData): ShoppingEntry[] {
   const sectionById = new Map(data.sections.map((s) => [s.id, s]))
-  const fromHome: ShoppingEntry[] = data.products
-    .filter((p) => p.kind === 'staple' && !p.is_available)
-    .sort((a, b) => byTime(a.updated_at, b.updated_at))
+  const fromHome = data.products
+    .filter((p) => p.to_buy)
     .map((product) => ({
-      type: 'product',
-      key: `product:${product.id}`,
-      product,
-      section: sectionById.get(product.section_id) ?? null,
+      at: product.updated_at,
+      entry: {
+        type: 'product',
+        key: `product:${product.id}`,
+        product,
+        section: sectionById.get(product.section_id) ?? null,
+      } satisfies ShoppingEntry,
     }))
-  const manual: ShoppingEntry[] = [...data.shoppingItems]
-    .sort((a, b) => byTime(a.created_at, b.created_at))
-    .map((item) => ({ type: 'manual', key: `item:${item.id}`, item }))
-  return [...fromHome, ...manual]
+  const manual = data.shoppingItems.map((item) => ({
+    at: item.created_at,
+    entry: { type: 'manual', key: `item:${item.id}`, item } satisfies ShoppingEntry,
+  }))
+  // Одним списком в порядке добавления: продукт — по времени, когда его положили в покупки.
+  return [...fromHome, ...manual].sort((a, b) => byTime(a.at, b.at)).map(({ entry }) => entry)
 }
+
+/**
+ * Наличие поменяли вручную. Закончившийся постоянный продукт сам попадает в покупки;
+ * продукт, который снова дома, из покупок уходит. То же правило для прежних версий
+ * приложения держит триггер products_sync_to_buy.
+ */
+export function withAvailability(product: Product, available: boolean): ProductState {
+  if (available) return { is_available: true, to_buy: false }
+  return { is_available: false, to_buy: product.kind === 'staple' ? true : product.to_buy }
+}
+
+/** Продукт положили в покупки или убрали из них; наличие при этом не меняется. */
+export function withToBuy(product: Product, toBuy: boolean): ProductState {
+  return { is_available: product.is_available, to_buy: toBuy }
+}
+
+/** Продукт из списка покупок куплен: он дома, покупать больше не нужно. */
+export const PURCHASED: ProductState = { is_available: true, to_buy: false }
 
 /* Чистые переходы состояния. Их использует локальный режим; в Supabase то же
    самое делают внешние ключи с каскадом и RPC purchase_shopping_item. */
 
-export function setAvailability(
-  data: HomeData,
-  productId: string,
-  available: boolean,
-  now: string,
-): HomeData {
-  const product = data.products.find((p) => p.id === productId)
-  if (!product) throw new Error('Продукт не найден')
-  // Разовый продукт существует, только пока он есть дома (как check в базе).
-  if (product.kind === 'one_off' && !available) throw new Error('Разовый продукт нельзя отметить закончившимся')
+export function setProductState(data: HomeData, productId: string, state: ProductState, now: string): HomeData {
+  if (!data.products.some((p) => p.id === productId)) throw new Error('Продукт не найден')
   return {
     ...data,
-    products: data.products.map((p) =>
-      p.id === productId ? { ...p, is_available: available, updated_at: now } : p,
-    ),
+    products: data.products.map((p) => (p.id === productId ? { ...p, ...state, updated_at: now } : p)),
   }
 }
 
@@ -99,6 +114,7 @@ export function purchaseManualItem(
     icon: item.icon,
     kind,
     is_available: true,
+    to_buy: false,
     created_at: ctx.now,
     updated_at: ctx.now,
     created_by: ctx.userId,

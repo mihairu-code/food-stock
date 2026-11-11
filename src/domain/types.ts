@@ -73,10 +73,7 @@ export interface Section {
   created_at: string
 }
 
-/**
- * `staple` — постоянный: закончившись, сам попадает в покупки.
- * `one_off` — разовый: существует, только пока он есть дома.
- */
+/** `staple` — постоянный: закончившись, сам попадает в покупки. `one_off` — разовый. */
 export interface Product {
   id: string
   household_id: string
@@ -84,13 +81,16 @@ export interface Product {
   name: string
   icon: string | null
   kind: ProductKind
+  /** Есть ли продукт дома. */
   is_available: boolean
+  /** Лежит ли продукт в списке покупок. Не зависит от наличия: можно докупать то, что ещё есть. */
+  to_buy: boolean
   created_at: string
   updated_at: string
   created_by: string | null
 }
 
-/** Позиция покупок, добавленная вручную. Закончившиеся постоянные продукты сюда не копируются. */
+/** Позиция покупок, добавленная вручную. Продукты дома попадают в список отметкой `to_buy`, а не копией. */
 export interface ShoppingItem {
   id: string
   household_id: string

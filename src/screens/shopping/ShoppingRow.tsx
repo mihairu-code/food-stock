@@ -1,10 +1,12 @@
 import { X } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { SwipeRow } from '@/components/SwipeRow'
 
 interface ShoppingRowProps {
   name: string
   meta: string
-  icon: string | null
+  /** Иконка слева: у продукта дома — с точкой наличия. */
+  icon: ReactNode
   /** Продукта дома уже нет: строка приглушена. */
   missing?: boolean
   /** Подпись кнопки удаления для скринридера. */
@@ -18,9 +20,7 @@ export function ShoppingRow({ name, meta, icon, missing = false, removeLabel, on
   return (
     <SwipeRow onDelete={onRemove} label="Убрать">
       <div className="row" data-missing={missing}>
-        <span className="emoji" aria-hidden="true">
-          {icon || '🛒'}
-        </span>
+        {icon}
         <div className="row-text">
           <div className="row-name">{name}</div>
           <div className="row-meta">{meta}</div>

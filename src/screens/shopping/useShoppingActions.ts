@@ -3,13 +3,14 @@ import { useSession } from '@/app/session'
 import { useToast } from '@/components/toastContext'
 import { backend } from '@/data'
 import { useHomeMutation } from '@/data/useHomeMutation'
+import { PURCHASED, withToBuy, type ProductState } from '@/domain/logic'
 import type { Product, ShoppingItem } from '@/domain/types'
 
 export interface ShoppingActions {
-  /** Постоянный продукт куплен: он снова есть дома и уходит из списка. */
+  /** Продукт дома куплен: он снова есть и уходит из списка. */
   buyProduct: (product: Product) => void
-  /** Строка — сам продукт дома: удаляется он целиком, и из раздела тоже. */
-  deleteProduct: (product: Product) => void
+  /** Убрать из покупок, не покупая: сам продукт и его наличие остаются как были. */
+  dropProduct: (product: Product) => void
   removeItem: (item: ShoppingItem) => void
   purchaseItem: (item: ShoppingItem, sectionId: string, makeStaple: boolean) => void
 }
@@ -18,16 +19,12 @@ export interface ShoppingActions {
 export function useShoppingActions(): ShoppingActions {
   const { user } = useSession()
   const toast = useToast()
-  const { mutate: setAvailability } = useHomeMutation(
-    (id: string) => backend.setAvailability(id, true),
-    (cache, id) =>
+  const { mutate: setState } = useHomeMutation(
+    ({ id, state }: { id: string; state: ProductState }) => backend.setProductState(id, state),
+    (cache, { id, state }) =>
       cache.products((list) =>
-        list.map((p) => (p.id === id ? { ...p, is_available: true, updated_at: new Date().toISOString() } : p)),
+        list.map((p) => (p.id === id ? { ...p, ...state, updated_at: new Date().toISOString() } : p)),
       ),
-  )
-  const { mutate: deleteProduct } = useHomeMutation(
-    (id: string) => backend.deleteProduct(id),
-    (cache, id) => cache.products((list) => list.filter((p) => p.id !== id)),
   )
   const { mutate: deleteItem } = useHomeMutation(
     (id: string) => backend.deleteShoppingItem(id),
@@ -50,6 +47,7 @@ export function useShoppingActions(): ShoppingActions {
           icon: item.icon,
           kind: makeStaple ? 'staple' : 'one_off',
           is_available: true,
+          to_buy: false,
           created_at: now,
           updated_at: now,
           created_by: user.id,
@@ -61,12 +59,12 @@ export function useShoppingActions(): ShoppingActions {
   return useMemo(
     () => ({
       buyProduct(product) {
-        setAvailability(product.id)
+        setState({ id: product.id, state: PURCHASED })
         toast(`«${product.name}» снова дома`)
       },
-      deleteProduct(product) {
-        deleteProduct(product.id)
-        toast(`«${product.name}» удалён`)
+      dropProduct(product) {
+        setState({ id: product.id, state: withToBuy(product, false) })
+        toast(`«${product.name}» убран из покупок`)
       },
       removeItem(item) {
         deleteItem(item.id)
@@ -76,6 +74,6 @@ export function useShoppingActions(): ShoppingActions {
         toast(makeStaple ? `«${item.name}» теперь постоянный` : `«${item.name}» дома`)
       },
     }),
-    [setAvailability, deleteProduct, deleteItem, purchase, toast],
+    [setState, deleteItem, purchase, toast],
   )
 }

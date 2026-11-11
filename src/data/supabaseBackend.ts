@@ -199,8 +199,13 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
           .select()
           .single(),
       ) as Product,
-    setAvailability: async (productId, available) => {
-      check(await supabase.from('products').update({ is_available: available }).eq('id', productId))
+    setProductState: async (productId, state) => {
+      check(
+        await supabase
+          .from('products')
+          .update({ is_available: state.is_available, to_buy: state.to_buy })
+          .eq('id', productId),
+      )
     },
     deleteProduct: async (productId) => {
       check(await supabase.from('products').delete().eq('id', productId))
