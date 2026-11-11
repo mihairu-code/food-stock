@@ -29,6 +29,7 @@ type SettingsSheet =
   | { type: 'invite-link'; link: string }
   | { type: 'join' }
   | { type: 'name' }
+  | { type: 'sign-out' }
 
 export function SettingsScreen() {
   const t = useT()
@@ -157,6 +158,7 @@ export function SettingsScreen() {
             name={me?.display_name ?? ''}
             onEditName={() => setSheet({ type: 'name' })}
             onJoin={() => setSheet({ type: 'join' })}
+            onSignOut={() => setSheet({ type: 'sign-out' })}
           />
         </>
       )}
@@ -232,6 +234,15 @@ export function SettingsScreen() {
           description={t('confirm.resetText')}
           confirmLabel={t('confirm.reset')}
           onConfirm={() => void resetDemo()}
+          onClose={close}
+        />
+      )}
+      {sheet?.type === 'sign-out' && (
+        <ConfirmSheet
+          title={t('confirm.signOutTitle')}
+          description={t('confirm.signOutText')}
+          confirmLabel={t('confirm.signOut')}
+          onConfirm={() => void backend.signOut().catch(() => toast(t('common.actionError')))}
           onClose={close}
         />
       )}

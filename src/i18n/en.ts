@@ -17,6 +17,7 @@ export const en: Messages = {
   'common.loading': 'Loading…',
   'common.loadError': 'Couldn’t load the data. Check your connection.',
   'common.saveError': 'Couldn’t save the change',
+  'common.actionError': 'Something went wrong',
   'common.checkConnection': 'Check your internet connection and try again.',
 
   quote: '“{name}”',
@@ -138,6 +139,7 @@ export const en: Messages = {
   'settings.setName': 'Set your name',
   'settings.nameMeta': 'Your name — members of the home see it',
   'settings.joinMeta': 'Paste an invitation to another home',
+  'settings.signOut': 'Sign out',
   'settings.anonGoogle':
     'Access to the home is kept only on this device, and the browser and the Home Screen app count as different members. Sign in with Google to be the same person with the same data everywhere.',
   'settings.anonNoGoogle':
@@ -205,6 +207,10 @@ export const en: Messages = {
   'confirm.removeMemberTitle': 'Remove this member?',
   'confirm.removeMemberText':
     '{name} will lose access to “{home}”. You can bring them back with a new link.',
+  'confirm.signOutTitle': 'Sign out?',
+  'confirm.signOutText':
+    'Your homes and items stay in the account. Sign in with Google again to get back to them.',
+  'confirm.signOut': 'Sign out',
   'confirm.resetTitle': 'Reset demo data?',
   'confirm.resetText':
     'All sections, items and shopping in this browser will be replaced with the sample.',

@@ -101,9 +101,17 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       check(
         await supabase.auth.signInWithOAuth({
           provider: 'google',
-          options: { redirectTo: `${window.location.origin}/` },
+          options: {
+            redirectTo: `${window.location.origin}/`,
+            // Всегда показывать выбор аккаунта: на общем телефоне иначе войдёт «не тот» человек.
+            queryParams: { prompt: 'select_account' },
+          },
         }),
       )
+    },
+    signOut: async () => {
+      // Только на этом устройстве: на остальных человек остаётся в аккаунте.
+      check(await supabase.auth.signOut({ scope: 'local' }))
     },
 
     createMergeTicket: async () => unwrap(await supabase.rpc('create_merge_ticket')) as string,

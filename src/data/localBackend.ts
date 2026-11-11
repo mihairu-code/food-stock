@@ -126,6 +126,7 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
     onAuthChange: () => () => {},
     googleAvailable: async () => false,
     signInWithGoogle: notSupported,
+    signOut: notSupported,
     createMergeTicket: notSupported,
     previewMerge: notSupported,
     completeMerge: notSupported,

@@ -29,6 +29,7 @@ export const ru = {
   'common.loading': 'Загрузка…',
   'common.loadError': 'Не удалось загрузить данные. Проверьте соединение.',
   'common.saveError': 'Не удалось сохранить изменение',
+  'common.actionError': 'Не удалось выполнить действие',
   'common.checkConnection': 'Проверьте соединение с интернетом и попробуйте ещё раз.',
 
   quote: '«{name}»',
@@ -180,6 +181,7 @@ export const ru = {
   'settings.setName': 'Указать имя',
   'settings.nameMeta': 'Ваше имя — его видят участники дома',
   'settings.joinMeta': 'Вставьте приглашение в другой дом',
+  'settings.signOut': 'Выйти из аккаунта',
   'settings.anonGoogle':
     'Доступ к дому хранится только на этом устройстве, а браузер и приложение на экране «Домой» считаются разными участниками. Войдите через Google — и везде будете одним человеком с одними данными.',
   'settings.anonNoGoogle':
@@ -248,6 +250,10 @@ export const ru = {
   'confirm.removeMemberTitle': 'Удалить участника?',
   'confirm.removeMemberText':
     '{name} потеряет доступ к дому «{home}». Вернуть его можно будет новой ссылкой.',
+  'confirm.signOutTitle': 'Выйти из аккаунта?',
+  'confirm.signOutText':
+    'Дома и продукты останутся в аккаунте. Чтобы вернуться к ним, снова войдите через Google.',
+  'confirm.signOut': 'Выйти',
   'confirm.resetTitle': 'Сбросить демо-данные?',
   'confirm.resetText': 'Все разделы, продукты и покупки в этом браузере заменятся исходным примером.',
   'confirm.reset': 'Сбросить',

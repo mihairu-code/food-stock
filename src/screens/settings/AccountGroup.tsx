@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { ChevronRight, UserRound } from 'lucide-react'
+import { ChevronRight, LogOut, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { signInWithGoogle } from '@/app/googleSignIn'
 import { useSession } from '@/app/session'
@@ -13,10 +13,11 @@ interface AccountGroupProps {
   name: string
   onEditName: () => void
   onJoin: () => void
+  onSignOut: () => void
 }
 
 /** Аккаунт: вход через Google, своё имя и вступление в другой дом по ссылке. */
-export function AccountGroup({ name, onEditName, onJoin }: AccountGroupProps) {
+export function AccountGroup({ name, onEditName, onJoin, onSignOut }: AccountGroupProps) {
   const t = useT()
   const toast = useToast()
   const { user } = useSession()
@@ -75,6 +76,14 @@ export function AccountGroup({ name, onEditName, onJoin }: AccountGroupProps) {
           </span>
           <ChevronRight className="chevron" size={18} aria-hidden="true" />
         </button>
+        {!user.isAnonymous && (
+          <button className="setting-row danger" type="button" onClick={onSignOut}>
+            <span className="row-text">
+              <span className="row-name">{t('settings.signOut')}</span>
+            </span>
+            <LogOut className="chevron" size={18} aria-hidden="true" />
+          </button>
+        )}
       </div>
       <p className="settings-note">{t(hint)}</p>
     </>

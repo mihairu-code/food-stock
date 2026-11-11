@@ -59,6 +59,7 @@ export interface Backend {
   googleAvailable(): Promise<boolean>
   /** Уводит на страницу Google; после возврата currentUser() вернёт аккаунт. */
   signInWithGoogle(): Promise<void>
+  signOut(): Promise<void>
 
   /**
    * Слияние анонимного пользователя устройства с аккаунтом. Билет берут до входа,

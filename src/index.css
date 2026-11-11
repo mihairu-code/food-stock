@@ -917,3 +917,8 @@ button {
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
+.setting-row.danger .row-name,
+.setting-row.danger .chevron {
+  color: var(--red);
+}

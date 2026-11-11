@@ -17,6 +17,7 @@ export const ja: Messages = {
   'common.loading': '読み込み中…',
   'common.loadError': 'データを読み込めませんでした。通信状況を確認してください。',
   'common.saveError': '変更を保存できませんでした',
+  'common.actionError': '操作を完了できませんでした',
   'common.checkConnection': 'インターネット接続を確認して、もう一度お試しください。',
 
   quote: '「{name}」',
@@ -132,6 +133,7 @@ export const ja: Messages = {
   'settings.setName': '名前を設定',
   'settings.nameMeta': 'あなたの名前。家のメンバーに表示されます',
   'settings.joinMeta': '別の家への招待リンクを貼り付けます',
+  'settings.signOut': 'ログアウト',
   'settings.anonGoogle':
     '家へのアクセスはこの端末にだけ保存されていて、ブラウザとホーム画面のアプリは別のメンバーとして扱われます。Googleでログインすると、どこでも同じ人として同じデータを使えます。',
   'settings.anonNoGoogle':
@@ -200,6 +202,10 @@ export const ja: Messages = {
   'confirm.removeMemberTitle': 'メンバーを削除しますか？',
   'confirm.removeMemberText':
     '{name}さんは「{home}」にアクセスできなくなります。新しいリンクでまた招待できます。',
+  'confirm.signOutTitle': 'ログアウトしますか？',
+  'confirm.signOutText':
+    '家とアイテムはアカウントに残ります。もう一度Googleでログインすると元に戻ります。',
+  'confirm.signOut': 'ログアウト',
   'confirm.resetTitle': 'デモデータをリセットしますか？',
   'confirm.resetText':
     'このブラウザの置き場所・アイテム・買い物リストが、すべて最初のサンプルに置き換わります。',

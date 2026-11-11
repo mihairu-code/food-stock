@@ -17,6 +17,7 @@ export const vi: Messages = {
   'common.loading': 'Đang tải…',
   'common.loadError': 'Không tải được dữ liệu. Hãy kiểm tra kết nối.',
   'common.saveError': 'Không lưu được thay đổi',
+  'common.actionError': 'Không thực hiện được thao tác',
   'common.checkConnection': 'Hãy kiểm tra kết nối Internet rồi thử lại.',
 
   quote: '“{name}”',
@@ -132,6 +133,7 @@ export const vi: Messages = {
   'settings.setName': 'Đặt tên',
   'settings.nameMeta': 'Tên của bạn — các thành viên trong nhà sẽ thấy',
   'settings.joinMeta': 'Dán lời mời vào một nhà khác',
+  'settings.signOut': 'Đăng xuất',
   'settings.anonGoogle':
     'Quyền vào nhà chỉ được lưu trên thiết bị này, còn trình duyệt và ứng dụng trên Màn hình chính bị coi là hai thành viên khác nhau. Hãy đăng nhập bằng Google để ở đâu bạn cũng là một người với cùng dữ liệu.',
   'settings.anonNoGoogle':
@@ -200,6 +202,10 @@ export const vi: Messages = {
   'confirm.removeMemberTitle': 'Xóa thành viên?',
   'confirm.removeMemberText':
     '{name} sẽ mất quyền vào nhà “{home}”. Bạn có thể mời lại bằng liên kết mới.',
+  'confirm.signOutTitle': 'Đăng xuất?',
+  'confirm.signOutText':
+    'Nhà và các món vẫn nằm trong tài khoản. Để quay lại, hãy đăng nhập bằng Google lần nữa.',
+  'confirm.signOut': 'Đăng xuất',
   'confirm.resetTitle': 'Đặt lại dữ liệu mẫu?',
   'confirm.resetText':
     'Mọi khu vực, món và danh sách mua trong trình duyệt này sẽ được thay bằng dữ liệu mẫu ban đầu.',
