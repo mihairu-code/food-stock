@@ -187,6 +187,8 @@ export const ru = {
   'settings.accountText':
     'Войдите в этот же аккаунт Google в браузере или в приложении на экране «Домой» — там будут те же дома и продукты.',
   'settings.groupApp': 'Приложение',
+  'settings.language': 'Язык',
+  'settings.languageAuto': 'Как на устройстве',
   'settings.theme': 'Тема',
   'settings.themeAuto': 'Как на устройстве',
   'settings.themeLight': 'Светлая',

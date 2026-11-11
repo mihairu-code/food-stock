@@ -7,7 +7,7 @@ import { backend } from '@/data'
 import { qk } from '@/data/keys'
 import { queryClient } from '@/data/queryClient'
 import type { Member } from '@/domain/types'
-import { useLang, useT } from '@/i18n'
+import { LANG_NAMES, LANGS, setLangSetting, useLang, useT, type LangSetting } from '@/i18n'
 import { inviteLink, saveName } from '@/lib/invite'
 import { memberIdentity, memberLabel } from '@/lib/memberText'
 import { readTheme, setTheme, type ThemeSetting } from '@/lib/theme'
@@ -32,7 +32,7 @@ type SettingsSheet =
 
 export function SettingsScreen() {
   const t = useT()
-  const { lang } = useLang()
+  const { lang, setting: langSetting } = useLang()
   const toast = useToast()
   const { user, household, role, selectHousehold } = useSession()
   const hid = household.id
@@ -163,6 +163,23 @@ export function SettingsScreen() {
 
       <h2 className="group-label">{t('settings.groupApp')}</h2>
       <div className="card">
+        <label className="setting-row">
+          <span className="row-text">
+            <span className="row-name">{t('settings.language')}</span>
+          </span>
+          <select
+            className="inline-select"
+            value={langSetting}
+            onChange={(e) => setLangSetting(e.target.value as LangSetting)}
+          >
+            <option value="auto">{t('settings.languageAuto')}</option>
+            {LANGS.map((code) => (
+              <option key={code} value={code}>
+                {LANG_NAMES[code]}
+              </option>
+            ))}
+          </select>
+        </label>
         <label className="setting-row">
           <span className="row-text">
             <span className="row-name">{t('settings.theme')}</span>

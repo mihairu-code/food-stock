@@ -1,12 +1,14 @@
 import { useSyncExternalStore } from 'react'
+import { en } from './en'
+import { ja } from './ja'
 import { ru, type Messages } from './ru'
+import { vi } from './vi'
 
 /**
- * Языки интерфейса. Пока только русский, но тексты уже живут в словаре, а не в разметке.
- * Все словари лежат в основном файле приложения: ленивая подгрузка ломает открытую
- * старую версию после выкладки новой (см. решение 0004).
+ * Языки интерфейса. Все словари лежат в основном файле приложения: ленивая подгрузка
+ * ломает открытую старую версию после выкладки новой (см. README, «Обновления»).
  */
-export const LANGS = ['ru'] as const
+export const LANGS = ['ru', 'en', 'ja', 'vi'] as const
 export type Lang = (typeof LANGS)[number]
 /** 'auto' — язык берётся из настроек устройства. */
 export type LangSetting = Lang | 'auto'
@@ -17,11 +19,14 @@ export type Translate = (key: MessageKey, params?: Params) => string
 /** Названия языков на них самих — так их узнают в любом интерфейсе. */
 export const LANG_NAMES: Record<Lang, string> = {
   ru: 'Русский',
+  en: 'English',
+  ja: '日本語',
+  vi: 'Tiếng Việt',
 }
 
-const DICTS: Record<Lang, Messages> = { ru }
+const DICTS: Record<Lang, Messages> = { ru, en, ja, vi }
 const STORAGE_KEY = 'home-stock:lang'
-const FALLBACK: Lang = 'ru'
+const FALLBACK: Lang = 'en'
 
 const isLang = (value: unknown): value is Lang => LANGS.includes(value as Lang)
 

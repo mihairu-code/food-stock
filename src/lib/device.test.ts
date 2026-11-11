@@ -38,7 +38,10 @@ it('незнакомая строка не ломает подпись', () => {
 
 it('подпись переводится на язык участника, в том числе записанная прежней версией', () => {
   const ru = (key: Parameters<typeof format>[1]) => format('ru', key)
+  const ja = (key: Parameters<typeof format>[1]) => format('ja', key)
   expect(localizeDevice('App · iPhone', ru)).toBe('Приложение · iPhone')
+  expect(localizeDevice('Приложение · iPhone', ja)).toBe('アプリ · iPhone')
   expect(localizeDevice('Browser · device', ru)).toBe('Браузер · устройство')
+  expect(localizeDevice('Safari · Mac', ja)).toBe('Safari · Mac')
   expect(localizeDevice('', ru)).toBe('')
 })

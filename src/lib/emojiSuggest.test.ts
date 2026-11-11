@@ -81,3 +81,85 @@ describe('подбор иконки по названию', () => {
   })
 })
 
+describe('подбор иконки на других языках', () => {
+  const en = (name: string) => suggestEmojis(name, { lang: 'en' })
+  const ja = (name: string) => suggestEmojis(name, { lang: 'ja' })
+  const vi = (name: string) => suggestEmojis(name, { lang: 'vi' })
+
+  it('английский: слово, множественное число и словосочетания', () => {
+    expect(en('Milk').best).toBe('🥛')
+    expect(en('eggs').best).toBe('🥚')
+    expect(en('Strawberries').best).toBe('🍓')
+    expect(en('tomatoes').best).toBe('🍅')
+    expect(en('ice cream').best).toBe('🍦')
+    expect(en('Toilet paper').best).toBe('🧻')
+    expect(en('olive oil').best).toBe('🫒')
+    expect(en('Greek yogurt').options[0]).toBe('🥣')
+  })
+
+  it('английский: короткое слово не цепляет чужие длинные', () => {
+    expect(en('eggplant').best).toBe('🍆')
+    expect(en('cheesecake').best).toBe('🍰')
+    expect(en('watermelon').best).toBe('🍉')
+    expect(en('hamburger').best).toBe('🍔')
+    expect(en('teaspoon').options).not.toContain('🍵')
+    // «bunch» — не булочка (bun): уверенного совпадения нет, первой идёт иконка бананов.
+    expect(en('bunch of bananas').best).toBeNull()
+    expect(en('bunch of bananas').options[0]).toBe('🍌')
+  })
+
+  it('английский: без точной иконки показывает соседей по группе', () => {
+    expect(en('snacks').options.slice(0, 3)).toEqual(['🥨', '🍟', '🥜'])
+    expect(en('vegetables').best).toBeNull()
+    expect(en('vegetables').options.slice(0, 2)).toEqual(['🥔', '🥕'])
+    expect(en('mi').options).toEqual(expect.arrayContaining(['🥛']))
+  })
+
+  it('японский: слово находится внутри названия, катакана и хирагана равнозначны', () => {
+    expect(ja('牛乳').best).toBe('🥛')
+    expect(ja('バナナ').best).toBe('🍌')
+    expect(ja('ばなな').best).toBe('🍌')
+    expect(ja('北海道牛乳 1L').options[0]).toBe('🥛')
+    expect(ja('トイレットペーパー').best).toBe('🧻')
+    expect(ja('すいか').best).toBe('🍉')
+    expect(ja('たまご').best).toBe('🥚')
+  })
+
+  it('японский: длинное слово важнее короткого, входящего в него', () => {
+    expect(ja('パンケーキ').best).toBe('🥞')
+    expect(ja('食パン').best).toBe('🍞')
+    expect(ja('ツナ缶').best).toBe('🥫')
+    expect(ja('豆乳').best).toBe('🥛')
+    expect(ja('果物').best).toBeNull()
+    expect(ja('果物').options.slice(0, 2)).toEqual(['🍎', '🍌'])
+  })
+
+  it('вьетнамский: совпадает слово или словосочетание целиком', () => {
+    expect(vi('Sữa').best).toBe('🥛')
+    expect(vi('sữa chua').best).toBe('🥣')
+    expect(vi('Bánh mì').best).toBe('🍞')
+    expect(vi('nước mắm').best).toBe('🥫')
+    expect(vi('Cà phê sữa').best).toBe('☕')
+    expect(vi('trứng gà').best).toBe('🥚')
+    expect(vi('giấy vệ sinh').best).toBe('🧻')
+  })
+
+  it('вьетнамский без диакритики находится, но сам не подставляется', () => {
+    expect(vi('sua chua').options[0]).toBe('🥣')
+    expect(vi('sua chua').best).toBeNull()
+    expect(vi('banh mi').options[0]).toBe('🍞')
+  })
+
+  it('языки не мешают друг другу', () => {
+    // «pin» — батарейка только во вьетнамском интерфейсе.
+    expect(vi('pin').best).toBe('🔋')
+    expect(en('pin').options).not.toContain('🔋')
+    expect(en('hat').options).not.toContain('🥜')
+    // Слово с диакритикой однозначно вьетнамское — работает при любом языке интерфейса.
+    expect(en('sữa').best).toBe('🥛')
+    // Название на другом языке, чем интерфейс, всё равно находится.
+    expect(ja('молоко').best).toBe('🥛')
+    expect(vi('bread').best).toBe('🍞')
+    expect(suggestEmojis('牛乳').best).toBe('🥛')
+  })
+})
