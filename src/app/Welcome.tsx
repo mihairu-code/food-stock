@@ -1,8 +1,10 @@
 import { useState } from 'react'
+import { useT } from '@/i18n'
 import { signInWithGoogle } from './googleSignIn'
 
 /** Первое знакомство: войти через Google или начать без аккаунта. */
 export function Welcome({ onContinue }: { onContinue: () => void }) {
+  const t = useT()
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
 
@@ -21,19 +23,19 @@ export function Welcome({ onContinue }: { onContinue: () => void }) {
       <div className="auth-emoji" aria-hidden="true">
         🏠
       </div>
-      <h1>Домашние запасы</h1>
-      <p className="auth-lead">Общий список того, что есть дома, и того, что надо купить.</p>
+      <h1>{t('app.name')}</h1>
+      <p className="auth-lead">{t('app.tagline')}</p>
       <div className="card welcome-card">
         <button className="btn" type="button" disabled={busy} onClick={signIn}>
-          Войти через Google
+          {t('auth.google')}
         </button>
-        <p className="welcome-note">Данные не потеряются при смене телефона, дом будет на всех ваших устройствах.</p>
+        <p className="welcome-note">{t('welcome.googleNote')}</p>
         <button className="btn subtle" type="button" disabled={busy} onClick={onContinue}>
-          Продолжить без аккаунта
+          {t('welcome.anon')}
         </button>
-        <p className="welcome-note">Войти можно и потом, в настройках, — всё созданное сохранится.</p>
+        <p className="welcome-note">{t('welcome.later')}</p>
       </div>
-      {failed && <p className="field-error">Не удалось открыть вход через Google. Попробуйте ещё раз.</p>}
+      {failed && <p className="field-error">{t('toast.googleError')}</p>}
     </main>
   )
 }

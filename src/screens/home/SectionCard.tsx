@@ -1,6 +1,7 @@
 import { ChevronDown, Pencil } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { Section } from '@/domain/types'
+import { useT } from '@/i18n'
 
 interface SectionCardProps {
   section: Section
@@ -13,6 +14,7 @@ interface SectionCardProps {
 
 /** Раздел дома: сворачиваемая карточка со своими продуктами. */
 export function SectionCard({ section, count, open, onToggle, onEdit, children }: SectionCardProps) {
+  const t = useT()
   const panelId = `section-${section.id}`
   return (
     <section className="card section" data-open={open}>
@@ -29,9 +31,11 @@ export function SectionCard({ section, count, open, onToggle, onEdit, children }
             {section.icon && <span aria-hidden="true">{section.icon}</span>}
             <span className="section-name">{section.name}</span>
           </span>
-          <span className="count">{count}</span>
+          <span className="count" aria-label={t('home.sectionCount', { count })}>
+            {count}
+          </span>
         </button>
-        <button className="icon-btn" type="button" aria-label={`Изменить раздел «${section.name}»`} onClick={onEdit}>
+        <button className="icon-btn" type="button" aria-label={t('home.editSection', { name: section.name })} onClick={onEdit}>
           <Pencil size={16} />
         </button>
       </div>

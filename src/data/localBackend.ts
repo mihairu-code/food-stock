@@ -6,6 +6,7 @@ import {
   type HomeData,
 } from '@/domain/logic'
 import type { Household, Product, Section, ShoppingItem, User } from '@/domain/types'
+import { translate as t } from '@/i18n'
 import type { Backend } from './backend'
 
 const STORAGE_KEY = 'home-stock:local:v1'
@@ -21,7 +22,7 @@ function seed(): LocalState {
   const now = Date.now()
   const at = (offset: number) => new Date(now + offset).toISOString()
   const hid = crypto.randomUUID()
-  const household: Household = { id: hid, name: 'Мой дом', created_at: at(0) }
+  const household: Household = { id: hid, name: t('home.defaultName'), created_at: at(0) }
 
   let tick = 0
   const section = (name: string, icon: string): Section => ({
@@ -60,23 +61,24 @@ function seed(): LocalState {
     created_by: LOCAL_USER.id,
   })
 
-  const fridge = section('Холодильник', '🧊')
-  const cupboard = section('Шкаф', '🧺')
-  const treats = section('Вкусняшки', '🍪')
+  // Демо-набор заводится один раз, на языке интерфейса в этот момент.
+  const fridge = section(t('demo.fridge'), '🧊')
+  const cupboard = section(t('demo.cupboard'), '🧺')
+  const treats = section(t('demo.treats'), '🍪')
 
   return {
     household,
     sections: [fridge, cupboard, treats],
     products: [
-      product(fridge, 'Молоко', '🥛', 'staple', false),
-      product(fridge, 'Яйца', '🥚', 'staple'),
-      product(fridge, 'Сыр', '🧀', 'staple'),
-      product(fridge, 'Клубника', '🍓', 'one_off'),
-      product(cupboard, 'Кофе', '☕', 'staple'),
-      product(cupboard, 'Рис', '🍚', 'staple'),
-      product(treats, 'Шоколад', '🍫', 'one_off'),
+      product(fridge, t('demo.milk'), '🥛', 'staple', false),
+      product(fridge, t('demo.eggs'), '🥚', 'staple'),
+      product(fridge, t('demo.cheese'), '🧀', 'staple'),
+      product(fridge, t('demo.strawberry'), '🍓', 'one_off'),
+      product(cupboard, t('demo.coffee'), '☕', 'staple'),
+      product(cupboard, t('demo.rice'), '🍚', 'staple'),
+      product(treats, t('demo.chocolate'), '🍫', 'one_off'),
     ],
-    shoppingItems: [item('Кофе в зёрнах', '🫘'), item('Хлеб', '🍞')],
+    shoppingItems: [item(t('demo.coffeeBeans'), '🫘'), item(t('demo.bread'), '🍞')],
   }
 }
 

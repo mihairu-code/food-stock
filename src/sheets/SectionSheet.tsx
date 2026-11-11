@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import type { Section } from '@/domain/types'
+import { useT } from '@/i18n'
 import { Sheet } from './Sheet'
 
 /** Самые частые места в доме. */
@@ -14,6 +15,7 @@ interface SectionSheetProps {
 }
 
 export function SectionSheet({ section, onSave, onDelete, onClose }: SectionSheetProps) {
+  const t = useT()
   const [name, setName] = useState(section?.name ?? '')
   const [icon, setIcon] = useState(section?.icon ?? '')
 
@@ -27,17 +29,17 @@ export function SectionSheet({ section, onSave, onDelete, onClose }: SectionShee
 
   return (
     <Sheet
-      title={section ? 'Раздел' : 'Новый раздел'}
-      description={section ? undefined : 'Например, «Холодильник» или «Вкусняшки».'}
+      title={t(section ? 'section.title' : 'section.newTitle')}
+      description={section ? undefined : t('section.newDescription')}
       onClose={onClose}
     >
       <form onSubmit={submit}>
         <label className="field">
-          <span>Название</span>
+          <span>{t('section.name')}</span>
           <input value={name} maxLength={60} onChange={(e) => setName(e.target.value)} autoFocus />
         </label>
         <div className="field">
-          <span>Иконка</span>
+          <span>{t('emoji.label')}</span>
           <div className="emoji-grid">
             {SECTION_EMOJIS.map((emoji) => (
               <button
@@ -54,15 +56,15 @@ export function SectionSheet({ section, onSave, onDelete, onClose }: SectionShee
         </div>
         <div className="sheet-actions">
           <button className="btn subtle" type="button" onClick={onClose}>
-            Отмена
+            {t('common.cancel')}
           </button>
           <button className="btn" type="submit" disabled={!name.trim()}>
-            {section ? 'Сохранить' : 'Создать'}
+            {t(section ? 'common.save' : 'common.create')}
           </button>
         </div>
         {onDelete && (
           <button className="btn danger-text" type="button" onClick={onDelete}>
-            Удалить раздел
+            {t('section.delete')}
           </button>
         )}
       </form>

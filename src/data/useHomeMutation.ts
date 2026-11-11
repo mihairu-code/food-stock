@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useHouseholdId } from '@/app/session'
 import { useToast } from '@/components/toastContext'
 import type { Product, Section, ShoppingItem } from '@/domain/types'
+import { translate } from '@/i18n'
 import { qk } from './keys'
 import { queryClient } from './queryClient'
 
@@ -61,7 +62,7 @@ export function useHomeMutation<V, R = unknown>(
         queryClient.setQueryData(qk.products(hid), snapshot.products)
         queryClient.setQueryData(qk.shoppingItems(hid), snapshot.shoppingItems)
       }
-      toast('Не удалось сохранить. Проверьте соединение.')
+      toast(translate('common.saveError'))
     },
     onSettled: () => {
       // Пока в очереди есть другие правки, серверный ответ затёр бы их оптимистичное

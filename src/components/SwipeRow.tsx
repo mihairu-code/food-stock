@@ -1,10 +1,11 @@
 import { Trash2 } from 'lucide-react'
 import { useRef, useState, type PointerEvent, type ReactNode } from 'react'
+import { useT } from '@/i18n'
 
 interface SwipeRowProps {
   /** Вызывается, если строку утянули влево дальше порога. */
   onDelete: () => void
-  /** Подпись под строкой во время жеста. */
+  /** Подпись под строкой во время жеста; по умолчанию «Удалить». */
   label?: string
   children: ReactNode
 }
@@ -25,7 +26,8 @@ interface Gesture {
  * Строка, которую удаляют свайпом влево. Жест — не единственный способ:
  * в самой строке обязана быть кнопка удаления для клавиатуры и скринридера.
  */
-export function SwipeRow({ onDelete, label = 'Удалить', children }: SwipeRowProps) {
+export function SwipeRow({ onDelete, label, children }: SwipeRowProps) {
+  const t = useT()
   const root = useRef<HTMLDivElement>(null)
   const [offset, setOffset] = useState(0)
   const [dragging, setDragging] = useState(false)
@@ -76,7 +78,7 @@ export function SwipeRow({ onDelete, label = 'Удалить', children }: Swipe
     <div className="swipe" ref={root} data-active={offset !== 0}>
       <div className="swipe-under" aria-hidden="true">
         <Trash2 size={18} />
-        {label}
+        {label ?? t('common.delete')}
       </div>
       <div
         className="swipe-content"

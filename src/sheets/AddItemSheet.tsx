@@ -1,10 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import type { NewShoppingItem } from '@/data/backend'
 import { useSuggestedEmoji } from '@/hooks/useSuggestedEmoji'
+import { useT } from '@/i18n'
 import { Sheet } from './Sheet'
 
 /** Позиция покупок, добавленная вручную: того, чего в разделах дома нет. Раздел не нужен. */
 export function AddItemSheet({ onSave, onClose }: { onSave: (input: NewShoppingItem) => void; onClose: () => void }) {
+  const t = useT()
   const [name, setName] = useState('')
   const { icon, setIcon, options } = useSuggestedEmoji(name)
 
@@ -17,20 +19,22 @@ export function AddItemSheet({ onSave, onClose }: { onSave: (input: NewShoppingI
   }
 
   return (
-    <Sheet title="Добавить в покупки" description="Раздел выберете, когда купите." onClose={onClose}>
+    <Sheet title={t('shopping.addTitle')} description={t('shopping.addDescription')} onClose={onClose}>
       <form onSubmit={submit}>
         <label className="field">
-          <span>Что купить</span>
+          <span>{t('shopping.whatToBuy')}</span>
           <input
             value={name}
             maxLength={80}
-            placeholder="Например, батарейки"
+            placeholder={t('shopping.placeholder')}
             onChange={(e) => setName(e.target.value)}
             autoFocus
           />
         </label>
         <div className="field">
-          <span>Иконка</span>
+          <span>
+            {t('emoji.label')} <small>{t('emoji.hint')}</small>
+          </span>
           <div className="emoji-grid">
             {options.map((emoji) => (
               <button
@@ -47,10 +51,10 @@ export function AddItemSheet({ onSave, onClose }: { onSave: (input: NewShoppingI
         </div>
         <div className="sheet-actions">
           <button className="btn subtle" type="button" onClick={onClose}>
-            Отмена
+            {t('common.cancel')}
           </button>
           <button className="btn" type="submit" disabled={!name.trim()}>
-            Добавить
+            {t('common.add')}
           </button>
         </div>
       </form>

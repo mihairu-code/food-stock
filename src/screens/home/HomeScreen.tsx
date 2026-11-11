@@ -4,11 +4,13 @@ import { useSession } from '@/app/session'
 import { EmptyState } from '@/components/EmptyState'
 import { useToast } from '@/components/toastContext'
 import { backend } from '@/data'
+import type { NewProduct, NewSection } from '@/data/backend'
 import { useHomeData, useSortedSections } from '@/data/useHomeData'
 import { useHomeMutation } from '@/data/useHomeMutation'
 import { productsOf } from '@/domain/logic'
-import type { NewProduct, NewSection } from '@/data/backend'
 import type { Section } from '@/domain/types'
+import { useT } from '@/i18n'
+import { rich } from '@/i18n/rich'
 import { ConfirmSheet } from '@/sheets/ConfirmSheet'
 import { ProductSheet } from '@/sheets/ProductSheet'
 import { SectionSheet } from '@/sheets/SectionSheet'
@@ -24,6 +26,7 @@ type HomeSheet =
   | { type: 'delete-section'; section: Section }
 
 export function HomeScreen() {
+  const t = useT()
   const { household, user } = useSession()
   const hid = household.id
   const { products, isLoading, isError } = useHomeData()
@@ -62,8 +65,21 @@ export function HomeScreen() {
     },
   )
 
-  if (isLoading) return <p className="status">Загрузка…</p>
-  if (isError) return <p className="status">Не удалось загрузить данные</p>
+  if (isLoading) return <p className="status">{t('home.loading')}</p>
+  if (isError) return <p className="status">{t('common.loadError')}</p>
+
+  /** Сколько продуктов пропадёт вместе с разделом и сколько из них — из покупок. */
+  function deleteText(section: Section) {
+    const inSection = productsOf(products, section.id)
+    const inList = inSection.filter((p) => p.to_buy).length
+    return (
+      <>
+        {rich(t('section.deleteText', { count: inSection.length }))}{' '}
+        {inList > 0 && `${t('section.deleteInList', { count: inList })} `}
+        {t('section.deleteNoUndo')}
+      </>
+    )
+  }
 
   function requestDelete(section: Section) {
     // Пустой раздел удаляем сразу, непустой — только после подтверждения.
@@ -78,19 +94,17 @@ export function HomeScreen() {
   return (
     <>
       {sections.length === 0 ? (
-        <EmptyState emoji="🏠" title="Пока пусто" text="Заведите первый раздел — например, «Холодильник».">
+        <EmptyState emoji="🏠" title={t('home.emptyTitle')} text={t('home.emptyText')}>
           <button className="btn" type="button" onClick={() => setSheet({ type: 'add-section' })}>
-            <Plus size={16} /> Создать раздел
+            <Plus size={16} /> {t('home.createSection')}
           </button>
         </EmptyState>
       ) : (
         <>
           <div className="summary">
-            <p>
-              Дома <strong>{products.filter((p) => p.is_available).length}</strong> из {products.length}
-            </p>
+            <p>{rich(t('home.summary', { count: products.filter((p) => p.is_available).length }))}</p>
             <button className="btn small" type="button" onClick={() => setSheet({ type: 'add-product' })}>
-              <Plus size={16} aria-hidden="true" /> Продукт
+              <Plus size={16} aria-hidden="true" /> {t('common.add')}
             </button>
           </div>
           {sections.map((section) => (
@@ -110,12 +124,12 @@ export function HomeScreen() {
                 type="button"
                 onClick={() => setSheet({ type: 'add-product', sectionId: section.id })}
               >
-                <Plus size={16} aria-hidden="true" /> Добавить в «{section.name}»
+                <Plus size={16} aria-hidden="true" /> {t('home.addProductTo', { name: section.name })}
               </button>
             </SectionCard>
           ))}
           <button className="add-row" type="button" onClick={() => setSheet({ type: 'add-section' })}>
-            <Plus size={16} aria-hidden="true" /> Новый раздел
+            <Plus size={16} aria-hidden="true" /> {t('section.newTitle')}
           </button>
         </>
       )}
@@ -126,7 +140,7 @@ export function HomeScreen() {
           sectionId={sheet.sectionId}
           onSave={(input) => {
             createProduct.mutate(input)
-            toast(`«${input.name}» добавлен`)
+            toast(t('toast.addedTo', { name: sections.find((s) => s.id === input.section_id)?.name ?? '' }))
           }}
           onClose={close}
         />
@@ -136,7 +150,7 @@ export function HomeScreen() {
           onSave={(name, icon) => {
             const sort_order = sections.reduce((max, s) => Math.max(max, s.sort_order + 1), 0)
             createSection.mutate({ id: crypto.randomUUID(), name, icon, sort_order })
-            toast(`Раздел «${name}» создан`)
+            toast(t('toast.sectionCreated', { name }))
           }}
           onClose={close}
         />
@@ -151,12 +165,12 @@ export function HomeScreen() {
       )}
       {sheet?.type === 'delete-section' && (
         <ConfirmSheet
-          title={`Удалить «${sheet.section.name}»?`}
-          description="Вместе с разделом удалятся все его продукты, в том числе те, что сейчас в покупках."
-          confirmLabel="Удалить"
+          title={t('section.deleteTitle', { name: sheet.section.name })}
+          description={deleteText(sheet.section)}
+          confirmLabel={t('common.delete')}
           onConfirm={() => {
             deleteSection.mutate(sheet.section.id)
-            toast(`Раздел «${sheet.section.name}» удалён`)
+            toast(t('toast.sectionDeleted', { name: sheet.section.name }))
           }}
           onClose={close}
         />

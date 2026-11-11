@@ -3,6 +3,7 @@ import { useToast } from '@/components/toastContext'
 import { backend } from '@/data'
 import { queryClient } from '@/data/queryClient'
 import type { MergeKeep, MergePreview, User } from '@/domain/types'
+import { translate, useT } from '@/i18n'
 import { rememberHousehold } from '@/lib/household'
 import { clearMergeTicket, readMergeTicket } from '@/lib/mergeTicket'
 import { MergeChoice } from './MergeChoice'
@@ -31,6 +32,7 @@ function initialState(user: User): MergeState {
  * спрашиваем, какие оставить.
  */
 export function MergeGate({ user, children }: { user: User; children: ReactNode }) {
+  const t = useT()
   const toast = useToast()
   const [state, setState] = useState(() => initialState(user))
   const started = useRef(false)
@@ -56,7 +58,7 @@ export function MergeGate({ user, children }: { user: User; children: ReactNode 
           return
         }
         await finish(await backend.completeMerge(ticket.token, null))
-        toast('Готово: всё с этого устройства теперь в аккаунте')
+        toast(translate('merge.done'))
       })
       .catch(fail)
   }, [state.status, finish, fail, toast])
@@ -67,12 +69,12 @@ export function MergeGate({ user, children }: { user: User; children: ReactNode 
   }
 
   if (state.status === 'idle') return children
-  if (state.status === 'working') return <p className="status">Переносим данные в аккаунт…</p>
+  if (state.status === 'working') return <p className="status">{t('merge.working')}</p>
   if (state.status === 'failed') {
     return (
       <div className="notice">
-        <h2>Не удалось перенести данные</h2>
-        <p>Вы вошли в аккаунт, но дом с этого устройства в него не попал. Его можно позвать ссылкой.</p>
+        <h2>{t('merge.failedTitle')}</h2>
+        <p>{t('merge.failedText')}</p>
         <button
           className="btn"
           type="button"
@@ -81,7 +83,7 @@ export function MergeGate({ user, children }: { user: User; children: ReactNode 
             setState({ status: 'idle' })
           }}
         >
-          Продолжить
+          {t('common.continue')}
         </button>
       </div>
     )

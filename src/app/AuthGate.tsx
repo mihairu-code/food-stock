@@ -4,6 +4,7 @@ import { backend } from '@/data'
 import { qk } from '@/data/keys'
 import { queryClient } from '@/data/queryClient'
 import type { User } from '@/domain/types'
+import { useT } from '@/i18n'
 import { Welcome } from './Welcome'
 
 /**
@@ -12,6 +13,7 @@ import { Welcome } from './Welcome'
  * Google на сервере не настроен, анонимный пользователь создаётся сразу.
  */
 export function AuthGate({ children }: { children: (user: User) => ReactNode }) {
+  const t = useT()
   const [anonymousChosen, setAnonymousChosen] = useState(false)
   const user = useQuery({
     queryKey: [...qk.user, anonymousChosen],
@@ -37,15 +39,15 @@ export function AuthGate({ children }: { children: (user: User) => ReactNode }) 
     if (userId) lastUserId.current = userId
   }, [userId])
 
-  if (user.isPending) return <p className="status">Загрузка…</p>
+  if (user.isPending) return <p className="status">{t('common.loading')}</p>
   if (user.isError) {
     return (
       <div className="notice">
-        <h2>Не удалось начать работу</h2>
-        <p>Проверьте соединение и попробуйте ещё раз.</p>
+        <h2>{t('start.errorTitle')}</h2>
+        <p>{t('common.checkConnection')}</p>
         <small className="notice-detail">{user.error.message}</small>
         <button className="btn" type="button" onClick={() => void user.refetch()}>
-          Повторить
+          {t('common.retry')}
         </button>
       </div>
     )

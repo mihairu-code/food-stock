@@ -1,7 +1,10 @@
+import type { Translate } from '@/i18n'
+
 /**
- * Короткая подпись устройства — «Safari · iPhone», «Приложение · iPhone».
+ * Короткая подпись устройства — «Safari · iPhone», «App · iPhone».
  * Без аккаунта каждый браузер — отдельный участник дома; подпись помогает понять,
- * кто есть кто в списке участников.
+ * кто есть кто в списке участников. В базу она пишется без перевода, одинаково для
+ * всех языков; на язык участника её переводит localizeDevice.
  */
 export function describeDevice(userAgent: string, flags: { standalone: boolean; brave: boolean }): string {
   const os = /iPhone/.test(userAgent)
@@ -16,11 +19,11 @@ export function describeDevice(userAgent: string, flags: { standalone: boolean; 
             ? 'Windows'
             : /Linux/.test(userAgent)
               ? 'Linux'
-              : 'устройство'
+              : 'device'
 
   // Порядок важен: почти каждый браузер называет себя и Chrome, и Safari.
   const browser = flags.standalone
-    ? 'Приложение'
+    ? 'App'
     : flags.brave
       ? 'Brave'
       : /YaBrowser/.test(userAgent)
@@ -35,7 +38,7 @@ export function describeDevice(userAgent: string, flags: { standalone: boolean; 
                 ? 'Chrome'
                 : /Safari\//.test(userAgent)
                   ? 'Safari'
-                  : 'Браузер'
+                  : 'Browser'
 
   return `${browser} · ${os}`
 }
@@ -46,4 +49,17 @@ export function currentDevice(): string {
     standalone: nav.standalone === true || window.matchMedia('(display-mode: standalone)').matches,
     brave: nav.brave !== undefined,
   })
+}
+
+/** Подпись устройства на языке интерфейса. Понимает и подписи, записанные прежними версиями по-русски. */
+export function localizeDevice(device: string, t: Translate): string {
+  return device
+    .split(' · ')
+    .map((part) => {
+      if (part === 'App' || part === 'Приложение') return t('device.app')
+      if (part === 'Browser' || part === 'Браузер') return t('device.browser')
+      if (part === 'device' || part === 'устройство') return t('device.unknown')
+      return part
+    })
+    .join(' · ')
 }
