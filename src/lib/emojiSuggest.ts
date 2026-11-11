@@ -1,34 +1,28 @@
 /**
- * Подбор эмодзи по названию продукта.
+ * Подбор эмодзи по названию продукта — на русском, английском, японском и вьетнамском.
  *
  * Если точной иконки нет, показываются соседи по группе: для «сухариков» — другие снеки.
- * Словарь хранит основы слов («молок», «сухар»), поэтому падежи и уменьшительные формы
- * находятся сами, а одна опечатка прощается.
+ * Языки устроены по-разному, поэтому у каждого словаря свой способ сравнения:
+ *   stem   — основы слов («молок», «сухар»): падежи и уменьшительные формы находятся сами;
+ *   plural — слово и его множественное число (английский: «egg» — это eggs, но не eggplant);
+ *   word   — слово или словосочетание целиком (вьетнамский: «sữa chua» — йогурт, не молоко);
+ *   sub    — вхождение в любом месте (японский: слова пишутся без пробелов).
  */
 
-type Group =
-  | 'dairy'
-  | 'bakery'
-  | 'meat'
-  | 'fish'
-  | 'fruit'
-  | 'veg'
-  | 'grain'
-  | 'drink'
-  | 'alcohol'
-  | 'sweet'
-  | 'snack'
-  | 'sauce'
-  | 'ready'
-  | 'home'
-
-/** [эмодзи, группа, ...слова]. Порядок внутри группы — порядок показа. */
-type Item = [emoji: string, group: Group, ...words: string[]]
-/** Слова, которые называют группу целиком: «снеки», «фрукты». */
-type GroupWords = [group: Group, ...words: string[]]
+import {
+  EN_GROUPS,
+  EN_ITEMS,
+  JA_GROUPS,
+  JA_ITEMS,
+  VI_GROUPS,
+  VI_ITEMS,
+  type Group,
+  type GroupWords,
+  type Item,
+} from './emojiWords'
 
 /* Русский: основы слов, чтобы находились падежи и уменьшительные формы. */
-const ITEMS: Item[] = [
+const RU_ITEMS: Item[] = [
   ['🥛', 'dairy', 'молок', 'молоч', 'кефир', 'ряженк', 'сливк', 'простокваш', 'айран'],
   ['🧀', 'dairy', 'сыр', 'сырок', 'сырк', 'моцарел', 'пармезан', 'брынз', 'фет', 'творож'],
   ['🧈', 'dairy', 'масл', 'маргарин'],
@@ -151,7 +145,7 @@ const ITEMS: Item[] = [
   ['💡', 'home', 'лампочк'],
 ]
 
-const GROUPS: GroupWords[] = [
+const RU_GROUPS: GroupWords[] = [
   ['dairy', 'молочк', 'молочн'],
   ['bakery', 'выпечк'],
   ['meat', 'мясн'],
@@ -178,25 +172,74 @@ export interface EmojiSuggestion {
   best: string | null
 }
 
-/** Нижний регистр, «ё» как «е», знаки препинания — в пробелы. */
+export interface SuggestOptions {
+  limit?: number
+  /** Язык интерфейса: его словарь получает небольшое преимущество при равных совпадениях. */
+  lang?: string
+}
+
+/** Нижний регистр, «ё» как «е», катакана как хирагана, знаки препинания — в пробелы. */
 const normalize = (text: string) =>
   text
+    .normalize('NFC')
     .toLowerCase()
     .replaceAll('ё', 'е')
+    .replace(/[ァ-ヶ]/g, (char) => String.fromCharCode(char.charCodeAt(0) - 0x60))
     .replace(/[^\p{L}\p{N}]+/gu, ' ')
     .trim()
+
+/** Латиница без диакритики: «sữa» → «sua». Так вьетнамское название набирают без знаков. */
+const stripMarks = (text: string) =>
+  text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replaceAll('đ', 'd')
+
+type Mode = 'stem' | 'plural' | 'word' | 'sub'
 
 interface Entry {
   /** null — слово называет группу целиком, а не продукт. */
   emoji: string | null
   group: Group
   word: string
+  /** Слово без диакритики; отличается от word только во вьетнамском. */
+  plain: string
+  phrase: boolean
 }
 
-const ENTRIES: Entry[] = [
-  ...ITEMS.flatMap(([emoji, group, ...stems]) => stems.map((word) => ({ emoji, group, word }))),
-  ...GROUPS.flatMap(([group, ...stems]) => stems.map((word) => ({ emoji: null, group, word }))),
+interface Dictionary {
+  lang: string
+  mode: Mode
+  entries: Entry[]
+}
+
+function dictionary(lang: string, mode: Mode, items: Item[], groups: GroupWords[]): Dictionary {
+  const entry = (emoji: string | null, group: Group, raw: string): Entry => {
+    const word = normalize(raw)
+    return { emoji, group, word, plain: stripMarks(word), phrase: word.includes(' ') }
+  }
+  return {
+    lang,
+    mode,
+    entries: [
+      ...items.flatMap(([emoji, group, ...words]) => words.map((word) => entry(emoji, group, word))),
+      ...groups.flatMap(([group, ...words]) => words.map((word) => entry(null, group, word))),
+    ],
+  }
+}
+
+const DICTIONARIES: Dictionary[] = [
+  dictionary('ru', 'stem', RU_ITEMS, RU_GROUPS),
+  dictionary('en', 'plural', EN_ITEMS, EN_GROUPS),
+  dictionary('ja', 'sub', JA_ITEMS, JA_GROUPS),
+  dictionary('vi', 'word', VI_ITEMS, VI_GROUPS),
 ]
+
+/** Порядок показа соседей по группе: сначала русский список, новые иконки других языков — следом. */
+const GROUP_ORDER: [string, Group][] = []
+for (const [emoji, group] of [...RU_ITEMS, ...EN_ITEMS, ...JA_ITEMS, ...VI_ITEMS]) {
+  if (!GROUP_ORDER.some(([e, g]) => e === emoji && g === group)) GROUP_ORDER.push([emoji, group])
+}
 
 /** Расстояние Левенштейна не больше 1 — одна опечатка. */
 function withinOneEdit(a: string, b: string): boolean {
@@ -212,15 +255,27 @@ function withinOneEdit(a: string, b: string): boolean {
 const EXACT = 100
 /** Первое слово названия важнее уточнений: «масло оливковое» — это прежде всего масло. */
 const FIRST_WORD_BONUS = 20
+/** Преимущество словаря на языке интерфейса. */
+const LANG_BONUS = 3
 
 /** Насколько слово из названия подходит к основе из словаря; 0 — не подходит. */
 function stemScore(word: string, stem: string): number {
   if (word.startsWith(stem)) {
-    // Короткая основа («кол», «вин») не должна цеплять длинные чужие слова («колбаса», «виноград»).
+    // Короткая основа («кол», «вин», «egg») не должна цеплять длинные чужие слова
+    // («колбаса», «виноград», «eggplant»).
     if (stem.length <= 3 && word.length > stem.length + 3) return 0
     return EXACT + stem.length
   }
   // Название ещё набирают: «мо» → молоко, морковь, мороженое.
+  if (word.length >= 2 && stem.startsWith(word)) return 50 + word.length
+  return 0
+}
+
+const EN_ENDINGS = new Set(['', 's', 'es', 'y', 'ies'])
+
+/** Английское слово: само, во множественном числе («tomatoes») или с «-y/-ies» («strawberries»). */
+function pluralScore(word: string, stem: string): number {
+  if (word.startsWith(stem) && EN_ENDINGS.has(word.slice(stem.length))) return EXACT + stem.length
   if (word.length >= 2 && stem.startsWith(word)) return 50 + word.length
   return 0
 }
@@ -234,12 +289,45 @@ function typoScore(word: string, stem: string): number {
   return 0
 }
 
-export function suggestEmojis(name: string, limit = 11): EmojiSuggestion {
+/**
+ * Где в тексте стоит слово или словосочетание; -1 — нигде. Начало всегда на границе слова;
+ * конец — тоже (whole) либо где угодно («ice cream» найдётся и в «ice creams»).
+ */
+function findPhrase(text: string, phrase: string, whole: boolean): number {
+  let from = 0
+  for (;;) {
+    const at = text.indexOf(phrase, from)
+    if (at < 0) return -1
+    const end = at + phrase.length
+    const startsWord = at === 0 || text[at - 1] === ' '
+    const endsWord = end === text.length || text[end] === ' '
+    if (startsWord && (endsWord || !whole)) return at
+    from = at + 1
+  }
+}
+
+interface Hit {
+  score: number
+  /** Совпало начало названия целиком — такую иконку можно подставить без выбора. */
+  confident: boolean
+}
+
+const at = (position: number, length: number, penalty = 0): Hit => ({
+  score: EXACT + length - penalty + (position === 0 ? FIRST_WORD_BONUS : 0),
+  confident: position === 0,
+})
+const typing = (text: string): Hit => ({ score: 50 + text.length, confident: false })
+
+export function suggestEmojis(name: string, { limit = 11, lang }: SuggestOptions = {}): EmojiSuggestion {
   const text = normalize(name)
   if (!text) return { options: DEFAULTS.slice(0, limit), best: null }
 
+  const plain = stripMarks(text)
+  const typedPlain = text === plain
   // Числа и обозначения («2», «b12») словами не считаются: «2 молока» начинается с молока.
-  const words = text.split(' ').filter((word) => /^[а-я]+$/.test(word))
+  const words = text.split(' ').filter((word) => /^[a-zа-я]+$/.test(word))
+  const cjk = /[぀-ヿ㐀-鿿]/.test(text)
+
   const scores = new Map<string, number>()
   const groupScores = new Map<Group, number>()
   const bump = <K>(map: Map<K, number>, key: K, score: number) => {
@@ -247,26 +335,80 @@ export function suggestEmojis(name: string, limit = 11): EmojiSuggestion {
   }
   let confident = false
 
-  words.forEach((word, index) => {
-    const collect = (score: (word: string, stem: string) => number) => {
-      let found = false
-      for (const entry of ENTRIES) {
-        const value = score(word, entry.word)
-        if (value === 0) continue
-        const total = value + (index === 0 ? FIRST_WORD_BONUS : 0)
-        if (entry.emoji) {
-          bump(scores, entry.emoji, total)
-          bump(groupScores, entry.group, total)
-          if (value >= EXACT && index === 0) confident = true
-        } else {
-          bump(groupScores, entry.group, total - 1)
-        }
-        found = true
-      }
-      return found
+  const record = (entry: Entry, hit: Hit, bonus: number) => {
+    if (hit.score === 0) return false
+    if (entry.emoji) {
+      bump(scores, entry.emoji, hit.score + bonus)
+      bump(groupScores, entry.group, hit.score + bonus)
+      if (hit.confident) confident = true
+    } else {
+      bump(groupScores, entry.group, hit.score + bonus - 1)
     }
-    if (!collect(stemScore)) collect(typoScore)
-  })
+    return true
+  }
+
+  for (const dict of DICTIONARIES) {
+    const bonus = dict.lang === lang ? LANG_BONUS : 0
+
+    if (dict.mode === 'sub') {
+      if (!cjk) continue
+      for (const entry of dict.entries) {
+        const position = text.indexOf(entry.word)
+        if (position >= 0) record(entry, at(position, entry.word.length), bonus)
+        else if (entry.word.startsWith(text)) record(entry, typing(text), bonus)
+      }
+      continue
+    }
+
+    if (dict.mode === 'word') {
+      // Вне вьетнамского интерфейса работают только слова с диакритикой: «cam», «pin»
+      // или «hat» в английском названии — не вьетнамские апельсин, батарейка и орехи.
+      const native = dict.lang === lang
+      for (const entry of dict.entries) {
+        const marked = entry.word !== entry.plain
+        if (!native && !marked) continue
+        const position = findPhrase(text, entry.word, true)
+        if (position >= 0) {
+          record(entry, at(position, entry.word.length), bonus)
+        } else if (native && typedPlain && marked) {
+          // Название набрано без знаков: «sua chua». Совпадение менее надёжно — «bo» это
+          // и масло (bơ), и говядина (bò), — поэтому само в поле не подставляется.
+          const loose = findPhrase(plain, entry.plain, true)
+          if (loose >= 0) record(entry, { ...at(loose, entry.word.length, 3), confident: false }, bonus)
+          else if (plain.length >= 2 && entry.plain.startsWith(plain)) record(entry, typing(text), bonus)
+        } else if ((native || !typedPlain) && text.length >= 2 && entry.word.startsWith(text)) {
+          record(entry, typing(text), bonus)
+        }
+      }
+      continue
+    }
+
+    // Основы слов. Словосочетания сверяются со всем названием, остальное — по словам.
+    for (const entry of dict.entries) {
+      if (!entry.phrase) continue
+      const position = findPhrase(text, entry.word, false)
+      if (position >= 0) record(entry, at(position, entry.word.length), bonus)
+      else if (text.length >= 2 && entry.word.startsWith(text)) record(entry, typing(text), bonus)
+    }
+    const exactScore = dict.mode === 'plural' ? pluralScore : stemScore
+    words.forEach((word, index) => {
+      const collect = (score: (word: string, stem: string) => number) => {
+        let found = false
+        for (const entry of dict.entries) {
+          if (entry.phrase) continue
+          const value = score(word, entry.word)
+          if (value === 0) continue
+          const hit: Hit = {
+            score: value + (index === 0 ? FIRST_WORD_BONUS : 0),
+            confident: value >= EXACT && index === 0,
+          }
+          if (record(entry, hit, bonus)) found = true
+        }
+        return found
+      }
+      if (!collect(exactScore)) collect(typoScore)
+    })
+  }
 
   const byScore = <K>(map: Map<K, number>) => [...map].sort((a, b) => b[1] - a[1])
   const direct = byScore(scores)
@@ -274,7 +416,7 @@ export function suggestEmojis(name: string, limit = 11): EmojiSuggestion {
 
   // Добираем соседями по группе, начиная с самой подходящей.
   for (const [group] of byScore(groupScores)) {
-    for (const [emoji, itemGroup] of ITEMS) {
+    for (const [emoji, itemGroup] of GROUP_ORDER) {
       if (itemGroup === group && !options.includes(emoji)) options.push(emoji)
     }
   }
@@ -284,7 +426,7 @@ export function suggestEmojis(name: string, limit = 11): EmojiSuggestion {
 
   return {
     options: options.slice(0, limit),
-    // Подставляем сами, только если первое слово названия нашлось в словаре целиком.
+    // Подставляем сами, только если начало названия нашлось в словаре целиком.
     best: confident && direct.length > 0 ? direct[0][0] : null,
   }
 }

@@ -4,7 +4,8 @@ import { useToast } from '@/components/toastContext'
 import { backend } from '@/data'
 import { useHomeMutation } from '@/data/useHomeMutation'
 import { PURCHASED, withToBuy, type ProductState } from '@/domain/logic'
-import type { Product, ShoppingItem } from '@/domain/types'
+import type { Product, Section, ShoppingItem } from '@/domain/types'
+import { useT } from '@/i18n'
 
 export interface ShoppingActions {
   /** Продукт дома куплен: он снова есть и уходит из списка. */
@@ -12,11 +13,12 @@ export interface ShoppingActions {
   /** Убрать из покупок, не покупая: сам продукт и его наличие остаются как были. */
   dropProduct: (product: Product) => void
   removeItem: (item: ShoppingItem) => void
-  purchaseItem: (item: ShoppingItem, sectionId: string, makeStaple: boolean) => void
+  purchaseItem: (item: ShoppingItem, section: Section, makeStaple: boolean) => void
 }
 
 /** Действия над строками списка покупок; объект стабилен — для memo-строк. */
 export function useShoppingActions(): ShoppingActions {
+  const t = useT()
   const { user } = useSession()
   const toast = useToast()
   const { mutate: setState } = useHomeMutation(
@@ -60,20 +62,20 @@ export function useShoppingActions(): ShoppingActions {
     () => ({
       buyProduct(product) {
         setState({ id: product.id, state: PURCHASED })
-        toast(`«${product.name}» снова дома`)
+        toast(t('toast.backHome', { name: product.name }))
       },
       dropProduct(product) {
         setState({ id: product.id, state: withToBuy(product, false) })
-        toast(`«${product.name}» убран из покупок`)
+        toast(t('toast.removedFromList', { name: product.name }))
       },
       removeItem(item) {
         deleteItem(item.id)
       },
-      purchaseItem(item, sectionId, makeStaple) {
-        purchase({ item, sectionId, makeStaple })
-        toast(makeStaple ? `«${item.name}» теперь постоянный` : `«${item.name}» дома`)
+      purchaseItem(item, section, makeStaple) {
+        purchase({ item, sectionId: section.id, makeStaple })
+        toast(t(makeStaple ? 'toast.purchasedStaple' : 'toast.purchasedOnce', { name: section.name }))
       },
     }),
-    [setState, deleteItem, purchase, toast],
+    [setState, deleteItem, purchase, toast, t],
   )
 }

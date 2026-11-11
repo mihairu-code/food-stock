@@ -4,8 +4,9 @@ import { backend } from '@/data'
 import { qk } from '@/data/keys'
 import { queryClient } from '@/data/queryClient'
 import type { User } from '@/domain/types'
-import { preferredHousehold, rememberHousehold } from '@/lib/household'
+import { translate, useT } from '@/i18n'
 import { firstName } from '@/lib/firstName'
+import { preferredHousehold, rememberHousehold } from '@/lib/household'
 import { clearInviteToken, readInviteToken, savedName } from '@/lib/invite'
 import { SessionContext, type Session } from './session'
 import { useProfileSync } from './useProfileSync'
@@ -18,6 +19,7 @@ type Bootstrap = 'idle' | 'joining' | 'creating' | 'join-failed' | 'create-faile
  * если домов нет вовсе — создаёт первый.
  */
 export function HouseholdGate({ user, children }: { user: User; children: ReactNode }) {
+  const t = useT()
   const memberships = useQuery({ queryKey: qk.memberships, queryFn: () => backend.listMemberships() })
   const [preferred, setPreferred] = useState(preferredHousehold)
   const [inviteToken, setInviteToken] = useState(() => (backend.mode === 'supabase' ? readInviteToken() : null))
@@ -56,7 +58,7 @@ export function HouseholdGate({ user, children }: { user: User; children: ReactN
     }
 
     if (inviteToken) void run('joining', () => backend.joinHousehold(inviteToken, displayName))
-    else if (!hasHome && status === 'idle') void run('creating', () => backend.createHousehold('Наш дом', displayName))
+    else if (!hasHome && status === 'idle') void run('creating', () => backend.createHousehold(translate('home.defaultName'), displayName))
   }, [memberships.isSuccess, hasHome, inviteToken, status, displayName, selectHousehold])
 
   const session = useMemo<Session | null>(() => {
@@ -66,25 +68,23 @@ export function HouseholdGate({ user, children }: { user: User; children: ReactN
     return { user, household: current.household, role: current.role, selectHousehold }
   }, [memberships.data, preferred, user, selectHousehold])
 
-  if (memberships.isPending) return <p className="status">Загрузка…</p>
-  if (memberships.isError) return <p className="status">Не удалось загрузить дом. Обновите страницу.</p>
+  if (memberships.isPending) return <p className="status">{t('common.loading')}</p>
+  if (memberships.isError) return <p className="status">{t('load.reloadError')}</p>
   if (status === 'join-failed' || status === 'create-failed') {
     const joining = status === 'join-failed'
     return (
       <div className="notice">
-        <h2>{joining ? 'Не получилось вступить в дом' : 'Не удалось создать дом'}</h2>
+        <h2>{t(joining ? 'join.failedTitle' : 'create.failedTitle')}</h2>
         <p>
-          {joining
-            ? 'Ссылка недействительна, истекла или уже использована. Попросите новую.'
-            : 'Проверьте соединение и попробуйте ещё раз.'}
+          {t(joining ? 'join.failedText' : 'common.checkConnection')}
         </p>
         <button className="btn" type="button" onClick={() => setStatus('idle')}>
-          {joining ? 'Продолжить' : 'Повторить'}
+          {t(joining ? 'common.continue' : 'common.retry')}
         </button>
       </div>
     )
   }
-  if (inviteToken || status === 'joining') return <p className="status">Вступаем в дом…</p>
-  if (!session) return <p className="status">Готовим ваш дом…</p>
+  if (inviteToken || status === 'joining') return <p className="status">{t('join.working')}</p>
+  if (!session) return <p className="status">{t('home.preparing')}</p>
   return <SessionContext.Provider value={session}>{children}</SessionContext.Provider>
 }

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { useT } from '@/i18n'
 import { parseInviteToken } from '@/lib/invite'
 import { Sheet } from './Sheet'
 
@@ -9,6 +10,7 @@ interface JoinSheetProps {
 
 /** Вступление в чужой дом по вставленной ссылке — для приложения на экране «Домой», куда ссылку не открыть. */
 export function JoinSheet({ onJoin, onClose }: JoinSheetProps) {
+  const t = useT()
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -17,7 +19,7 @@ export function JoinSheet({ onJoin, onClose }: JoinSheetProps) {
     event.preventDefault()
     const token = parseInviteToken(text)
     if (!token) {
-      setError('Это не похоже на ссылку-приглашение')
+      setError(t('join.notLink'))
       return
     }
     setBusy(true)
@@ -25,16 +27,16 @@ export function JoinSheet({ onJoin, onClose }: JoinSheetProps) {
     onJoin(token)
       .then(onClose)
       .catch(() => {
-        setError('Ссылка недействительна, истекла или уже использована')
+        setError(t('join.invalid'))
         setBusy(false)
       })
   }
 
   return (
-    <Sheet title="Присоединиться по ссылке" description="Вставьте ссылку, которую вам прислали." onClose={onClose}>
+    <Sheet title={t('join.title')} description={t('join.description')} onClose={onClose}>
       <form onSubmit={submit}>
         <label className="field">
-          <span>Ссылка-приглашение</span>
+          <span>{t('invite.title')}</span>
           <input
             value={text}
             autoCapitalize="none"
@@ -50,10 +52,10 @@ export function JoinSheet({ onJoin, onClose }: JoinSheetProps) {
         )}
         <div className="sheet-actions">
           <button className="btn subtle" type="button" onClick={onClose}>
-            Отмена
+            {t('common.cancel')}
           </button>
           <button className="btn" type="submit" disabled={!text.trim() || busy}>
-            Присоединиться
+            {t('join.submit')}
           </button>
         </div>
       </form>

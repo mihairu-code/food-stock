@@ -1,5 +1,6 @@
 import { expect, it } from 'vitest'
-import { describeDevice } from './device'
+import { format } from '../i18n'
+import { describeDevice, localizeDevice } from './device'
 
 const IPHONE_SAFARI =
   'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1'
@@ -26,11 +27,21 @@ it('различает браузеры и системы', () => {
 })
 
 it('приложение на экране «Домой» и Brave узнаются по признакам, а не по строке браузера', () => {
-  expect(describeDevice(IPHONE_SAFARI, { standalone: true, brave: false })).toBe('Приложение · iPhone')
+  expect(describeDevice(IPHONE_SAFARI, { standalone: true, brave: false })).toBe('App · iPhone')
   expect(describeDevice(MAC_CHROME, { standalone: false, brave: true })).toBe('Brave · Mac')
   expect(describeDevice(IPHONE_SAFARI, { standalone: false, brave: true })).toBe('Brave · iPhone')
 })
 
 it('незнакомая строка не ломает подпись', () => {
-  expect(describeDevice('', browser)).toBe('Браузер · устройство')
+  expect(describeDevice('', browser)).toBe('Browser · device')
+})
+
+it('подпись переводится на язык участника, в том числе записанная прежней версией', () => {
+  const ru = (key: Parameters<typeof format>[1]) => format('ru', key)
+  const ja = (key: Parameters<typeof format>[1]) => format('ja', key)
+  expect(localizeDevice('App · iPhone', ru)).toBe('Приложение · iPhone')
+  expect(localizeDevice('Приложение · iPhone', ja)).toBe('アプリ · iPhone')
+  expect(localizeDevice('Browser · device', ru)).toBe('Браузер · устройство')
+  expect(localizeDevice('Safari · Mac', ja)).toBe('Safari · Mac')
+  expect(localizeDevice('', ru)).toBe('')
 })

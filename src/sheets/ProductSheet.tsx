@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import type { NewProduct } from '@/data/backend'
-import { useSuggestedEmoji } from '@/hooks/useSuggestedEmoji'
 import type { Section } from '@/domain/types'
+import { useSuggestedEmoji } from '@/hooks/useSuggestedEmoji'
+import { useT } from '@/i18n'
 import { Sheet } from './Sheet'
 
 interface ProductSheetProps {
@@ -13,6 +14,7 @@ interface ProductSheetProps {
 }
 
 export function ProductSheet({ sections, sectionId: initialSectionId, onSave, onClose }: ProductSheetProps) {
+  const t = useT()
   const [name, setName] = useState('')
   const { icon, setIcon, options } = useSuggestedEmoji(name)
   const [sectionId, setSectionId] = useState(initialSectionId ?? sections[0]?.id ?? '')
@@ -27,20 +29,22 @@ export function ProductSheet({ sections, sectionId: initialSectionId, onSave, on
   }
 
   return (
-    <Sheet title="Новый продукт" onClose={onClose}>
+    <Sheet title={t('productSheet.title')} description={t('productSheet.description')} onClose={onClose}>
       <form onSubmit={submit}>
         <label className="field">
-          <span>Название</span>
+          <span>{t('productSheet.name')}</span>
           <input
             value={name}
             maxLength={80}
-            placeholder="Например, молоко"
+            placeholder={t('productSheet.placeholder')}
             onChange={(e) => setName(e.target.value)}
             autoFocus
           />
         </label>
         <div className="field">
-          <span>Иконка</span>
+          <span>
+            {t('emoji.label')} <small>{t('emoji.hint')}</small>
+          </span>
           <div className="emoji-grid">
             {options.map((emoji) => (
               <button
@@ -56,7 +60,7 @@ export function ProductSheet({ sections, sectionId: initialSectionId, onSave, on
           </div>
         </div>
         <label className="field">
-          <span>Раздел</span>
+          <span>{t('field.section')}</span>
           <select value={sectionId} onChange={(e) => setSectionId(e.target.value)}>
             {sections.map((section) => (
               <option key={section.id} value={section.id}>
@@ -68,16 +72,16 @@ export function ProductSheet({ sections, sectionId: initialSectionId, onSave, on
         <label className="check">
           <input type="checkbox" checked={staple} onChange={(e) => setStaple(e.target.checked)} />
           <span>
-            Постоянный
-            <small>Закончится — сам попадёт в покупки</small>
+            {t('product.keep')}
+            <small>{t('product.keepHint')}</small>
           </span>
         </label>
         <div className="sheet-actions">
           <button className="btn subtle" type="button" onClick={onClose}>
-            Отмена
+            {t('common.cancel')}
           </button>
           <button className="btn" type="submit" disabled={!name.trim() || !sectionId}>
-            Добавить
+            {t('common.add')}
           </button>
         </div>
       </form>

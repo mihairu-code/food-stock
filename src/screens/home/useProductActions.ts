@@ -4,6 +4,7 @@ import { backend } from '@/data'
 import { useHomeMutation } from '@/data/useHomeMutation'
 import { withAvailability, withToBuy, type ProductState } from '@/domain/logic'
 import type { Product } from '@/domain/types'
+import { useT } from '@/i18n'
 
 export interface ProductActions {
   /** Нажатие на иконку или название: продукт закончился или снова дома. */
@@ -18,6 +19,7 @@ export interface ProductActions {
  * поэтому memo-строки не перерисовываются, когда меняется чужой продукт.
  */
 export function useProductActions(): ProductActions {
+  const t = useT()
   const toast = useToast()
   const { mutate: setState } = useHomeMutation(
     ({ id, state }: { id: string; state: ProductState }) => backend.setProductState(id, state),
@@ -37,24 +39,18 @@ export function useProductActions(): ProductActions {
         const available = !product.is_available
         const state = withAvailability(product, available)
         setState({ id: product.id, state })
-        toast(
-          available
-            ? `«${product.name}» снова дома`
-            : state.to_buy
-              ? `«${product.name}» закончился — добавлен в покупки`
-              : `«${product.name}» закончился`,
-        )
+        toast(t(available ? 'toast.backHome' : state.to_buy ? 'toast.outToList' : 'toast.out', { name: product.name }))
       },
       toggleList(product) {
         const toBuy = !product.to_buy
         setState({ id: product.id, state: withToBuy(product, toBuy) })
-        toast(toBuy ? `«${product.name}» — в покупках` : `«${product.name}» убран из покупок`)
+        toast(t(toBuy ? 'toast.addedToList' : 'toast.removedFromList', { name: product.name }))
       },
       remove(product) {
         deleteProduct(product.id)
-        toast(`«${product.name}» удалён`)
+        toast(t('toast.deleted', { name: product.name }))
       },
     }),
-    [setState, deleteProduct, toast],
+    [setState, deleteProduct, toast, t],
   )
 }

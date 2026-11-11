@@ -9,6 +9,8 @@ import type { NewShoppingItem } from '@/data/backend'
 import { useHomeData, useShoppingList, useSortedSections } from '@/data/useHomeData'
 import { useHomeMutation } from '@/data/useHomeMutation'
 import type { Product, Section, ShoppingItem } from '@/domain/types'
+import { useT } from '@/i18n'
+import { rich } from '@/i18n/rich'
 import { AddItemSheet } from '@/sheets/AddItemSheet'
 import { PurchaseSheet } from '@/sheets/PurchaseSheet'
 import { ShoppingRow } from './ShoppingRow'
@@ -26,14 +28,15 @@ const ProductEntry = memo(function ProductEntry({
   section: Section | null
   actions: ShoppingActions
 }) {
-  const stock = product.is_available ? 'Есть дома' : 'Закончилось'
+  const t = useT()
+  const stock = t(product.is_available ? 'shopping.stillHome' : 'shopping.out')
   return (
     <ShoppingRow
       name={product.name}
       icon={<StockIcon icon={product.icon} />}
       meta={section ? `${section.name} · ${stock}` : stock}
       missing={!product.is_available}
-      removeLabel={`Убрать «${product.name}» из покупок`}
+      removeLabel={t('product.removeFromList', { name: product.name })}
       onBuy={() => actions.buyProduct(product)}
       onRemove={() => actions.dropProduct(product)}
     />
@@ -50,6 +53,7 @@ const ManualEntry = memo(function ManualEntry({
   actions: ShoppingActions
   onBuy: (item: ShoppingItem) => void
 }) {
+  const t = useT()
   return (
     <ShoppingRow
       name={item.name}
@@ -58,8 +62,8 @@ const ManualEntry = memo(function ManualEntry({
           {item.icon || '🛒'}
         </span>
       }
-      meta="Добавлено вручную"
-      removeLabel={`Убрать «${item.name}» из покупок`}
+      meta={t('shopping.manual')}
+      removeLabel={t('product.removeFromList', { name: item.name })}
       onBuy={() => onBuy(item)}
       onRemove={() => actions.removeItem(item)}
     />
@@ -67,6 +71,7 @@ const ManualEntry = memo(function ManualEntry({
 })
 
 export function ShoppingScreen() {
+  const t = useT()
   const hid = useHouseholdId()
   const toast = useToast()
   const { isLoading, isError } = useHomeData()
@@ -86,20 +91,20 @@ export function ShoppingScreen() {
       ]),
   )
 
-  if (isLoading) return <p className="status">Загрузка…</p>
-  if (isError) return <p className="status">Не удалось загрузить данные</p>
+  if (isLoading) return <p className="status">{t('shopping.loading')}</p>
+  if (isError) return <p className="status">{t('common.loadError')}</p>
 
   return (
     <>
       <div className="summary">
-        <p>{entries.length === 0 ? 'Всё куплено' : <>Купить: <strong>{entries.length}</strong></>}</p>
+        <p>{entries.length === 0 ? t('shopping.nothing') : rich(t('shopping.summary', { count: entries.length }))}</p>
         <button className="btn small" type="button" onClick={() => setSheet({ type: 'add-item' })}>
-          <Plus size={16} aria-hidden="true" /> Добавить
+          <Plus size={16} aria-hidden="true" /> {t('common.add')}
         </button>
       </div>
 
       {entries.length === 0 ? (
-        <EmptyState emoji="🛒" title="Список пуст" text="Закончившиеся постоянные продукты появятся здесь сами, остальное — по плюсу на продукте." />
+        <EmptyState emoji="🛒" title={t('shopping.emptyTitle')} text={t('shopping.emptyText')} />
       ) : (
         <div className="card list">
           {entries.map((entry) =>
@@ -116,7 +121,7 @@ export function ShoppingScreen() {
         <AddItemSheet
           onSave={(input) => {
             createItem.mutate(input)
-            toast(`«${input.name}» в покупках`)
+            toast(t('toast.addedItem'))
           }}
           onClose={close}
         />
@@ -125,7 +130,7 @@ export function ShoppingScreen() {
         <PurchaseSheet
           item={sheet.item}
           sections={sections}
-          onPurchase={(sectionId, makeStaple) => actions.purchaseItem(sheet.item, sectionId, makeStaple)}
+          onPurchase={(section, makeStaple) => actions.purchaseItem(sheet.item, section, makeStaple)}
           onClose={close}
         />
       )}

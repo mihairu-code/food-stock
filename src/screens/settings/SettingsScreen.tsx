@@ -1,12 +1,15 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { ChevronRight, Link2, UserRound, X } from 'lucide-react'
+import { ChevronRight, Link2, X } from 'lucide-react'
 import { useState } from 'react'
 import { useSession } from '@/app/session'
+import { useToast } from '@/components/toastContext'
 import { backend } from '@/data'
 import { qk } from '@/data/keys'
 import { queryClient } from '@/data/queryClient'
 import type { Member } from '@/domain/types'
+import { LANG_NAMES, LANGS, setLangSetting, useLang, useT, type LangSetting } from '@/i18n'
 import { inviteLink, saveName } from '@/lib/invite'
+import { memberIdentity, memberLabel } from '@/lib/memberText'
 import { readTheme, setTheme, type ThemeSetting } from '@/lib/theme'
 import { ConfirmSheet } from '@/sheets/ConfirmSheet'
 import { InviteLinkSheet } from '@/sheets/InviteLinkSheet'
@@ -14,11 +17,11 @@ import { JoinSheet } from '@/sheets/JoinSheet'
 import { NameSheet } from '@/sheets/NameSheet'
 import { AccountGroup } from './AccountGroup'
 
-const THEME_LABELS: Record<ThemeSetting, string> = {
-  auto: 'Как на устройстве',
-  light: 'Светлая',
-  dark: 'Тёмная',
-}
+const THEME_KEYS = {
+  auto: 'settings.themeAuto',
+  light: 'settings.themeLight',
+  dark: 'settings.themeDark',
+} as const
 
 type SettingsSheet =
   | { type: 'reset' }
@@ -27,12 +30,10 @@ type SettingsSheet =
   | { type: 'join' }
   | { type: 'name' }
 
-const roleLabel = (member: Member) => (member.role === 'owner' ? 'Владелец' : 'Участник')
-const memberLabel = (member: Member) => member.display_name || roleLabel(member)
-/** Что отличает участника от остальных: почта аккаунта или, без аккаунта, его устройство. */
-const memberIdentity = (member: Member) => [roleLabel(member), member.account_email ?? member.device].filter(Boolean).join(' · ')
-
 export function SettingsScreen() {
+  const t = useT()
+  const { lang, setting: langSetting } = useLang()
+  const toast = useToast()
   const { user, household, role, selectHousehold } = useSession()
   const hid = household.id
   const isOwner = role === 'owner'
@@ -53,15 +54,22 @@ export function SettingsScreen() {
   const createInvite = useMutation({
     mutationFn: () => backend.createInvite(hid),
     onSuccess: (token) => setSheet({ type: 'invite-link', link: inviteLink(token) }),
+    onError: () => toast(t('toast.linkError')),
     onSettled: refreshHome,
   })
-  const revokeInvite = useMutation({ mutationFn: (id: string) => backend.deleteInvite(id), onSettled: refreshHome })
+  const revokeInvite = useMutation({
+    mutationFn: (id: string) => backend.deleteInvite(id),
+    onSuccess: () => toast(t('toast.linkRevoked')),
+    onSettled: refreshHome,
+  })
   const setDisplayName = useMutation({
     mutationFn: (name: string) => backend.setDisplayName(hid, name),
+    onError: () => toast(t('toast.nameError')),
     onSettled: refreshHome,
   })
   const removeMember = useMutation({
     mutationFn: (userId: string) => backend.removeMember(hid, userId),
+    onSuccess: () => toast(t('toast.memberRemoved')),
     onSettled: refreshHome,
   })
 
@@ -74,52 +82,54 @@ export function SettingsScreen() {
     const householdId = await backend.joinHousehold(token, me?.display_name ?? '')
     await queryClient.invalidateQueries()
     selectHousehold(householdId)
+    toast(t('toast.joined'))
   }
 
   async function resetDemo() {
     await backend.resetLocalData?.()
     await queryClient.invalidateQueries()
+    toast(t('toast.demoRestored'))
   }
 
   return (
     <>
       {shared && (
         <>
-          <h2 className="group-label">Участники</h2>
+          <h2 className="group-label">{t('settings.groupMembers')}</h2>
           <div className="card">
-            {members.data?.map((member) => (
-              <div className="setting-row" key={member.user_id}>
-                <span className="row-text">
-                  <span className="row-name">
-                    {memberLabel(member)}
-                    {member.user_id === user.id && ' (вы)'}
+            {members.data?.map((member) => {
+              const label = memberLabel(member, t)
+              return (
+                <div className="setting-row" key={member.user_id}>
+                  <span className="row-text">
+                    <span className="row-name">{member.user_id === user.id ? `${label} ${t('settings.you')}` : label}</span>
+                    <span className="row-meta">{memberIdentity(member, t)}</span>
                   </span>
-                  <span className="row-meta">{memberIdentity(member)}</span>
-                </span>
-                {isOwner && member.role !== 'owner' && (
-                  <button
-                    className="icon-btn"
-                    type="button"
-                    aria-label={`Удалить «${memberLabel(member)}» из дома`}
-                    onClick={() => setSheet({ type: 'remove-member', member })}
-                  >
-                    <X size={18} />
-                  </button>
-                )}
-              </div>
-            ))}
+                  {isOwner && member.role !== 'owner' && (
+                    <button
+                      className="icon-btn"
+                      type="button"
+                      aria-label={t('settings.removeMemberAria', { name: label })}
+                      onClick={() => setSheet({ type: 'remove-member', member })}
+                    >
+                      <X size={18} />
+                    </button>
+                  )}
+                </div>
+              )
+            })}
             {invites.data?.map((invite) => {
-              const until = new Date(invite.expires_at).toLocaleDateString('ru', { day: 'numeric', month: 'long' })
+              const date = new Date(invite.expires_at).toLocaleDateString(lang, { day: 'numeric', month: 'long' })
               return (
                 <div className="setting-row" key={invite.id}>
                   <span className="row-text">
-                    <span className="row-name">Ссылка-приглашение</span>
-                    <span className="row-meta">Не использована · действует до {until}</span>
+                    <span className="row-name">{t('invite.title')}</span>
+                    <span className="row-meta">{t('invite.rowMeta', { date })}</span>
                   </span>
                   <button
                     className="icon-btn"
                     type="button"
-                    aria-label={`Отозвать ссылку, действующую до ${until}`}
+                    aria-label={t('invite.revokeAria', { date })}
                     onClick={() => revokeInvite.mutate(invite.id)}
                   >
                     <X size={18} />
@@ -135,50 +145,53 @@ export function SettingsScreen() {
                 onClick={() => createInvite.mutate()}
               >
                 <span className="row-text">
-                  <span className="row-name accent">Пригласить по ссылке</span>
-                  <span className="row-meta">Одноразовая, действует 7 дней</span>
+                  <span className="row-name accent">{t('invite.create')}</span>
+                  <span className="row-meta">{t('invite.createMeta')}</span>
                 </span>
                 <Link2 className="chevron" size={18} aria-hidden="true" />
               </button>
             )}
           </div>
 
-          <AccountGroup />
-
-          <h2 className="group-label">Вы</h2>
-          <div className="card">
-            <button className="setting-row" type="button" onClick={() => setSheet({ type: 'name' })}>
-              <span className="row-text">
-                <span className="row-name">Ваше имя</span>
-                <span className="row-meta">{me?.display_name || 'Не указано'}</span>
-              </span>
-              <UserRound className="chevron" size={18} aria-hidden="true" />
-            </button>
-            <button className="setting-row" type="button" onClick={() => setSheet({ type: 'join' })}>
-              <span className="row-text">
-                <span className="row-name">Присоединиться по ссылке</span>
-                <span className="row-meta">Если вас пригласили в другой дом</span>
-              </span>
-              <ChevronRight className="chevron" size={18} aria-hidden="true" />
-            </button>
-          </div>
+          <AccountGroup
+            name={me?.display_name ?? ''}
+            onEditName={() => setSheet({ type: 'name' })}
+            onJoin={() => setSheet({ type: 'join' })}
+          />
         </>
       )}
 
-      <h2 className="group-label">Оформление</h2>
+      <h2 className="group-label">{t('settings.groupApp')}</h2>
       <div className="card">
         <label className="setting-row">
           <span className="row-text">
-            <span className="row-name">Тема</span>
+            <span className="row-name">{t('settings.language')}</span>
+          </span>
+          <select
+            className="inline-select"
+            value={langSetting}
+            onChange={(e) => setLangSetting(e.target.value as LangSetting)}
+          >
+            <option value="auto">{t('settings.languageAuto')}</option>
+            {LANGS.map((code) => (
+              <option key={code} value={code}>
+                {LANG_NAMES[code]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="setting-row">
+          <span className="row-text">
+            <span className="row-name">{t('settings.theme')}</span>
           </span>
           <select
             className="inline-select"
             value={theme}
             onChange={(e) => changeTheme(e.target.value as ThemeSetting)}
           >
-            {(Object.keys(THEME_LABELS) as ThemeSetting[]).map((value) => (
+            {(Object.keys(THEME_KEYS) as ThemeSetting[]).map((value) => (
               <option key={value} value={value}>
-                {THEME_LABELS[value]}
+                {t(THEME_KEYS[value])}
               </option>
             ))}
           </select>
@@ -187,29 +200,20 @@ export function SettingsScreen() {
 
       {!shared && (
         <>
-          <h2 className="group-label">Демо-режим</h2>
+          <h2 className="group-label">{t('settings.groupData')}</h2>
           <div className="card">
             <button className="setting-row" type="button" onClick={() => setSheet({ type: 'reset' })}>
               <span className="row-text">
-                <span className="row-name">Сбросить данные</span>
-                <span className="row-meta">Вернуть пример разделов и продуктов</span>
+                <span className="row-name">{t('settings.reset')}</span>
+                <span className="row-meta">{t('settings.resetMeta')}</span>
               </span>
               <ChevronRight className="chevron" size={18} aria-hidden="true" />
             </button>
           </div>
-          <p className="settings-note">Данные хранятся только в этом браузере.</p>
+          <p className="settings-note">{t('settings.demoText')}</p>
         </>
       )}
 
-      {sheet?.type === 'reset' && (
-        <ConfirmSheet
-          title="Сбросить данные?"
-          description="Всё, что вы добавили, пропадёт, а вместо этого появятся примеры."
-          confirmLabel="Сбросить"
-          onConfirm={() => void resetDemo()}
-          onClose={close}
-        />
-      )}
       {sheet?.type === 'invite-link' && <InviteLinkSheet link={sheet.link} onClose={close} />}
       {sheet?.type === 'join' && <JoinSheet onJoin={join} onClose={close} />}
       {sheet?.type === 'name' && (
@@ -222,11 +226,20 @@ export function SettingsScreen() {
           onClose={close}
         />
       )}
+      {sheet?.type === 'reset' && (
+        <ConfirmSheet
+          title={t('confirm.resetTitle')}
+          description={t('confirm.resetText')}
+          confirmLabel={t('confirm.reset')}
+          onConfirm={() => void resetDemo()}
+          onClose={close}
+        />
+      )}
       {sheet?.type === 'remove-member' && (
         <ConfirmSheet
-          title="Удалить участника?"
-          description={`«${memberLabel(sheet.member)}» больше не увидит этот дом.`}
-          confirmLabel="Удалить"
+          title={t('confirm.removeMemberTitle')}
+          description={t('confirm.removeMemberText', { name: memberLabel(sheet.member, t), home: household.name })}
+          confirmLabel={t('common.delete')}
           onConfirm={() => removeMember.mutate(sheet.member.user_id)}
           onClose={close}
         />

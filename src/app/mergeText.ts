@@ -1,18 +1,19 @@
 import type { MergeHome } from '@/domain/types'
-import { plural } from '@/lib/plural'
+import type { Translate } from '@/i18n'
 
 /** «3 раздела · 12 продуктов · 2 участника». */
-export const homeSummary = (home: MergeHome) =>
+export const homeSummary = (home: MergeHome, t: Translate) =>
   [
-    plural(home.sections, ['раздел', 'раздела', 'разделов']),
-    plural(home.products, ['продукт', 'продукта', 'продуктов']),
-    plural(home.members, ['участник', 'участника', 'участников']),
+    t('n.sections', { count: home.sections }),
+    t('n.products', { count: home.products }),
+    t('n.members', { count: home.members }),
   ].join(' · ')
 
-export const homeNames = (homes: MergeHome[]) => homes.map((home) => `«${home.name}»`).join(', ')
+export const homeNames = (homes: MergeHome[], t: Translate) =>
+  homes.map((home) => t('quote', { name: home.name })).join(', ')
 
 /** Что станет с домами, которые не оставили: дом, где есть другие люди, не удаляется — человек только выходит из него. */
-export const fateOf = (homes: MergeHome[]) =>
-  homes.every((home) => home.members > 1)
-    ? `Из ${homeNames(homes)} вы выйдете, остальные участники останутся.`
-    : `${homeNames(homes)} будет удалён вместе со всеми данными.`
+export const fateOf = (homes: MergeHome[], t: Translate) =>
+  t(homes.every((home) => home.members > 1) ? 'merge.fateLeave' : 'merge.fateDelete', {
+    homes: homeNames(homes, t),
+  })

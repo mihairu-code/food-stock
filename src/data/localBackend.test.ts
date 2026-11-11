@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { buildShoppingList, PURCHASED, withAvailability, withToBuy } from '../domain/logic'
 import type { Product } from '../domain/types'
+import { setLangSetting } from '../i18n'
 import type { Backend } from './backend'
 import { createLocalBackend } from './localBackend'
 
@@ -40,6 +41,7 @@ describe('домашние запасы: основные потоки', () => {
     backend.setProductState(id, withToBuy(await product(id), toBuy))
 
   beforeEach(async () => {
+    setLangSetting('ru') // демо-набор заводится на языке интерфейса
     backend = createLocalBackend(memoryStore())
     hid = (await backend.listMemberships())[0].household.id
     // Начинаем с пустого дома, чтобы тесты не зависели от демо-набора.
@@ -212,6 +214,15 @@ describe('домашние запасы: основные потоки', () => {
     const state = await snapshot()
     expect(state.sections.map((s) => s.name)).toEqual(['Холодильник', 'Шкаф', 'Вкусняшки'])
     expect(state.shopping).toHaveLength(3)
+  })
+
+  it('демо-набор заводится на языке интерфейса', async () => {
+    setLangSetting('ja')
+    backend = createLocalBackend(memoryStore())
+    hid = (await backend.listMemberships())[0].household.id
+    const state = await snapshot()
+    expect(state.sections.map((s) => s.name)).toEqual(['冷蔵庫', '戸棚', 'おやつ'])
+    setLangSetting('ru')
   })
 
   it('данные, сохранённые до появления отметки «в покупках», читаются по прежнему правилу', async () => {
