@@ -1,16 +1,12 @@
 import { Plus } from 'lucide-react'
 import { memo, useCallback, useState } from 'react'
-import { useHouseholdId } from '@/app/session'
 import { EmptyState } from '@/components/EmptyState'
 import { StockIcon } from '@/components/StockIcon'
-import { useToast } from '@/components/toastContext'
-import { backend } from '@/data'
-import type { NewShoppingItem } from '@/data/backend'
-import { useHomeData, useShoppingList, useSortedSections } from '@/data/useHomeData'
-import { useHomeMutation } from '@/data/useHomeMutation'
+import { useCreateShoppingItem, useHomeData, useShoppingList, useSortedSections } from '@/data/hooks'
 import type { Product, Section, ShoppingItem } from '@/domain/types'
 import { useT } from '@/i18n'
 import { rich } from '@/i18n/rich'
+import { notify } from '@/lib/toast'
 import { AddItemSheet } from '@/sheets/AddItemSheet'
 import { PurchaseSheet } from '@/sheets/PurchaseSheet'
 import { ShoppingRow } from './ShoppingRow'
@@ -72,8 +68,6 @@ const ManualEntry = memo(function ManualEntry({
 
 export function ShoppingScreen() {
   const t = useT()
-  const hid = useHouseholdId()
-  const toast = useToast()
   const { isLoading, isError } = useHomeData()
   const entries = useShoppingList()
   const sections = useSortedSections()
@@ -82,14 +76,7 @@ export function ShoppingScreen() {
   const close = () => setSheet(null)
   const openPurchase = useCallback((item: ShoppingItem) => setSheet({ type: 'purchase', item }), [])
 
-  const createItem = useHomeMutation(
-    (input: NewShoppingItem) => backend.createShoppingItem(hid, input),
-    (cache, input) =>
-      cache.shoppingItems((list) => [
-        ...list,
-        { ...input, household_id: hid, created_at: new Date().toISOString(), created_by: null },
-      ]),
-  )
+  const createItem = useCreateShoppingItem()
 
   if (isLoading) return <p className="status">{t('shopping.loading')}</p>
   if (isError) return <p className="status">{t('common.loadError')}</p>
@@ -121,7 +108,7 @@ export function ShoppingScreen() {
         <AddItemSheet
           onSave={(input) => {
             createItem.mutate(input)
-            toast(t('toast.addedItem'))
+            notify('toast.addedItem')
           }}
           onClose={close}
         />

@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import { useToast } from '@/components/toastContext'
 import { backend } from '@/data'
 import { queryClient } from '@/data/queryClient'
 import type { MergeKeep, MergePreview, User } from '@/domain/types'
-import { translate, useT } from '@/i18n'
+import { useT } from '@/i18n'
 import { rememberHousehold } from '@/lib/household'
 import { clearMergeTicket, readMergeTicket } from '@/lib/mergeTicket'
+import { notify } from '@/lib/toast'
 import { MergeChoice } from './MergeChoice'
 
 type MergeState =
@@ -33,7 +33,6 @@ function initialState(user: User): MergeState {
  */
 export function MergeGate({ user, children }: { user: User; children: ReactNode }) {
   const t = useT()
-  const toast = useToast()
   const [state, setState] = useState(() => initialState(user))
   const started = useRef(false)
 
@@ -58,10 +57,10 @@ export function MergeGate({ user, children }: { user: User; children: ReactNode 
           return
         }
         await finish(await backend.completeMerge(ticket.token, null))
-        toast(translate('merge.done'))
+        notify('merge.done')
       })
       .catch(fail)
-  }, [state.status, finish, fail, toast])
+  }, [state.status, finish, fail])
 
   function choose(ticket: string, keep: MergeKeep) {
     setState({ status: 'working' })

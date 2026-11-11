@@ -2,6 +2,7 @@ import { Minus, Plus, X } from 'lucide-react'
 import { memo } from 'react'
 import { StockIcon } from '@/components/StockIcon'
 import { SwipeRow } from '@/components/SwipeRow'
+import { isPendingProduct } from '@/data/hooks'
 import type { Product } from '@/domain/types'
 import { useT, type MessageKey } from '@/i18n'
 import type { ProductActions } from './useProductActions'
@@ -22,7 +23,7 @@ export const ProductRow = memo(function ProductRow({ product, actions }: { produ
   const t = useT()
   const { name, is_available: available, to_buy: toBuy } = product
   // Продукт, только что перенесённый из покупок, ещё не получил настоящий идентификатор.
-  const saving = product.id.startsWith('pending-')
+  const saving = isPendingProduct(product.id)
 
   return (
     <SwipeRow onDelete={() => actions.remove(product)}>

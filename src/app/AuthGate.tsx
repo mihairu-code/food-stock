@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { backend } from '@/data'
-import { qk } from '@/data/keys'
+import { qk } from '@/data/hooks'
 import { queryClient } from '@/data/queryClient'
 import type { User } from '@/domain/types'
 import { useT } from '@/i18n'

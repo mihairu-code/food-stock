@@ -1,16 +1,24 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
 import { ChevronRight, Link2, X } from 'lucide-react'
 import { useState } from 'react'
 import { useSession } from '@/app/session'
-import { useToast } from '@/components/toastContext'
 import { backend } from '@/data'
-import { qk } from '@/data/keys'
-import { queryClient } from '@/data/queryClient'
+import {
+  useCreateInvite,
+  useInvites,
+  useJoinHousehold,
+  useMembers,
+  useRemoveMember,
+  useResetLocalData,
+  useRevokeInvite,
+  useSetDisplayName,
+  useSignOut,
+} from '@/data/hooks'
 import type { Member } from '@/domain/types'
 import { LANG_NAMES, LANGS, setLangSetting, useLang, useT, type LangSetting } from '@/i18n'
 import { inviteLink, saveName } from '@/lib/invite'
 import { memberIdentity, memberLabel } from '@/lib/memberText'
 import { readTheme, setTheme, type ThemeSetting } from '@/lib/theme'
+import { notify } from '@/lib/toast'
 import { ConfirmSheet } from '@/sheets/ConfirmSheet'
 import { InviteLinkSheet } from '@/sheets/InviteLinkSheet'
 import { JoinSheet } from '@/sheets/JoinSheet'
@@ -34,45 +42,23 @@ type SettingsSheet =
 export function SettingsScreen() {
   const t = useT()
   const { lang, setting: langSetting } = useLang()
-  const toast = useToast()
   const { user, household, role, selectHousehold } = useSession()
-  const hid = household.id
   const isOwner = role === 'owner'
   const shared = backend.mode === 'supabase'
   const [theme, setThemeState] = useState(readTheme)
   const [sheet, setSheet] = useState<SettingsSheet | null>(null)
   const close = () => setSheet(null)
 
-  const members = useQuery({ queryKey: qk.members(hid), queryFn: () => backend.listMembers(hid) })
-  const invites = useQuery({
-    queryKey: qk.invites(hid),
-    queryFn: () => backend.listInvites(hid),
-    enabled: shared && isOwner,
-  })
-  const me = members.data?.find((member) => member.user_id === user.id)
-
-  const refreshHome = () => queryClient.invalidateQueries({ queryKey: qk.home(hid) })
-  const createInvite = useMutation({
-    mutationFn: () => backend.createInvite(hid),
-    onSuccess: (token) => setSheet({ type: 'invite-link', link: inviteLink(token) }),
-    onError: () => toast(t('toast.linkError')),
-    onSettled: refreshHome,
-  })
-  const revokeInvite = useMutation({
-    mutationFn: (id: string) => backend.deleteInvite(id),
-    onSuccess: () => toast(t('toast.linkRevoked')),
-    onSettled: refreshHome,
-  })
-  const setDisplayName = useMutation({
-    mutationFn: (name: string) => backend.setDisplayName(hid, name),
-    onError: () => toast(t('toast.nameError')),
-    onSettled: refreshHome,
-  })
-  const removeMember = useMutation({
-    mutationFn: (userId: string) => backend.removeMember(hid, userId),
-    onSuccess: () => toast(t('toast.memberRemoved')),
-    onSettled: refreshHome,
-  })
+  const members = useMembers().data
+  const invites = useInvites().data
+  const me = members?.find((member) => member.user_id === user.id)
+  const createInvite = useCreateInvite()
+  const revokeInvite = useRevokeInvite()
+  const setDisplayName = useSetDisplayName()
+  const removeMember = useRemoveMember()
+  const joinHousehold = useJoinHousehold()
+  const resetLocalData = useResetLocalData()
+  const signOut = useSignOut()
 
   function changeTheme(next: ThemeSetting) {
     setTheme(next)
@@ -80,16 +66,8 @@ export function SettingsScreen() {
   }
 
   async function join(token: string) {
-    const householdId = await backend.joinHousehold(token, me?.display_name ?? '')
-    await queryClient.invalidateQueries()
-    selectHousehold(householdId)
-    toast(t('toast.joined'))
-  }
-
-  async function resetDemo() {
-    await backend.resetLocalData?.()
-    await queryClient.invalidateQueries()
-    toast(t('toast.demoRestored'))
+    selectHousehold(await joinHousehold.mutateAsync(token))
+    notify('toast.joined')
   }
 
   return (
@@ -98,7 +76,7 @@ export function SettingsScreen() {
         <>
           <h2 className="group-label">{t('settings.groupMembers')}</h2>
           <div className="card">
-            {members.data?.map((member) => {
+            {members?.map((member) => {
               const label = memberLabel(member, t)
               return (
                 <div className="setting-row" key={member.user_id}>
@@ -119,7 +97,7 @@ export function SettingsScreen() {
                 </div>
               )
             })}
-            {invites.data?.map((invite) => {
+            {isOwner && invites?.map((invite) => {
               const date = new Date(invite.expires_at).toLocaleDateString(lang, { day: 'numeric', month: 'long' })
               return (
                 <div className="setting-row" key={invite.id}>
@@ -143,7 +121,11 @@ export function SettingsScreen() {
                 className="setting-row"
                 type="button"
                 disabled={createInvite.isPending}
-                onClick={() => createInvite.mutate()}
+                onClick={() =>
+                  createInvite.mutate(undefined, {
+                    onSuccess: (token) => setSheet({ type: 'invite-link', link: inviteLink(token) }),
+                  })
+                }
               >
                 <span className="row-text">
                   <span className="row-name accent">{t('invite.create')}</span>
@@ -233,7 +215,7 @@ export function SettingsScreen() {
           title={t('confirm.resetTitle')}
           description={t('confirm.resetText')}
           confirmLabel={t('confirm.reset')}
-          onConfirm={() => void resetDemo()}
+          onConfirm={() => resetLocalData.mutate()}
           onClose={close}
         />
       )}
@@ -242,7 +224,7 @@ export function SettingsScreen() {
           title={t('confirm.signOutTitle')}
           description={t('confirm.signOutText')}
           confirmLabel={t('confirm.signOut')}
-          onConfirm={() => void backend.signOut().catch(() => toast(t('common.actionError')))}
+          onConfirm={() => signOut.mutate()}
           onClose={close}
         />
       )}

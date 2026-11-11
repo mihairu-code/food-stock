@@ -1,10 +1,9 @@
 import { useMutation } from '@tanstack/react-query'
 import { useHouseholdId } from '@/app/session'
-import { useToast } from '@/components/toastContext'
+import { queryClient } from '@/data/queryClient'
 import type { Product, Section, ShoppingItem } from '@/domain/types'
-import { translate } from '@/i18n'
+import { notify } from '@/lib/toast'
 import { qk } from './keys'
-import { queryClient } from './queryClient'
 
 type ListPatch<T> = (change: (list: T[]) => T[]) => void
 
@@ -27,13 +26,16 @@ const patchList =
  *
  * Мутации одного дома выполняются строго по очереди (scope): «добавил продукт и
  * тут же отметил, что он закончился» дойдёт до сервера в том же порядке.
+ *
+ * Тост об успехе показывает вызывающий код сразу после mutate, а не в onSuccess:
+ * шторка к этому моменту уже закрыта, и её колбэки не сработают. Если запрос
+ * не удался, тост об ошибке отсюда заменит оптимистичный.
  */
 export function useHomeMutation<V, R = unknown>(
   mutationFn: (variables: V) => Promise<R>,
   optimistic: (cache: CachePatch, variables: V) => void,
 ) {
   const hid = useHouseholdId()
-  const toast = useToast()
 
   return useMutation({
     mutationKey: homeMutationKey(hid),
@@ -62,7 +64,7 @@ export function useHomeMutation<V, R = unknown>(
         queryClient.setQueryData(qk.products(hid), snapshot.products)
         queryClient.setQueryData(qk.shoppingItems(hid), snapshot.shoppingItems)
       }
-      toast(translate('common.saveError'))
+      notify('common.saveError')
     },
     onSettled: () => {
       // Пока в очереди есть другие правки, серверный ответ затёр бы их оптимистичное

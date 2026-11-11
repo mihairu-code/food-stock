@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { backend } from '@/data'
-import { qk } from '@/data/keys'
+import { membershipsQuery } from '@/data/hooks'
 import { queryClient } from '@/data/queryClient'
 import type { User } from '@/domain/types'
 import { translate, useT } from '@/i18n'
@@ -20,7 +20,7 @@ type Bootstrap = 'idle' | 'joining' | 'creating' | 'join-failed' | 'create-faile
  */
 export function HouseholdGate({ user, children }: { user: User; children: ReactNode }) {
   const t = useT()
-  const memberships = useQuery({ queryKey: qk.memberships, queryFn: () => backend.listMemberships() })
+  const memberships = useQuery(membershipsQuery)
   const [preferred, setPreferred] = useState(preferredHousehold)
   const [inviteToken, setInviteToken] = useState(() => (backend.mode === 'supabase' ? readInviteToken() : null))
   const [status, setStatus] = useState<Bootstrap>('idle')

@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import { backend } from '@/data'
 import { useT } from '@/i18n'
-import { signInWithGoogle } from './googleSignIn'
+import { rememberInviteToken } from '@/lib/invite'
 
 /** Первое знакомство: войти через Google или начать без аккаунта. */
 export function Welcome({ onContinue }: { onContinue: () => void }) {
@@ -11,8 +12,9 @@ export function Welcome({ onContinue }: { onContinue: () => void }) {
   function signIn() {
     setBusy(true)
     setFailed(false)
-    // Пользователя на устройстве ещё нет — переносить нечего, билет не нужен.
-    signInWithGoogle(null).catch(() => {
+    // Приглашение из адреса должно пережить уход на страницу Google.
+    rememberInviteToken()
+    backend.signInWithGoogle().catch(() => {
       setBusy(false)
       setFailed(true)
     })

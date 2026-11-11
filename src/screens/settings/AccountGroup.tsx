@@ -1,11 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
 import { ChevronRight, LogOut, UserRound } from 'lucide-react'
-import { useState } from 'react'
-import { signInWithGoogle } from '@/app/googleSignIn'
 import { useSession } from '@/app/session'
-import { useToast } from '@/components/toastContext'
-import { backend } from '@/data'
-import { qk } from '@/data/keys'
+import { useGoogleAvailable, useGoogleSignIn } from '@/data/hooks'
 import { useT, type MessageKey } from '@/i18n'
 
 interface AccountGroupProps {
@@ -19,22 +14,9 @@ interface AccountGroupProps {
 /** Аккаунт: вход через Google, своё имя и вступление в другой дом по ссылке. */
 export function AccountGroup({ name, onEditName, onJoin, onSignOut }: AccountGroupProps) {
   const t = useT()
-  const toast = useToast()
   const { user } = useSession()
-  const [busy, setBusy] = useState(false)
-  const google = useQuery({
-    queryKey: qk.googleAvailable,
-    queryFn: () => backend.googleAvailable(),
-    staleTime: Infinity,
-  }).data
-
-  function signIn() {
-    setBusy(true)
-    signInWithGoogle(user.id).catch(() => {
-      setBusy(false)
-      toast(t('toast.googleError'))
-    })
-  }
+  const google = useGoogleAvailable()
+  const signIn = useGoogleSignIn()
 
   const hint: MessageKey = !user.isAnonymous
     ? 'settings.accountText'
@@ -55,7 +37,7 @@ export function AccountGroup({ name, onEditName, onJoin, onSignOut }: AccountGro
           </div>
         )}
         {user.isAnonymous && google && (
-          <button className="setting-row" type="button" disabled={busy} onClick={signIn}>
+          <button className="setting-row" type="button" disabled={signIn.isPending} onClick={() => signIn.mutate()}>
             <span className="row-text">
               <span className="row-name accent">{t('auth.google')}</span>
               <span className="row-meta">{t('settings.googleMeta')}</span>

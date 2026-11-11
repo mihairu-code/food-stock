@@ -1,16 +1,19 @@
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
-import { useSession } from '@/app/session'
 import { EmptyState } from '@/components/EmptyState'
-import { useToast } from '@/components/toastContext'
-import { backend } from '@/data'
-import type { NewProduct, NewSection } from '@/data/backend'
-import { useHomeData, useSortedSections } from '@/data/useHomeData'
-import { useHomeMutation } from '@/data/useHomeMutation'
+import {
+  useCreateProduct,
+  useCreateSection,
+  useDeleteSection,
+  useHomeData,
+  useSortedSections,
+  useUpdateSection,
+} from '@/data/hooks'
 import { productsOf } from '@/domain/logic'
 import type { Section } from '@/domain/types'
 import { useT } from '@/i18n'
 import { rich } from '@/i18n/rich'
+import { notify } from '@/lib/toast'
 import { ConfirmSheet } from '@/sheets/ConfirmSheet'
 import { ProductSheet } from '@/sheets/ProductSheet'
 import { SectionSheet } from '@/sheets/SectionSheet'
@@ -27,43 +30,17 @@ type HomeSheet =
 
 export function HomeScreen() {
   const t = useT()
-  const { household, user } = useSession()
-  const hid = household.id
   const { products, isLoading, isError } = useHomeData()
   const sections = useSortedSections()
   const collapsed = useCollapsedSections()
   const [sheet, setSheet] = useState<HomeSheet | null>(null)
   const close = () => setSheet(null)
 
-  const toast = useToast()
   const actions = useProductActions()
-
-  const createSection = useHomeMutation(
-    (input: NewSection) => backend.createSection(hid, input),
-    (cache, input) =>
-      cache.sections((list) => [...list, { ...input, household_id: hid, created_at: new Date().toISOString() }]),
-  )
-  const updateSection = useHomeMutation(
-    (v: { id: string; name: string; icon: string | null }) => backend.updateSection(v.id, { name: v.name, icon: v.icon }),
-    (cache, { id, name, icon }) => cache.sections((list) => list.map((s) => (s.id === id ? { ...s, name, icon } : s))),
-  )
-  const deleteSection = useHomeMutation(
-    (id: string) => backend.deleteSection(id),
-    (cache, id) => {
-      cache.sections((list) => list.filter((s) => s.id !== id))
-      cache.products((list) => list.filter((p) => p.section_id !== id))
-    },
-  )
-  const createProduct = useHomeMutation(
-    (input: NewProduct) => backend.createProduct(hid, input),
-    (cache, input) => {
-      const now = new Date().toISOString()
-      cache.products((list) => [
-        ...list,
-        { ...input, household_id: hid, is_available: true, to_buy: false, created_at: now, updated_at: now, created_by: user.id },
-      ])
-    },
-  )
+  const createSection = useCreateSection()
+  const updateSection = useUpdateSection()
+  const deleteSection = useDeleteSection()
+  const createProduct = useCreateProduct()
 
   if (isLoading) return <p className="status">{t('home.loading')}</p>
   if (isError) return <p className="status">{t('common.loadError')}</p>
@@ -140,7 +117,7 @@ export function HomeScreen() {
           sectionId={sheet.sectionId}
           onSave={(input) => {
             createProduct.mutate(input)
-            toast(t('toast.addedTo', { name: sections.find((s) => s.id === input.section_id)?.name ?? '' }))
+            notify('toast.addedTo', { name: sections.find((s) => s.id === input.section_id)?.name ?? '' })
           }}
           onClose={close}
         />
@@ -150,7 +127,7 @@ export function HomeScreen() {
           onSave={(name, icon) => {
             const sort_order = sections.reduce((max, s) => Math.max(max, s.sort_order + 1), 0)
             createSection.mutate({ id: crypto.randomUUID(), name, icon, sort_order })
-            toast(t('toast.sectionCreated', { name }))
+            notify('toast.sectionCreated', { name })
           }}
           onClose={close}
         />
@@ -158,7 +135,7 @@ export function HomeScreen() {
       {sheet?.type === 'edit-section' && (
         <SectionSheet
           section={sheet.section}
-          onSave={(name, icon) => updateSection.mutate({ id: sheet.section.id, name, icon })}
+          onSave={(name, icon) => updateSection.mutate({ id: sheet.section.id, patch: { name, icon } })}
           onDelete={() => requestDelete(sheet.section)}
           onClose={close}
         />
@@ -170,7 +147,7 @@ export function HomeScreen() {
           confirmLabel={t('common.delete')}
           onConfirm={() => {
             deleteSection.mutate(sheet.section.id)
-            toast(t('toast.sectionDeleted', { name: sheet.section.name }))
+            notify('toast.sectionDeleted', { name: sheet.section.name })
           }}
           onClose={close}
         />
