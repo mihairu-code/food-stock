@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import { useToast } from '@/components/toastContext'
+import { Notice, Splash } from '@/components'
 import { backend } from '@/data'
 import { queryClient } from '@/data/queryClient'
 import type { MergeKeep, MergePreview, User } from '@/domain/types'
-import { translate, useT } from '@/i18n'
+import { useT } from '@/i18n'
 import { rememberHousehold } from '@/lib/household'
 import { clearMergeTicket, readMergeTicket } from '@/lib/mergeTicket'
+import { notify } from '@/lib/toast'
 import { MergeChoice } from './MergeChoice'
 
 type MergeState =
@@ -33,7 +34,6 @@ function initialState(user: User): MergeState {
  */
 export function MergeGate({ user, children }: { user: User; children: ReactNode }) {
   const t = useT()
-  const toast = useToast()
   const [state, setState] = useState(() => initialState(user))
   const started = useRef(false)
 
@@ -58,10 +58,10 @@ export function MergeGate({ user, children }: { user: User; children: ReactNode 
           return
         }
         await finish(await backend.completeMerge(ticket.token, null))
-        toast(translate('merge.done'))
+        notify('merge.done')
       })
       .catch(fail)
-  }, [state.status, finish, fail, toast])
+  }, [state.status, finish, fail])
 
   function choose(ticket: string, keep: MergeKeep) {
     setState({ status: 'working' })
@@ -69,23 +69,19 @@ export function MergeGate({ user, children }: { user: User; children: ReactNode 
   }
 
   if (state.status === 'idle') return children
-  if (state.status === 'working') return <p className="status">{t('merge.working')}</p>
+  if (state.status === 'working') return <Splash>{t('merge.working')}</Splash>
   if (state.status === 'failed') {
     return (
-      <div className="notice">
-        <h2>{t('merge.failedTitle')}</h2>
-        <p>{t('merge.failedText')}</p>
-        <button
-          className="btn"
-          type="button"
-          onClick={() => {
-            clearMergeTicket()
-            setState({ status: 'idle' })
-          }}
-        >
-          {t('common.continue')}
-        </button>
-      </div>
+      <Notice
+        title={t('merge.failedTitle')}
+        actionLabel={t('common.continue')}
+        onAction={() => {
+          clearMergeTicket()
+          setState({ status: 'idle' })
+        }}
+      >
+        {t('merge.failedText')}
+      </Notice>
     )
   }
 

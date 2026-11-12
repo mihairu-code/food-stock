@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { Notice, Splash } from '@/components'
 import { backend } from '@/data'
-import { qk } from '@/data/keys'
+import { membershipsQuery } from '@/data/hooks'
 import { queryClient } from '@/data/queryClient'
 import type { User } from '@/domain/types'
 import { translate, useT } from '@/i18n'
@@ -20,7 +21,7 @@ type Bootstrap = 'idle' | 'joining' | 'creating' | 'join-failed' | 'create-faile
  */
 export function HouseholdGate({ user, children }: { user: User; children: ReactNode }) {
   const t = useT()
-  const memberships = useQuery({ queryKey: qk.memberships, queryFn: () => backend.listMemberships() })
+  const memberships = useQuery(membershipsQuery)
   const [preferred, setPreferred] = useState(preferredHousehold)
   const [inviteToken, setInviteToken] = useState(() => (backend.mode === 'supabase' ? readInviteToken() : null))
   const [status, setStatus] = useState<Bootstrap>('idle')
@@ -68,23 +69,21 @@ export function HouseholdGate({ user, children }: { user: User; children: ReactN
     return { user, household: current.household, role: current.role, selectHousehold }
   }, [memberships.data, preferred, user, selectHousehold])
 
-  if (memberships.isPending) return <p className="status">{t('common.loading')}</p>
-  if (memberships.isError) return <p className="status">{t('load.reloadError')}</p>
+  if (memberships.isPending) return <Splash />
+  if (memberships.isError) return <Splash>{t('load.reloadError')}</Splash>
   if (status === 'join-failed' || status === 'create-failed') {
     const joining = status === 'join-failed'
     return (
-      <div className="notice">
-        <h2>{t(joining ? 'join.failedTitle' : 'create.failedTitle')}</h2>
-        <p>
-          {t(joining ? 'join.failedText' : 'common.checkConnection')}
-        </p>
-        <button className="btn" type="button" onClick={() => setStatus('idle')}>
-          {t(joining ? 'common.continue' : 'common.retry')}
-        </button>
-      </div>
+      <Notice
+        title={t(joining ? 'join.failedTitle' : 'create.failedTitle')}
+        actionLabel={t(joining ? 'common.continue' : 'common.retry')}
+        onAction={() => setStatus('idle')}
+      >
+        {t(joining ? 'join.failedText' : 'common.checkConnection')}
+      </Notice>
     )
   }
-  if (inviteToken || status === 'joining') return <p className="status">{t('join.working')}</p>
-  if (!session) return <p className="status">{t('home.preparing')}</p>
+  if (inviteToken || status === 'joining') return <Splash>{t('join.working')}</Splash>
+  if (!session) return <Splash>{t('home.preparing')}</Splash>
   return <SessionContext.Provider value={session}>{children}</SessionContext.Provider>
 }

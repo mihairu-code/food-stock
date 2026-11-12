@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { Notice, Splash } from '@/components'
 import { backend } from '@/data'
-import { qk } from '@/data/keys'
+import { qk } from '@/data/hooks'
 import { queryClient } from '@/data/queryClient'
 import type { User } from '@/domain/types'
 import { useT } from '@/i18n'
@@ -39,17 +40,13 @@ export function AuthGate({ children }: { children: (user: User) => ReactNode }) 
     if (userId) lastUserId.current = userId
   }, [userId])
 
-  if (user.isPending) return <p className="status">{t('common.loading')}</p>
+  if (user.isPending) return <Splash />
   if (user.isError) {
     return (
-      <div className="notice">
-        <h2>{t('start.errorTitle')}</h2>
-        <p>{t('common.checkConnection')}</p>
+      <Notice title={t('start.errorTitle')} actionLabel={t('common.retry')} onAction={() => void user.refetch()}>
+        {t('common.checkConnection')}
         <small className="notice-detail">{user.error.message}</small>
-        <button className="btn" type="button" onClick={() => void user.refetch()}>
-          {t('common.retry')}
-        </button>
-      </div>
+      </Notice>
     )
   }
   if (!user.data) return <Welcome onContinue={() => setAnonymousChosen(true)} />
