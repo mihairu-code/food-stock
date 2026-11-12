@@ -71,8 +71,9 @@ src/
   domain/     types and pure logic (shopping list, state transitions)
   data/       storage boundary: the Backend interface and two implementations
   app/        gates: who's signed in, which home is open
-  screens/    Home, Shopping, Settings
-  sheets/     bottom sheets with forms
+  data/hooks/ queries and mutations (optimistic edits, one-off actions)
+  screens/    Home, Shopping, Settings — one component per file
+  sheets/     bottom sheets; all rendered by SheetHost, opened with openSheet()
   components/ small shared pieces
   hooks/      shared hooks
   lib/        small standalone helpers (theme, invite links, emoji suggestions)

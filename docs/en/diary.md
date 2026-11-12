@@ -261,3 +261,41 @@ doesn't fill the icon by itself.
 In the evening — sign-out. I decided it only signs out this device (`scope: 'local'`),
 and Google always asks for the account — on a shared tablet the wrong person would sign
 in otherwise.
+
+## Nov 12, Thu
+
+I opened the code after a week of racing and saw the screens had become a dump: each
+has its own `useState` for a sheet, its own mutations with optimistic patches, its own
+`useToast`. `Sheet` is imported in three screens. Time to clean up.
+
+First thought — bring in Redux Toolkit with RTK Query, a familiar tool.
+I sat down and wrote out what actually lives in state
+([0007](decisions/0007-tanstack-query-not-rtk.md)): the server cache — TanStack Query
+already holds it, and does it well; plus two values — the open sheet and the current
+toast. A second cache and slices for two values — meh. I wrote a `createStore` on
+`useSyncExternalStore`, about 30 lines.
+
+The order of the cleanup:
+
+1. Mutations go to `data/hooks`: `useCreateProduct`, `useSetProductState` and so on.
+   For one-off actions without optimism (invites, members, sign-out) — `useAction`,
+   which says right there what toast to show and what to refetch. A toast is just
+   `notify('key')`, no hook.
+2. Sheets — one `SheetHost` in the Layout and `openSheet({ type: … })` from anywhere.
+   Each sheet knows its own mutations. A screen knows nothing about sheets anymore.
+3. One component per file. `SettingsScreen` was a wall of code — cut into groups. Shared
+   bits (`TextField`, `SettingRow`, `SummaryBar`) moved to `components`.
+
+After lunch — startup speed. On the phone "Loading…" hangs for a second and a half on
+launch, although the data barely changes between launches. Three things:
+
+- a snapshot of the last data in `localStorage` (per user; wiped on sign-out) — shown
+  right away, fresh data comes in the background;
+- the home data is requested together with the list of homes — I know from last time
+  which home will open, no reason to wait;
+- `preconnect` to Supabase while the script downloads, and libraries in separate
+  chunks — after a deploy the phone only re-downloads the app code.
+
+One more small thing: by default TanStack notifies components on a timer, and when the
+phone is busy with a touch, an edit showed up on screen with a delay. I switched the
+scheduler to a microtask — feels noticeably snappier.

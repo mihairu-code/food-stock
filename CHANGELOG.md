@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0 — 2026-11-12
+
+- Mutations moved into `data/hooks`; `useAction` for one-off actions; `notify()` toasts.
+- One `SheetHost` renders every sheet; screens call `openSheet()`.
+- One component per file; settings split into groups; shared form and settings components.
+- Startup: last launch snapshot, home data requested in parallel, preconnect, vendor chunks.
+
 ## 0.4.0 — 2026-11-11
 
 - `to_buy` flag independent of stock (migration `0005`, trigger for older clients).
