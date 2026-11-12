@@ -1,8 +1,9 @@
 import { Outlet, useLocation } from 'react-router'
+import { SheetHost } from '@/sheets'
 import { Header } from './Header'
 import { TabBar } from './TabBar'
 
-/** Каркас всех экранов: заголовок, содержимое и нижние вкладки. */
+/** Каркас всех экранов: заголовок, содержимое, вкладки и общее место для шторок. */
 export function Layout() {
   const { pathname } = useLocation()
   return (
@@ -13,6 +14,7 @@ export function Layout() {
         <Outlet />
       </main>
       <TabBar />
+      <SheetHost />
     </div>
   )
 }

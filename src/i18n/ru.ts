@@ -168,6 +168,7 @@ export const ru = {
   'toast.demoRestored': 'Демо-данные восстановлены',
   'toast.joined': 'Вы присоединились к дому',
   'toast.copied': 'Ссылка скопирована',
+  'toast.copyError': 'Не удалось скопировать — выделите ссылку вручную',
   'toast.nameError': 'Не удалось сохранить имя',
 
   'settings.demoText':

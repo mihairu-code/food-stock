@@ -120,6 +120,7 @@ export const ja: Messages = {
   'toast.demoRestored': 'デモデータを元に戻しました',
   'toast.joined': '家に参加しました',
   'toast.copied': 'リンクをコピーしました',
+  'toast.copyError': 'コピーできませんでした。リンクを手動で選択してください',
   'toast.nameError': '名前を保存できませんでした',
 
   'settings.demoText':

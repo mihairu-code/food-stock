@@ -1,12 +1,16 @@
 import { useState, type FormEvent } from 'react'
-import type { NewShoppingItem } from '@/data/backend'
+import { useCreateShoppingItem } from '@/data/hooks'
 import { useSuggestedEmoji } from '@/hooks/useSuggestedEmoji'
 import { useT } from '@/i18n'
+import { notify } from '@/lib/toast'
 import { Sheet } from './Sheet'
+import { SheetActions } from './SheetActions'
+import { closeSheet } from './sheetStore'
 
 /** Позиция покупок, добавленная вручную: того, чего в разделах дома нет. Раздел не нужен. */
-export function AddItemSheet({ onSave, onClose }: { onSave: (input: NewShoppingItem) => void; onClose: () => void }) {
+export function AddItemSheet() {
   const t = useT()
+  const createItem = useCreateShoppingItem()
   const [name, setName] = useState('')
   const { icon, setIcon, options } = useSuggestedEmoji(name)
 
@@ -14,12 +18,13 @@ export function AddItemSheet({ onSave, onClose }: { onSave: (input: NewShoppingI
     event.preventDefault()
     const trimmed = name.trim()
     if (!trimmed) return
-    onSave({ id: crypto.randomUUID(), name: trimmed, icon: icon || null })
-    onClose()
+    createItem.mutate({ id: crypto.randomUUID(), name: trimmed, icon: icon || null })
+    notify('toast.addedItem')
+    closeSheet()
   }
 
   return (
-    <Sheet title={t('shopping.addTitle')} description={t('shopping.addDescription')} onClose={onClose}>
+    <Sheet title={t('shopping.addTitle')} description={t('shopping.addDescription')}>
       <form onSubmit={submit}>
         <label className="field">
           <span>{t('shopping.whatToBuy')}</span>
@@ -49,14 +54,7 @@ export function AddItemSheet({ onSave, onClose }: { onSave: (input: NewShoppingI
             ))}
           </div>
         </div>
-        <div className="sheet-actions">
-          <button className="btn subtle" type="button" onClick={onClose}>
-            {t('common.cancel')}
-          </button>
-          <button className="btn" type="submit" disabled={!name.trim()}>
-            {t('common.add')}
-          </button>
-        </div>
+        <SheetActions submitLabel={t('common.add')} disabled={!name.trim()} />
       </form>
     </Sheet>
   )

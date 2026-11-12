@@ -2,27 +2,12 @@ import { ChevronRight, Link2, X } from 'lucide-react'
 import { useState } from 'react'
 import { useSession } from '@/app/session'
 import { backend } from '@/data'
-import {
-  useCreateInvite,
-  useInvites,
-  useJoinHousehold,
-  useMembers,
-  useRemoveMember,
-  useResetLocalData,
-  useRevokeInvite,
-  useSetDisplayName,
-  useSignOut,
-} from '@/data/hooks'
-import type { Member } from '@/domain/types'
+import { useCreateInvite, useInvites, useMembers, useRevokeInvite } from '@/data/hooks'
 import { LANG_NAMES, LANGS, setLangSetting, useLang, useT, type LangSetting } from '@/i18n'
-import { inviteLink, saveName } from '@/lib/invite'
+import { inviteLink } from '@/lib/invite'
 import { memberIdentity, memberLabel } from '@/lib/memberText'
 import { readTheme, setTheme, type ThemeSetting } from '@/lib/theme'
-import { notify } from '@/lib/toast'
-import { ConfirmSheet } from '@/sheets/ConfirmSheet'
-import { InviteLinkSheet } from '@/sheets/InviteLinkSheet'
-import { JoinSheet } from '@/sheets/JoinSheet'
-import { NameSheet } from '@/sheets/NameSheet'
+import { openSheet } from '@/sheets'
 import { AccountGroup } from './AccountGroup'
 
 const THEME_KEYS = {
@@ -31,43 +16,23 @@ const THEME_KEYS = {
   dark: 'settings.themeDark',
 } as const
 
-type SettingsSheet =
-  | { type: 'reset' }
-  | { type: 'remove-member'; member: Member }
-  | { type: 'invite-link'; link: string }
-  | { type: 'join' }
-  | { type: 'name' }
-  | { type: 'sign-out' }
-
 export function SettingsScreen() {
   const t = useT()
   const { lang, setting: langSetting } = useLang()
-  const { user, household, role, selectHousehold } = useSession()
+  const { user, role } = useSession()
   const isOwner = role === 'owner'
   const shared = backend.mode === 'supabase'
   const [theme, setThemeState] = useState(readTheme)
-  const [sheet, setSheet] = useState<SettingsSheet | null>(null)
-  const close = () => setSheet(null)
 
   const members = useMembers().data
   const invites = useInvites().data
   const me = members?.find((member) => member.user_id === user.id)
   const createInvite = useCreateInvite()
   const revokeInvite = useRevokeInvite()
-  const setDisplayName = useSetDisplayName()
-  const removeMember = useRemoveMember()
-  const joinHousehold = useJoinHousehold()
-  const resetLocalData = useResetLocalData()
-  const signOut = useSignOut()
 
   function changeTheme(next: ThemeSetting) {
     setTheme(next)
     setThemeState(next)
-  }
-
-  async function join(token: string) {
-    selectHousehold(await joinHousehold.mutateAsync(token))
-    notify('toast.joined')
   }
 
   return (
@@ -89,7 +54,7 @@ export function SettingsScreen() {
                       className="icon-btn"
                       type="button"
                       aria-label={t('settings.removeMemberAria', { name: label })}
-                      onClick={() => setSheet({ type: 'remove-member', member })}
+                      onClick={() => openSheet({ type: 'remove-member', member })}
                     >
                       <X size={18} />
                     </button>
@@ -123,7 +88,7 @@ export function SettingsScreen() {
                 disabled={createInvite.isPending}
                 onClick={() =>
                   createInvite.mutate(undefined, {
-                    onSuccess: (token) => setSheet({ type: 'invite-link', link: inviteLink(token) }),
+                    onSuccess: (token) => openSheet({ type: 'invite-link', link: inviteLink(token) }),
                   })
                 }
               >
@@ -136,12 +101,7 @@ export function SettingsScreen() {
             )}
           </div>
 
-          <AccountGroup
-            name={me?.display_name ?? ''}
-            onEditName={() => setSheet({ type: 'name' })}
-            onJoin={() => setSheet({ type: 'join' })}
-            onSignOut={() => setSheet({ type: 'sign-out' })}
-          />
+          <AccountGroup name={me?.display_name ?? ''} />
         </>
       )}
 
@@ -186,7 +146,7 @@ export function SettingsScreen() {
         <>
           <h2 className="group-label">{t('settings.groupData')}</h2>
           <div className="card">
-            <button className="setting-row" type="button" onClick={() => setSheet({ type: 'reset' })}>
+            <button className="setting-row" type="button" onClick={() => openSheet({ type: 'reset' })}>
               <span className="row-text">
                 <span className="row-name">{t('settings.reset')}</span>
                 <span className="row-meta">{t('settings.resetMeta')}</span>
@@ -198,45 +158,6 @@ export function SettingsScreen() {
         </>
       )}
 
-      {sheet?.type === 'invite-link' && <InviteLinkSheet link={sheet.link} onClose={close} />}
-      {sheet?.type === 'join' && <JoinSheet onJoin={join} onClose={close} />}
-      {sheet?.type === 'name' && (
-        <NameSheet
-          current={me?.display_name ?? ''}
-          onSave={(name) => {
-            saveName(name)
-            setDisplayName.mutate(name)
-          }}
-          onClose={close}
-        />
-      )}
-      {sheet?.type === 'reset' && (
-        <ConfirmSheet
-          title={t('confirm.resetTitle')}
-          description={t('confirm.resetText')}
-          confirmLabel={t('confirm.reset')}
-          onConfirm={() => resetLocalData.mutate()}
-          onClose={close}
-        />
-      )}
-      {sheet?.type === 'sign-out' && (
-        <ConfirmSheet
-          title={t('confirm.signOutTitle')}
-          description={t('confirm.signOutText')}
-          confirmLabel={t('confirm.signOut')}
-          onConfirm={() => signOut.mutate()}
-          onClose={close}
-        />
-      )}
-      {sheet?.type === 'remove-member' && (
-        <ConfirmSheet
-          title={t('confirm.removeMemberTitle')}
-          description={t('confirm.removeMemberText', { name: memberLabel(sheet.member, t), home: household.name })}
-          confirmLabel={t('common.delete')}
-          onConfirm={() => removeMember.mutate(sheet.member.user_id)}
-          onClose={close}
-        />
-      )}
     </>
   )
 }

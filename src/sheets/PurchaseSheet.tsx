@@ -1,18 +1,17 @@
 import { useState, type FormEvent } from 'react'
-import type { Section, ShoppingItem } from '@/domain/types'
+import { usePurchaseShoppingItem, useSortedSections } from '@/data/hooks'
+import type { ShoppingItem } from '@/domain/types'
 import { useT } from '@/i18n'
+import { notify } from '@/lib/toast'
 import { Sheet } from './Sheet'
-
-interface PurchaseSheetProps {
-  item: ShoppingItem
-  sections: Section[]
-  onPurchase: (section: Section, makeStaple: boolean) => void
-  onClose: () => void
-}
+import { SheetActions } from './SheetActions'
+import { closeSheet } from './sheetStore'
 
 /** Ручная позиция куплена: в какой раздел дома её положить и сделать ли постоянной. */
-export function PurchaseSheet({ item, sections, onPurchase, onClose }: PurchaseSheetProps) {
+export function PurchaseSheet({ item }: { item: ShoppingItem }) {
   const t = useT()
+  const sections = useSortedSections()
+  const purchase = usePurchaseShoppingItem()
   const [sectionId, setSectionId] = useState(sections[0]?.id ?? '')
   const [makeStaple, setMakeStaple] = useState(false)
 
@@ -20,15 +19,16 @@ export function PurchaseSheet({ item, sections, onPurchase, onClose }: PurchaseS
     event.preventDefault()
     const section = sections.find((s) => s.id === sectionId)
     if (!section) return
-    onPurchase(section, makeStaple)
-    onClose()
+    purchase.mutate({ item, sectionId: section.id, makeStaple })
+    notify(makeStaple ? 'toast.purchasedStaple' : 'toast.purchasedOnce', { name: section.name })
+    closeSheet()
   }
 
   if (sections.length === 0) {
     return (
-      <Sheet title={t('purchase.needSectionTitle')} description={t('purchase.needSectionText')} onClose={onClose}>
-        <div className="sheet-actions">
-          <button className="btn" type="button" onClick={onClose}>
+      <Sheet title={t('purchase.needSectionTitle')} description={t('purchase.needSectionText')}>
+        <div className="sheet-actions single">
+          <button className="btn" type="button" onClick={closeSheet}>
             {t('common.ok')}
           </button>
         </div>
@@ -37,7 +37,7 @@ export function PurchaseSheet({ item, sections, onPurchase, onClose }: PurchaseS
   }
 
   return (
-    <Sheet title={t('purchase.title')} description={t('purchase.description', { name: item.name })} onClose={onClose}>
+    <Sheet title={t('purchase.title')} description={t('purchase.description', { name: item.name })}>
       <form onSubmit={submit}>
         <label className="field">
           <span>{t('field.section')}</span>
@@ -56,14 +56,7 @@ export function PurchaseSheet({ item, sections, onPurchase, onClose }: PurchaseS
             <small>{t('product.keepHint')}</small>
           </span>
         </label>
-        <div className="sheet-actions">
-          <button className="btn subtle" type="button" onClick={onClose}>
-            {t('common.cancel')}
-          </button>
-          <button className="btn" type="submit">
-            {t('purchase.submit')}
-          </button>
-        </div>
+        <SheetActions submitLabel={t('purchase.submit')} />
       </form>
     </Sheet>
   )

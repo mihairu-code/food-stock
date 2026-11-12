@@ -1,20 +1,17 @@
 import { useState, type FormEvent } from 'react'
-import type { NewProduct } from '@/data/backend'
-import type { Section } from '@/domain/types'
+import { useCreateProduct, useSortedSections } from '@/data/hooks'
 import { useSuggestedEmoji } from '@/hooks/useSuggestedEmoji'
 import { useT } from '@/i18n'
+import { notify } from '@/lib/toast'
 import { Sheet } from './Sheet'
+import { SheetActions } from './SheetActions'
+import { closeSheet } from './sheetStore'
 
-interface ProductSheetProps {
-  sections: Section[]
-  /** Раздел, из которого шторку открыли. */
-  sectionId?: string
-  onSave: (input: NewProduct) => void
-  onClose: () => void
-}
-
-export function ProductSheet({ sections, sectionId: initialSectionId, onSave, onClose }: ProductSheetProps) {
+/** Новый продукт; `sectionId` — раздел, из которого шторку открыли. */
+export function ProductSheet({ sectionId: initialSectionId }: { sectionId?: string }) {
   const t = useT()
+  const sections = useSortedSections()
+  const createProduct = useCreateProduct()
   const [name, setName] = useState('')
   const { icon, setIcon, options } = useSuggestedEmoji(name)
   const [sectionId, setSectionId] = useState(initialSectionId ?? sections[0]?.id ?? '')
@@ -23,13 +20,21 @@ export function ProductSheet({ sections, sectionId: initialSectionId, onSave, on
   function submit(event: FormEvent) {
     event.preventDefault()
     const trimmed = name.trim()
-    if (!trimmed || !sectionId) return
-    onSave({ id: crypto.randomUUID(), section_id: sectionId, name: trimmed, icon: icon || null, kind: staple ? 'staple' : 'one_off' })
-    onClose()
+    const section = sections.find((s) => s.id === sectionId)
+    if (!trimmed || !section) return
+    createProduct.mutate({
+      id: crypto.randomUUID(),
+      section_id: section.id,
+      name: trimmed,
+      icon: icon || null,
+      kind: staple ? 'staple' : 'one_off',
+    })
+    notify('toast.addedTo', { name: section.name })
+    closeSheet()
   }
 
   return (
-    <Sheet title={t('productSheet.title')} description={t('productSheet.description')} onClose={onClose}>
+    <Sheet title={t('productSheet.title')} description={t('productSheet.description')}>
       <form onSubmit={submit}>
         <label className="field">
           <span>{t('productSheet.name')}</span>
@@ -76,14 +81,7 @@ export function ProductSheet({ sections, sectionId: initialSectionId, onSave, on
             <small>{t('product.keepHint')}</small>
           </span>
         </label>
-        <div className="sheet-actions">
-          <button className="btn subtle" type="button" onClick={onClose}>
-            {t('common.cancel')}
-          </button>
-          <button className="btn" type="submit" disabled={!name.trim() || !sectionId}>
-            {t('common.add')}
-          </button>
-        </div>
+        <SheetActions submitLabel={t('common.add')} disabled={!name.trim() || !sectionId} />
       </form>
     </Sheet>
   )

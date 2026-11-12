@@ -126,6 +126,7 @@ export const en: Messages = {
   'toast.demoRestored': 'Demo data restored',
   'toast.joined': 'You’ve joined the home',
   'toast.copied': 'Link copied',
+  'toast.copyError': 'Couldn’t copy — select the link by hand',
   'toast.nameError': 'Couldn’t save the name',
 
   'settings.demoText':

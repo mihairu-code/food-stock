@@ -120,6 +120,7 @@ export const vi: Messages = {
   'toast.demoRestored': 'Đã khôi phục dữ liệu mẫu',
   'toast.joined': 'Bạn đã tham gia nhà',
   'toast.copied': 'Đã sao chép liên kết',
+  'toast.copyError': 'Không sao chép được — hãy tự chọn liên kết',
   'toast.nameError': 'Không lưu được tên',
 
   'settings.demoText':
