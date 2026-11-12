@@ -142,11 +142,6 @@ button {
   font-size: 14px;
 }
 
-.status {
-  padding: 32px 16px;
-  text-align: center;
-  color: var(--muted);
-}
 
 /* Навигация — отдельные кнопки, парящие над содержимым; общей панели нет. */
 .tabs {
@@ -312,6 +307,44 @@ button {
   margin-bottom: 10px;
   color: var(--muted);
   font-size: 14px;
+}
+
+.status-note {
+  padding: 40px 20px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 14px;
+}
+
+.splash {
+  padding-top: 40dvh;
+}
+
+.avatar {
+  display: grid;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.avatar.small {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: var(--accent-soft);
+  font-size: 12px;
+}
+
+.avatar.pending {
+  background: var(--orange-soft);
+  color: var(--orange);
 }
 
 /* ---------- Раздел ---------- */
@@ -718,9 +751,15 @@ button {
   margin-bottom: 15px;
 }
 
-.field > span {
+.field label,
+.field-label {
   font-size: 13px;
   font-weight: 600;
+}
+
+.field-label small {
+  color: var(--muted);
+  font-weight: 400;
 }
 
 /* Поле не меньше 16px — иначе Safari увеличивает страницу при фокусе. */
@@ -792,6 +831,12 @@ button {
   display: block;
 }
 
+.btn.sign-out {
+  width: 100%;
+  margin-top: 6px;
+  color: var(--red);
+}
+
 .chevron {
   flex: 0 0 auto;
   color: var(--muted);
@@ -838,27 +883,6 @@ button {
   margin: 0 6px;
   color: var(--red);
   font-size: 13px;
-}
-
-/* ---------- Сообщение вместо экрана ---------- */
-
-.notice {
-  display: grid;
-  max-width: 420px;
-  gap: 14px;
-  margin: 0 auto;
-  padding: calc(env(safe-area-inset-top) + 18dvh) 20px 40px;
-}
-
-.notice h2 {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 30px;
-  font-weight: 500;
-}
-
-.notice p {
-  color: var(--muted);
-  font-size: 15px;
 }
 
 .notice-detail {
@@ -923,6 +947,12 @@ button {
 }
 
 .setting-row.danger .row-name,
-.setting-row.danger .chevron {
+.setting-row.danger .btn.sign-out {
+  width: 100%;
+  margin-top: 6px;
+  color: var(--red);
+}
+
+.chevron {
   color: var(--red);
 }

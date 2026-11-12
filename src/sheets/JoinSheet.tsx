@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useSession } from '@/app/session'
+import { TextField } from '@/components'
 import { useJoinHousehold } from '@/data/hooks'
 import { useT } from '@/i18n'
 import { parseInviteToken } from '@/lib/invite'
@@ -38,16 +39,15 @@ export function JoinSheet() {
   return (
     <Sheet title={t('join.title')} description={t('join.description')}>
       <form onSubmit={submit}>
-        <label className="field">
-          <span>{t('invite.title')}</span>
-          <input
-            value={text}
-            autoCapitalize="none"
-            spellCheck={false}
-            onChange={(e) => setText(e.target.value)}
-            autoFocus
-          />
-        </label>
+        <TextField
+          id="join-link"
+          label={t('invite.title')}
+          value={text}
+          onChange={setText}
+          autoFocus
+          autoCapitalize="none"
+          spellCheck={false}
+        />
         {error && (
           <p className="field-error" role="alert">
             {error}

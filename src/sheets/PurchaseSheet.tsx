@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { SectionSelect, StapleCheckbox } from '@/components'
 import { usePurchaseShoppingItem, useSortedSections } from '@/data/hooks'
 import type { ShoppingItem } from '@/domain/types'
 import { useT } from '@/i18n'
@@ -39,23 +40,8 @@ export function PurchaseSheet({ item }: { item: ShoppingItem }) {
   return (
     <Sheet title={t('purchase.title')} description={t('purchase.description', { name: item.name })}>
       <form onSubmit={submit}>
-        <label className="field">
-          <span>{t('field.section')}</span>
-          <select value={sectionId} onChange={(e) => setSectionId(e.target.value)}>
-            {sections.map((section) => (
-              <option key={section.id} value={section.id}>
-                {section.icon ? `${section.icon} ${section.name}` : section.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="check">
-          <input type="checkbox" checked={makeStaple} onChange={(e) => setMakeStaple(e.target.checked)} />
-          <span>
-            {t('product.keep')}
-            <small>{t('product.keepHint')}</small>
-          </span>
-        </label>
+        <SectionSelect sections={sections} value={sectionId} onChange={setSectionId} />
+        <StapleCheckbox checked={makeStaple} onChange={setMakeStaple} />
         <SheetActions submitLabel={t('purchase.submit')} />
       </form>
     </Sheet>

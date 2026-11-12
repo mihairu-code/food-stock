@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { Notice, Splash } from '@/components'
 import { backend } from '@/data'
 import { queryClient } from '@/data/queryClient'
 import type { MergeKeep, MergePreview, User } from '@/domain/types'
@@ -68,23 +69,19 @@ export function MergeGate({ user, children }: { user: User; children: ReactNode 
   }
 
   if (state.status === 'idle') return children
-  if (state.status === 'working') return <p className="status">{t('merge.working')}</p>
+  if (state.status === 'working') return <Splash>{t('merge.working')}</Splash>
   if (state.status === 'failed') {
     return (
-      <div className="notice">
-        <h2>{t('merge.failedTitle')}</h2>
-        <p>{t('merge.failedText')}</p>
-        <button
-          className="btn"
-          type="button"
-          onClick={() => {
-            clearMergeTicket()
-            setState({ status: 'idle' })
-          }}
-        >
-          {t('common.continue')}
-        </button>
-      </div>
+      <Notice
+        title={t('merge.failedTitle')}
+        actionLabel={t('common.continue')}
+        onAction={() => {
+          clearMergeTicket()
+          setState({ status: 'idle' })
+        }}
+      >
+        {t('merge.failedText')}
+      </Notice>
     )
   }
 

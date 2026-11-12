@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { EmojiOptions, TextField } from '@/components'
 import { useCreateShoppingItem } from '@/data/hooks'
 import { useSuggestedEmoji } from '@/hooks/useSuggestedEmoji'
 import { useT } from '@/i18n'
@@ -26,34 +27,16 @@ export function AddItemSheet() {
   return (
     <Sheet title={t('shopping.addTitle')} description={t('shopping.addDescription')}>
       <form onSubmit={submit}>
-        <label className="field">
-          <span>{t('shopping.whatToBuy')}</span>
-          <input
-            value={name}
-            maxLength={80}
-            placeholder={t('shopping.placeholder')}
-            onChange={(e) => setName(e.target.value)}
-            autoFocus
-          />
-        </label>
-        <div className="field">
-          <span>
-            {t('emoji.label')} <small>{t('emoji.hint')}</small>
-          </span>
-          <div className="emoji-grid">
-            {options.map((emoji) => (
-              <button
-                key={emoji}
-                className="emoji-option"
-                type="button"
-                aria-pressed={icon === emoji}
-                onClick={() => setIcon(icon === emoji ? '' : emoji)}
-              >
-                {emoji}
-              </button>
-            ))}
-          </div>
-        </div>
+        <TextField
+          id="item-name"
+          label={t('shopping.whatToBuy')}
+          placeholder={t('shopping.placeholder')}
+          value={name}
+          onChange={setName}
+          maxLength={80}
+          autoFocus
+        />
+        <EmojiOptions options={options} value={icon} onChange={setIcon} hint={t('emoji.hint')} />
         <SheetActions submitLabel={t('common.add')} disabled={!name.trim()} />
       </form>
     </Sheet>

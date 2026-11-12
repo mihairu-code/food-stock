@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react'
-import { EmptyState } from '@/components/EmptyState'
+import { AddRow, EmptyState, StatusNote, SummaryBar } from '@/components'
 import { useHomeData, useSortedSections } from '@/data/hooks'
 import { productsOf } from '@/domain/logic'
 import { useT } from '@/i18n'
@@ -17,8 +17,8 @@ export function HomeScreen() {
   const collapsed = useCollapsedSections()
   const actions = useProductActions()
 
-  if (isLoading) return <p className="status">{t('home.loading')}</p>
-  if (isError) return <p className="status">{t('common.loadError')}</p>
+  if (isLoading) return <StatusNote>{t('home.loading')}</StatusNote>
+  if (isError) return <StatusNote>{t('common.loadError')}</StatusNote>
 
   return (
     <>
@@ -30,12 +30,9 @@ export function HomeScreen() {
         </EmptyState>
       ) : (
         <>
-          <div className="summary">
-            <p>{rich(t('home.summary', { count: products.filter((p) => p.is_available).length }))}</p>
-            <button className="btn small" type="button" onClick={() => openSheet({ type: 'add-product' })}>
-              <Plus size={16} aria-hidden="true" /> {t('common.add')}
-            </button>
-          </div>
+          <SummaryBar onAdd={() => openSheet({ type: 'add-product' })}>
+            {rich(t('home.summary', { count: products.filter((p) => p.is_available).length }))}
+          </SummaryBar>
           {sections.map((section) => (
             <SectionCard
               key={section.id}
@@ -48,18 +45,13 @@ export function HomeScreen() {
               {productsOf(products, section.id).map((product) => (
                 <ProductRow key={product.id} product={product} actions={actions} />
               ))}
-              <button
-                className="add-row"
-                type="button"
+              <AddRow
+                label={t('home.addProductTo', { name: section.name })}
                 onClick={() => openSheet({ type: 'add-product', sectionId: section.id })}
-              >
-                <Plus size={16} aria-hidden="true" /> {t('home.addProductTo', { name: section.name })}
-              </button>
+              />
             </SectionCard>
           ))}
-          <button className="add-row" type="button" onClick={() => openSheet({ type: 'add-section' })}>
-            <Plus size={16} aria-hidden="true" /> {t('section.newTitle')}
-          </button>
+          <AddRow label={t('section.newTitle')} onClick={() => openSheet({ type: 'add-section' })} />
         </>
       )}
     </>

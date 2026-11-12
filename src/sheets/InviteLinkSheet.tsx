@@ -1,3 +1,4 @@
+import { TextField } from '@/components'
 import { useT } from '@/i18n'
 import { notify } from '@/lib/toast'
 import { Sheet } from './Sheet'
@@ -30,10 +31,7 @@ export function InviteLinkSheet({ link }: { link: string }) {
       title={t('invite.title')}
       description={t('invite.sheetText')}
     >
-      <label className="field">
-        <span>{t('invite.link')}</span>
-        <input value={link} readOnly onFocus={(event) => event.target.select()} />
-      </label>
+      <TextField id="invite-link" label={t('invite.link')} value={link} onFocus={(event) => event.target.select()} />
       <p className="sheet-description">{t('invite.pwaNote')}</p>
       <div className="sheet-actions">
         <button className="btn subtle" type="button" onClick={() => void copy()}>

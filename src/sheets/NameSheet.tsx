@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { TextField } from '@/components'
 import { useSetDisplayName } from '@/data/hooks'
 import { useT } from '@/i18n'
 import { saveName } from '@/lib/invite'
@@ -23,16 +24,15 @@ export function NameSheet({ current }: { current: string }) {
   return (
     <Sheet title={t('name.title')} description={t('name.description')}>
       <form onSubmit={submit}>
-        <label className="field">
-          <span>{t('name.label')}</span>
-          <input
-            value={name}
-            maxLength={40}
-            autoComplete="given-name"
-            onChange={(e) => setName(e.target.value)}
-            autoFocus
-          />
-        </label>
+        <TextField
+          id="my-name"
+          label={t('name.label')}
+          value={name}
+          onChange={setName}
+          maxLength={40}
+          autoComplete="given-name"
+          autoFocus
+        />
         <SheetActions submitLabel={t('common.save')} />
       </form>
     </Sheet>

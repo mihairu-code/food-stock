@@ -1,7 +1,6 @@
 import { Minus, Plus, X } from 'lucide-react'
 import { memo } from 'react'
-import { StockIcon } from '@/components/StockIcon'
-import { SwipeRow } from '@/components/SwipeRow'
+import { StockIcon, SwipeRow } from '@/components'
 import { isPendingProduct } from '@/data/hooks'
 import type { Product } from '@/domain/types'
 import { useT, type MessageKey } from '@/i18n'

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { EmojiOptions, TextField } from '@/components'
 import { useCreateSection, useHomeData, useUpdateSection } from '@/data/hooks'
 import type { Section } from '@/domain/types'
 import { useT } from '@/i18n'
@@ -44,26 +45,8 @@ export function SectionSheet({ section, onRequestDelete }: SectionSheetProps) {
       description={section ? undefined : t('section.newDescription')}
     >
       <form onSubmit={submit}>
-        <label className="field">
-          <span>{t('section.name')}</span>
-          <input value={name} maxLength={60} onChange={(e) => setName(e.target.value)} autoFocus />
-        </label>
-        <div className="field">
-          <span>{t('emoji.label')}</span>
-          <div className="emoji-grid">
-            {SECTION_EMOJIS.map((emoji) => (
-              <button
-                key={emoji}
-                className="emoji-option"
-                type="button"
-                aria-pressed={icon === emoji}
-                onClick={() => setIcon(icon === emoji ? '' : emoji)}
-              >
-                {emoji}
-              </button>
-            ))}
-          </div>
-        </div>
+        <TextField id="section-name" label={t('section.name')} value={name} onChange={setName} maxLength={60} autoFocus />
+        <EmojiOptions options={SECTION_EMOJIS} value={icon} onChange={setIcon} />
         <SheetActions submitLabel={t(section ? 'common.save' : 'common.create')} disabled={!name.trim()} />
         {onRequestDelete && (
           <button className="btn danger-text" type="button" onClick={onRequestDelete}>
