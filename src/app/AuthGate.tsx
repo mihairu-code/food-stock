@@ -1,12 +1,22 @@
-import { useQuery } from '@tanstack/react-query'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Notice, Splash } from '@/components'
 import { backend } from '@/data'
-import { qk } from '@/data/hooks'
 import { queryClient } from '@/data/queryClient'
+import { dropSnapshot, openSnapshot } from '@/data/snapshot'
 import type { User } from '@/domain/types'
 import { useT } from '@/i18n'
+import { readInviteToken } from '@/lib/invite'
+import { notify } from '@/lib/toast'
 import { Welcome } from './Welcome'
+
+type AuthState =
+  | { status: 'loading' }
+  | { status: 'error'; detail: string }
+  | { status: 'welcome' }
+  | { status: 'ready'; user: User }
+
+const sameUser = (a: User, b: User) =>
+  a.id === b.id && a.isAnonymous === b.isAnonymous && a.email === b.email
 
 /**
  * Решает, кто пользуется приложением. Если на устройстве уже есть сессия — берём её.
@@ -15,40 +25,86 @@ import { Welcome } from './Welcome'
  */
 export function AuthGate({ children }: { children: (user: User) => ReactNode }) {
   const t = useT()
-  const [anonymousChosen, setAnonymousChosen] = useState(false)
-  const user = useQuery({
-    queryKey: [...qk.user, anonymousChosen],
-    queryFn: async () => {
-      const current = await backend.currentUser()
-      if (current) return current
-      if (anonymousChosen || !(await backend.googleAvailable())) return backend.continueAnonymously()
-      return null
-    },
-    staleTime: Infinity,
-    retry: false,
-  })
+  const [state, setState] = useState<AuthState>({ status: 'loading' })
+  const lastUserId = useRef<string | null>(null)
+  const mounted = useRef(true)
+  const [invited] = useState(() => backend.mode === 'supabase' && readInviteToken() !== null)
 
-  useEffect(() => backend.onAuthChange(() => void queryClient.invalidateQueries({ queryKey: qk.user })), [])
-
-  // Приватные данные не должны пережить смену пользователя.
-  const userId = user.data?.id ?? null
-  const lastUserId = useRef(userId)
-  useEffect(() => {
-    if (userId && lastUserId.current && lastUserId.current !== userId) {
-      queryClient.removeQueries({ predicate: (query) => query.queryKey[0] !== qk.user[0] })
+  const accept = useCallback((user: User) => {
+    if (!mounted.current) return
+    if (lastUserId.current !== user.id) {
+      // Приватные данные не должны пережить смену пользователя.
+      if (lastUserId.current !== null) queryClient.clear()
+      // В демо-режиме данные и так лежат на устройстве — снимок не нужен.
+      if (backend.mode === 'supabase') openSnapshot(user.id)
+      lastUserId.current = user.id
     }
-    if (userId) lastUserId.current = userId
-  }, [userId])
+    setState((current) =>
+      current.status === 'ready' && sameUser(current.user, user) ? current : { status: 'ready', user },
+    )
+  }, [])
 
-  if (user.isPending) return <Splash />
-  if (user.isError) {
+  const fail = useCallback((error: unknown) => {
+    if (!mounted.current) return
+    setState({ status: 'error', detail: error instanceof Error ? error.message : String(error) })
+  }, [])
+
+  const refresh = useCallback(() => {
+    backend
+      .currentUser()
+      .then(async (user) => {
+        if (user) return accept(user)
+        // Настроен ли вход через Google, нужно знать только новому человеку: тот, у кого
+        // уже есть сессия, не ждёт при запуске лишний запрос к серверу.
+        if (!(await backend.googleAvailable())) return accept(await backend.continueAnonymously())
+        if (!mounted.current) return
+        queryClient.clear()
+        dropSnapshot()
+        lastUserId.current = null
+        setState({ status: 'welcome' })
+      })
+      .catch(fail)
+  }, [accept, fail])
+
+  useEffect(() => {
+    mounted.current = true
+
+    // Google вернул ошибку (например, человек закрыл окно входа) — убираем её из адреса.
+    const params = new URLSearchParams(window.location.search)
+    if (params.has('error') || params.has('error_code')) {
+      notify('toast.googleFailed')
+      window.history.replaceState(null, '', window.location.pathname + window.location.hash)
+    }
+
+    refresh()
+    const unsubscribe = backend.onAuthChange(refresh)
+    return () => {
+      mounted.current = false
+      unsubscribe()
+    }
+  }, [refresh])
+
+  function retry(action: () => void) {
+    setState({ status: 'loading' })
+    action()
+  }
+
+  if (state.status === 'loading') return <Splash />
+  if (state.status === 'welcome') {
     return (
-      <Notice title={t('start.errorTitle')} actionLabel={t('common.retry')} onAction={() => void user.refetch()}>
+      <Welcome
+        invited={invited}
+        onContinue={() => retry(() => backend.continueAnonymously().then(accept, fail))}
+      />
+    )
+  }
+  if (state.status === 'error') {
+    return (
+      <Notice title={t('start.errorTitle')} actionLabel={t('common.retry')} onAction={() => retry(refresh)}>
         {t('common.checkConnection')}
-        <small className="notice-detail">{user.error.message}</small>
+        <small className="notice-detail">{state.detail}</small>
       </Notice>
     )
   }
-  if (!user.data) return <Welcome onContinue={() => setAnonymousChosen(true)} />
-  return children(user.data)
+  return children(state.user)
 }

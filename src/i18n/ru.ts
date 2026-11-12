@@ -165,6 +165,7 @@ export const ru = {
   'toast.linkRevoked': 'Ссылка отозвана',
   'toast.memberRemoved': 'Участник удалён из дома',
   'toast.googleError': 'Не удалось открыть вход через Google',
+  'toast.googleFailed': 'Вход через Google не выполнен',
   'toast.demoRestored': 'Демо-данные восстановлены',
   'toast.joined': 'Вы присоединились к дому',
   'toast.copied': 'Ссылка скопирована',
@@ -209,6 +210,7 @@ export const ru = {
 
   'auth.google': 'Войти через Google',
 
+  'welcome.invited': 'Вас пригласили в общий дом. Выберите, как войти.',
   'welcome.googleNote':
     'Данные сохранятся в аккаунте: не пропадут при смене телефона и будут одними и теми же в браузере и в приложении на экране «Домой».',
   'welcome.anon': 'Продолжить без аккаунта',

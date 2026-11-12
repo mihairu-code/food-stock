@@ -2,31 +2,33 @@ import { useState } from 'react'
 import { backend } from '@/data'
 import { useT } from '@/i18n'
 import { rememberInviteToken } from '@/lib/invite'
+import { notify } from '@/lib/toast'
+
+interface WelcomeProps {
+  invited: boolean
+  onContinue: () => void
+}
 
 /** Первое знакомство: войти через Google или начать без аккаунта. */
-export function Welcome({ onContinue }: { onContinue: () => void }) {
+export function Welcome({ invited, onContinue }: WelcomeProps) {
   const t = useT()
   const [busy, setBusy] = useState(false)
-  const [failed, setFailed] = useState(false)
 
   function signIn() {
     setBusy(true)
-    setFailed(false)
     // Приглашение из адреса должно пережить уход на страницу Google.
     rememberInviteToken()
     backend.signInWithGoogle().catch(() => {
       setBusy(false)
-      setFailed(true)
+      notify('toast.googleError')
     })
   }
 
   return (
     <main className="auth">
-      <div className="auth-emoji" aria-hidden="true">
-        🏠
-      </div>
+      <div className="auth-emoji" aria-hidden="true">🏠</div>
       <h1>{t('app.name')}</h1>
-      <p className="auth-lead">{t('app.tagline')}</p>
+      <p className="auth-lead">{t(invited ? 'welcome.invited' : 'app.tagline')}</p>
       <div className="card welcome-card">
         <button className="btn" type="button" disabled={busy} onClick={signIn}>
           {t('auth.google')}
@@ -37,7 +39,6 @@ export function Welcome({ onContinue }: { onContinue: () => void }) {
         </button>
         <p className="welcome-note">{t('welcome.later')}</p>
       </div>
-      {failed && <p className="field-error">{t('toast.googleError')}</p>}
     </main>
   )
 }

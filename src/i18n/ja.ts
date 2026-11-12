@@ -117,6 +117,7 @@ export const ja: Messages = {
   'toast.linkRevoked': 'リンクを無効にしました',
   'toast.memberRemoved': 'メンバーを家から削除しました',
   'toast.googleError': 'Googleログインを開けませんでした',
+  'toast.googleFailed': 'Googleログインは完了しませんでした',
   'toast.demoRestored': 'デモデータを元に戻しました',
   'toast.joined': '家に参加しました',
   'toast.copied': 'リンクをコピーしました',
@@ -161,6 +162,7 @@ export const ja: Messages = {
 
   'auth.google': 'Googleでログイン',
 
+  'welcome.invited': '共有の家に招待されました。ログイン方法を選んでください。',
   'welcome.googleNote':
     'データはアカウントに保存されます。機種変更しても消えず、ブラウザでもホーム画面のアプリでも同じデータを使えます。',
   'welcome.anon': 'アカウントなしで続ける',

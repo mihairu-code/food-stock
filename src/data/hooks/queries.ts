@@ -1,8 +1,9 @@
 import { queryOptions } from '@tanstack/react-query'
 import { backend } from '@/data'
+import { queryClient } from '@/data/queryClient'
 import { qk } from './keys'
 
-/* Описания запросов: одно и то же описание используют хуки и код вне компонентов. */
+/* Описания запросов: одно и то же описание используют хуки и предзагрузка. */
 
 export const membershipsQuery = queryOptions({
   queryKey: qk.memberships,
@@ -23,3 +24,14 @@ export const membersQuery = (hid: string) =>
 
 export const invitesQuery = (hid: string) =>
   queryOptions({ queryKey: qk.invites(hid), queryFn: () => backend.listInvites(hid) })
+
+/**
+ * Запрашивает всё, что нужно первому экрану, не дожидаясь списка домов: какой дом
+ * откроется, известно с прошлого запуска. Запросы уходят одним залпом, а не цепочкой.
+ */
+export function prefetchHome(hid: string): void {
+  void queryClient.prefetchQuery(sectionsQuery(hid))
+  void queryClient.prefetchQuery(productsQuery(hid))
+  void queryClient.prefetchQuery(shoppingItemsQuery(hid))
+  void queryClient.prefetchQuery(membersQuery(hid))
+}

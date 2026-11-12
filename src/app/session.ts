@@ -1,11 +1,11 @@
 import { createContext, useContext } from 'react'
-import type { Household, Role, User } from '@/domain/types'
+import type { Household, Membership, Role, User } from '@/domain/types'
 
 export interface Session {
   user: User
   household: Household
   role: Role
-  /** Открыть другой дом — например, тот, в который только что вступили. */
+  memberships: Membership[]
   selectHousehold: (householdId: string) => void
 }
 

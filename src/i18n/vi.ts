@@ -117,6 +117,7 @@ export const vi: Messages = {
   'toast.linkRevoked': 'Đã thu hồi liên kết',
   'toast.memberRemoved': 'Đã xóa thành viên khỏi nhà',
   'toast.googleError': 'Không mở được trang đăng nhập Google',
+  'toast.googleFailed': 'Chưa đăng nhập được bằng Google',
   'toast.demoRestored': 'Đã khôi phục dữ liệu mẫu',
   'toast.joined': 'Bạn đã tham gia nhà',
   'toast.copied': 'Đã sao chép liên kết',
@@ -161,6 +162,7 @@ export const vi: Messages = {
 
   'auth.google': 'Đăng nhập bằng Google',
 
+  'welcome.invited': 'Bạn được mời vào một nhà chung. Hãy chọn cách đăng nhập.',
   'welcome.googleNote':
     'Dữ liệu được lưu vào tài khoản: không mất khi đổi điện thoại và giống nhau trong trình duyệt lẫn ứng dụng trên Màn hình chính.',
   'welcome.anon': 'Tiếp tục không cần tài khoản',

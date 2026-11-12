@@ -123,6 +123,7 @@ export const en: Messages = {
   'toast.linkRevoked': 'Link revoked',
   'toast.memberRemoved': 'Member removed from the home',
   'toast.googleError': 'Couldn’t open Google sign-in',
+  'toast.googleFailed': 'Google sign-in wasn’t completed',
   'toast.demoRestored': 'Demo data restored',
   'toast.joined': 'You’ve joined the home',
   'toast.copied': 'Link copied',
@@ -167,6 +168,7 @@ export const en: Messages = {
 
   'auth.google': 'Sign in with Google',
 
+  'welcome.invited': 'You’ve been invited to a shared home. Choose how to sign in.',
   'welcome.googleNote':
     'Your data is saved to the account: it survives a change of phone and is the same in the browser and in the Home Screen app.',
   'welcome.anon': 'Continue without an account',
