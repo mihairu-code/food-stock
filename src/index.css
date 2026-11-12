@@ -695,6 +695,28 @@ button {
   }
 }
 
+/* ---------- Перетаскивание ---------- */
+
+/* Долгое нажатие начинает перетаскивание, а не выделение текста и не системное меню. */
+.sortable-row {
+  position: relative;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Рамка фокуса внутри карточки: наружную обрезал бы её overflow. */
+.sortable-row:focus-visible,
+.row-main:focus-visible {
+  outline-offset: -3px;
+  border-radius: 14px;
+}
+
+.sortable-row[data-dragging='true'] {
+  z-index: 1;
+  box-shadow: var(--float-shadow);
+}
+
 /* ---------- Шторка ---------- */
 
 .sheet {

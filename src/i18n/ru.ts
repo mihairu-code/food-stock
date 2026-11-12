@@ -155,6 +155,9 @@ export const ru = {
   'toast.addedToList': '«{name}» — в списке покупок',
   'toast.removedFromList': '«{name}» убрано из покупок',
   'toast.deleted': 'Удалено: «{name}»',
+
+  'dnd.product': 'продукт, можно переставить',
+
   'toast.addedTo': 'Добавлено в «{name}»',
   'toast.addedItem': 'Добавлено в список покупок',
   'toast.purchasedStaple': 'Добавлено в «{name}» как постоянный продукт',

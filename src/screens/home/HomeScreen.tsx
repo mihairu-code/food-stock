@@ -1,12 +1,13 @@
 import { Plus } from 'lucide-react'
+import { useMemo } from 'react'
 import { AddRow, EmptyState, StatusNote, SummaryBar } from '@/components'
 import { useHomeData, useSortedSections } from '@/data/hooks'
-import { productsOf } from '@/domain/logic'
+import { groupBySection } from '@/domain/logic'
 import { useT } from '@/i18n'
 import { rich } from '@/i18n/rich'
 import { openSheet } from '@/sheets'
-import { ProductRow } from './ProductRow'
 import { SectionCard } from './SectionCard'
+import { SectionProducts } from './SectionProducts'
 import { useCollapsedSections } from './useCollapsedSections'
 import { useProductActions } from './useProductActions'
 
@@ -16,6 +17,7 @@ export function HomeScreen() {
   const sections = useSortedSections()
   const collapsed = useCollapsedSections()
   const actions = useProductActions()
+  const bySection = useMemo(() => groupBySection(products), [products])
 
   if (isLoading) return <StatusNote>{t('home.loading')}</StatusNote>
   if (isError) return <StatusNote>{t('common.loadError')}</StatusNote>
@@ -37,14 +39,12 @@ export function HomeScreen() {
             <SectionCard
               key={section.id}
               section={section}
-              count={productsOf(products, section.id).length}
+              count={bySection.get(section.id)?.length ?? 0}
               open={!collapsed.ids.includes(section.id)}
               onToggle={() => collapsed.toggle(section.id)}
               onEdit={() => openSheet({ type: 'manage-section', section })}
             >
-              {productsOf(products, section.id).map((product) => (
-                <ProductRow key={product.id} product={product} actions={actions} />
-              ))}
+              <SectionProducts sectionId={section.id} products={bySection.get(section.id) ?? []} actions={actions} />
               <AddRow
                 label={t('home.addProductTo', { name: section.name })}
                 onClick={() => openSheet({ type: 'add-product', sectionId: section.id })}

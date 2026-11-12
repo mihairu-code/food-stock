@@ -107,6 +107,9 @@ export const vi: Messages = {
   'toast.addedToList': '“{name}” đã vào danh sách mua',
   'toast.removedFromList': 'Đã bỏ “{name}” khỏi danh sách mua',
   'toast.deleted': 'Đã xóa: “{name}”',
+
+  'dnd.product': 'món, có thể sắp xếp lại',
+
   'toast.addedTo': 'Đã thêm vào “{name}”',
   'toast.addedItem': 'Đã thêm vào danh sách mua',
   'toast.purchasedStaple': 'Đã thêm vào “{name}” như món luôn có sẵn',

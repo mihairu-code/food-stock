@@ -1,6 +1,7 @@
 import { useHouseholdId } from '@/app/session'
 import { backend } from '@/data'
 import type { NewSection, SectionPatch } from '@/data/backend'
+import { placeSections } from '@/domain/logic'
 import { useHomeMutation } from './useHomeMutation'
 
 export function useCreateSection() {
@@ -33,3 +34,10 @@ export function useDeleteSection() {
   )
 }
 
+/** Новый порядок разделов после перетаскивания: идентификаторы сверху вниз. */
+export function useReorderSections() {
+  return useHomeMutation(
+    (sectionIds: string[]) => backend.reorderSections(sectionIds),
+    (cache, sectionIds) => cache.sections((list) => placeSections(list, sectionIds)),
+  )
+}

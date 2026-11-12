@@ -85,6 +85,11 @@ export interface Product {
   is_available: boolean
   /** Лежит ли продукт в списке покупок. Не зависит от наличия: можно докупать то, что ещё есть. */
   to_buy: boolean
+  /**
+   * Место в разделе, если продукты раздела переставляли. У остальных его нет: они стоят
+   * после переставленных в порядке добавления.
+   */
+  sort_order?: number | null
   created_at: string
   updated_at: string
   created_by: string | null

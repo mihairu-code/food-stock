@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { buildShoppingList, PURCHASED, withAvailability, withToBuy } from '../domain/logic'
+import { buildShoppingList, groupBySection, PURCHASED, sortSections, withAvailability, withToBuy } from '../domain/logic'
 import type { Product } from '../domain/types'
 import { setLangSetting } from '../i18n'
 import type { Backend } from './backend'
@@ -206,6 +206,40 @@ describe('домашние запасы: основные потоки', () => {
     expect(state.sections.map((s) => s.name)).toEqual(['Шкаф'])
     expect(state.products.map((p) => p.name)).toEqual(['Рис'])
     expect(state.shopping.map((e) => (e.type === 'product' ? e.product.name : e.item.name)).sort()).toEqual(['Рис', 'Хлеб'])
+  })
+
+  it('перетаскивание: порядок в разделе, перенос в другой раздел и порядок разделов', async () => {
+    const fridge = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Холодильник', icon: null, sort_order: 0 })
+    const cupboard = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Шкаф', icon: null, sort_order: 1 })
+    const add = (sectionId: string, name: string) =>
+      backend.createProduct(hid, { id: crypto.randomUUID(), section_id: sectionId, name, icon: null, kind: 'staple' })
+    const milk = await add(fridge.id, 'Молоко')
+    const cheese = await add(fridge.id, 'Сыр')
+    const rice = await add(cupboard.id, 'Рис')
+    const names = async (sectionId: string) =>
+      (groupBySection((await snapshot()).products).get(sectionId) ?? []).map((p) => p.name)
+
+    expect(await names(fridge.id)).toEqual(['Молоко', 'Сыр'])
+
+    await backend.reorderProducts(fridge.id, [cheese.id, milk.id])
+    expect(await names(fridge.id)).toEqual(['Сыр', 'Молоко'])
+
+    // Перенос — тот же вызов: продукт из другого раздела стоит в списке.
+    await backend.reorderProducts(cupboard.id, [milk.id, rice.id])
+    expect(await names(cupboard.id)).toEqual(['Молоко', 'Рис'])
+    expect(await names(fridge.id)).toEqual(['Сыр'])
+
+    // Новый продукт встаёт в конец уже переставленного раздела.
+    await add(cupboard.id, 'Гречка')
+    expect(await names(cupboard.id)).toEqual(['Молоко', 'Рис', 'Гречка'])
+
+    // Перестановка не «обновляет» продукт: по updated_at упорядочен список покупок.
+    expect((await product(milk.id)).updated_at).toBe(milk.updated_at)
+
+    await backend.reorderSections([cupboard.id, fridge.id])
+    expect(sortSections((await snapshot()).sections).map((s) => s.name)).toEqual(['Шкаф', 'Холодильник'])
+
+    await expect(backend.reorderProducts('нет-такого-раздела', [milk.id])).rejects.toThrow()
   })
 
   it('демо-набор соответствует макету: молоко закончилось, в покупках три позиции', async () => {

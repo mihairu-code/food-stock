@@ -107,6 +107,9 @@ export const ja: Messages = {
   'toast.addedToList': '「{name}」を買い物リストに追加しました',
   'toast.removedFromList': '「{name}」を買い物リストから外しました',
   'toast.deleted': '「{name}」を削除しました',
+
+  'dnd.product': '品物、並べ替え可能',
+
   'toast.addedTo': '「{name}」に追加しました',
   'toast.addedItem': '買い物リストに追加しました',
   'toast.purchasedStaple': '常備品として「{name}」に追加しました',

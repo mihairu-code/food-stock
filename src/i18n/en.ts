@@ -113,6 +113,9 @@ export const en: Messages = {
   'toast.addedToList': '“{name}” is on the shopping list',
   'toast.removedFromList': '“{name}” removed from the shopping list',
   'toast.deleted': 'Deleted: “{name}”',
+
+  'dnd.product': 'item, can be reordered',
+
   'toast.addedTo': 'Added to “{name}”',
   'toast.addedItem': 'Added to the shopping list',
   'toast.purchasedStaple': 'Added to “{name}” as an item you always keep',

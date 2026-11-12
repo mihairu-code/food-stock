@@ -198,6 +198,9 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
     deleteSection: async (sectionId) => {
       check(await supabase.from('sections').delete().eq('id', sectionId))
     },
+    reorderSections: async (sectionIds) => {
+      check(await supabase.rpc('reorder_sections', { p_section_ids: sectionIds }))
+    },
 
     createProduct: async (householdId, input) =>
       unwrap(
@@ -217,6 +220,11 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
     },
     deleteProduct: async (productId) => {
       check(await supabase.from('products').delete().eq('id', productId))
+    },
+    reorderProducts: async (sectionId, productIds) => {
+      check(
+        await supabase.rpc('reorder_products', { p_section_id: sectionId, p_product_ids: productIds }),
+      )
     },
 
     createShoppingItem: async (householdId, input) =>
