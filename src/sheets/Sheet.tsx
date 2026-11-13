@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { closeSheet } from './sheetStore'
+import { useSheetDismiss } from './useSheetDismiss'
 
 interface SheetProps {
   title: string
@@ -8,12 +9,13 @@ interface SheetProps {
 }
 
 /**
- * Нижняя шторка на нативном <dialog>: фокус остаётся внутри, Esc закрывает.
- * Монтируется только пока открыта — так форма внутри каждый раз чистая.
+ * Нижняя шторка на нативном <dialog>: фокус остаётся внутри, Esc закрывает, на телефоне
+ * её можно стянуть вниз. Монтируется только пока открыта — так форма внутри каждый раз чистая.
  */
 export function Sheet({ title, description, children }: SheetProps) {
   const ref = useRef<HTMLDialogElement>(null)
   const titleId = useId()
+  useSheetDismiss(ref)
 
   useEffect(() => {
     const dialog = ref.current
@@ -36,6 +38,7 @@ export function Sheet({ title, description, children }: SheetProps) {
       }}
     >
       <div className="sheet-body">
+        <div className="sheet-grip" aria-hidden="true" />
         <h2 id={titleId}>{title}</h2>
         {description && <p className="sheet-description">{description}</p>}
         {children}

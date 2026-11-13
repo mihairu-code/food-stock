@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router'
+import { lockPageScroll } from '@/lib/scrollLock'
 import { AddItemSheet } from './AddItemSheet'
 import { InviteLinkSheet } from './InviteLinkSheet'
 import { JoinSheet } from './JoinSheet'
@@ -23,6 +24,10 @@ export function SheetHost() {
 
   // Переход на другой экран (и выход из приложения) закрывает открытую шторку.
   useEffect(() => closeSheet, [pathname])
+
+  // Пока открыта любая шторка, страница под ней стоит на месте.
+  const isOpen = sheet !== null
+  useEffect(() => (isOpen ? lockPageScroll() : undefined), [isOpen])
 
   switch (sheet?.type) {
     case 'add-product':

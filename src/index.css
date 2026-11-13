@@ -874,7 +874,27 @@ a {
     var(--shadow),
     0 140px 0 0 var(--paper);
   overscroll-behavior: contain;
-  transition: margin-bottom 0.2s ease;
+  transition:
+    margin-bottom 0.2s ease,
+    transform 0.2s ease;
+  animation: sheet-in 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Пока шторку тянут пальцем, она идёт за ним без запаздывания. */
+.sheet[data-pulling='true'] {
+  transition: none;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    animation: none;
+  }
 }
 
 .sheet::backdrop {
