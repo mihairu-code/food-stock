@@ -7,6 +7,8 @@ interface SwipeRowProps {
   onDelete: () => void
   /** Подпись под строкой во время жеста; по умолчанию «Удалить». */
   label?: string
+  /** Жест отключён: строка ещё сохраняется. */
+  disabled?: boolean
   children: ReactNode
 }
 
@@ -26,7 +28,7 @@ interface Gesture {
  * Строка, которую удаляют свайпом влево. Жест — не единственный способ:
  * в самой строке обязана быть кнопка удаления для клавиатуры и скринридера.
  */
-export function SwipeRow({ onDelete, label, children }: SwipeRowProps) {
+export function SwipeRow({ onDelete, label, disabled = false, children }: SwipeRowProps) {
   const t = useT()
   const root = useRef<HTMLDivElement>(null)
   const [offset, setOffset] = useState(0)
@@ -35,7 +37,7 @@ export function SwipeRow({ onDelete, label, children }: SwipeRowProps) {
   const suppressClick = useRef(false)
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
-    if (event.pointerType === 'mouse' && event.button !== 0) return
+    if (disabled || (event.pointerType === 'mouse' && event.button !== 0)) return
     gesture.current = { x: event.clientX, y: event.clientY, locked: false, offset: 0 }
     suppressClick.current = false
   }

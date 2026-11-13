@@ -19,11 +19,7 @@ export function useCollapsedSections() {
       const next = current.includes(sectionId)
         ? current.filter((id) => id !== sectionId)
         : [...current, sectionId]
-      try {
-        localStorage.setItem(KEY, JSON.stringify(next))
-      } catch {
-        // хранилище недоступно — выбор действует до перезагрузки
-      }
+      localStorage.setItem(KEY, JSON.stringify(next))
       return next
     })
   }, [])

@@ -113,8 +113,16 @@ export const en: Messages = {
   'toast.addedToList': '“{name}” is on the shopping list',
   'toast.removedFromList': '“{name}” removed from the shopping list',
   'toast.deleted': 'Deleted: “{name}”',
+  'toast.movedTo': '“{name}” is now in “{section}”',
 
+  'dnd.instructions':
+    'To reorder, press Space, move with the arrow keys and press Space again. Escape cancels.',
   'dnd.product': 'item, can be reordered',
+  'dnd.section': 'section, can be reordered',
+  'dnd.picked': 'Picked up “{name}”',
+  'dnd.over': '“{name}” is next to “{target}”',
+  'dnd.dropped': '“{name}” is in its new place',
+  'dnd.cancelled': 'Reordering cancelled: “{name}”',
 
   'toast.addedTo': 'Added to “{name}”',
   'toast.addedItem': 'Added to the shopping list',

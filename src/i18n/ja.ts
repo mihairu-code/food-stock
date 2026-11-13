@@ -107,8 +107,16 @@ export const ja: Messages = {
   'toast.addedToList': '「{name}」を買い物リストに追加しました',
   'toast.removedFromList': '「{name}」を買い物リストから外しました',
   'toast.deleted': '「{name}」を削除しました',
+  'toast.movedTo': '「{name}」を「{section}」に移動しました',
 
+  'dnd.instructions':
+    '並べ替えるには、スペースキーを押し、矢印キーで動かして、もう一度スペースキーを押します。Escape でキャンセルします。',
   'dnd.product': '品物、並べ替え可能',
+  'dnd.section': '置き場所、並べ替え可能',
+  'dnd.picked': '「{name}」を持ち上げました',
+  'dnd.over': '「{name}」は「{target}」の隣です',
+  'dnd.dropped': '「{name}」を新しい位置に置きました',
+  'dnd.cancelled': '並べ替えをキャンセルしました：「{name}」',
 
   'toast.addedTo': '「{name}」に追加しました',
   'toast.addedItem': '買い物リストに追加しました',

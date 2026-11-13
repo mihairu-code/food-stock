@@ -107,8 +107,16 @@ export const vi: Messages = {
   'toast.addedToList': '“{name}” đã vào danh sách mua',
   'toast.removedFromList': 'Đã bỏ “{name}” khỏi danh sách mua',
   'toast.deleted': 'Đã xóa: “{name}”',
+  'toast.movedTo': '“{name}” đã chuyển sang “{section}”',
 
+  'dnd.instructions':
+    'Để sắp xếp lại, nhấn phím cách, di chuyển bằng phím mũi tên rồi nhấn phím cách lần nữa. Escape để hủy.',
   'dnd.product': 'món, có thể sắp xếp lại',
+  'dnd.section': 'khu vực, có thể sắp xếp lại',
+  'dnd.picked': 'Đã nhấc “{name}”',
+  'dnd.over': '“{name}” đang ở cạnh “{target}”',
+  'dnd.dropped': '“{name}” đã ở vị trí mới',
+  'dnd.cancelled': 'Đã hủy sắp xếp: “{name}”',
 
   'toast.addedTo': 'Đã thêm vào “{name}”',
   'toast.addedItem': 'Đã thêm vào danh sách mua',
