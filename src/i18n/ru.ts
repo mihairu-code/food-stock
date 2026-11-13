@@ -155,6 +155,17 @@ export const ru = {
   'toast.addedToList': '«{name}» — в списке покупок',
   'toast.removedFromList': '«{name}» убрано из покупок',
   'toast.deleted': 'Удалено: «{name}»',
+  'toast.movedTo': '«{name}» теперь в «{section}»',
+
+  'dnd.instructions':
+    'Чтобы переставить, нажмите пробел, двигайте стрелками и нажмите пробел ещё раз. Escape — отмена.',
+  'dnd.product': 'продукт, можно переставить',
+  'dnd.section': 'раздел, можно переставить',
+  'dnd.picked': 'Взято: «{name}»',
+  'dnd.over': '«{name}» рядом с «{target}»',
+  'dnd.dropped': '«{name}» на новом месте',
+  'dnd.cancelled': 'Перестановка отменена: «{name}»',
+
   'toast.addedTo': 'Добавлено в «{name}»',
   'toast.addedItem': 'Добавлено в список покупок',
   'toast.purchasedStaple': 'Добавлено в «{name}» как постоянный продукт',

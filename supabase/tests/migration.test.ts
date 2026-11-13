@@ -742,6 +742,127 @@ describe('аккаунт Google: слияние пользователя уст�
 })
 
 
+describe('порядок вручную: перетаскивание продуктов и разделов', () => {
+  const DAVE = { id: '00000000-0000-0000-0000-00000000000d' }
+  const ERIN = { id: '00000000-0000-0000-0000-00000000000e' }
+  let home: string
+  let fridge: string
+  let pantry: string
+  let strangerHome: string
+  let strangerSection: string
+  const ids: Record<string, string> = {}
+
+  const addProduct = async (user: TestUser, householdId: string, sectionId: string, name: string) => {
+    const [row] = await as(user, () =>
+      rows<{ id: string }>(
+        `insert into public.products (household_id, section_id, name, kind) values ($1, $2, $3, 'staple') returning id`,
+        [householdId, sectionId, name],
+      ),
+    )
+    ids[name] = row.id
+  }
+
+  /** Продукты раздела так, как их показывает приложение. */
+  const shown = (sectionId: string) =>
+    as(DAVE, async () =>
+      (
+        await rows<{ name: string }>(
+          `select name from public.products where section_id = $1 order by sort_order nulls last, created_at`,
+          [sectionId],
+        )
+      ).map((row) => row.name),
+    )
+
+  beforeAll(async () => {
+    for (const user of [DAVE, ERIN]) await db.query(`insert into auth.users (id) values ($1)`, [user.id])
+    home = await createHousehold(DAVE, 'Дом Дейва')
+    fridge = await createSection(DAVE, home, 'Холодильник')
+    pantry = await createSection(DAVE, home, 'Шкаф')
+    strangerHome = await createHousehold(ERIN, 'Дом Эрин')
+    strangerSection = await createSection(ERIN, strangerHome, 'Чужой раздел')
+    for (const name of ['Молоко', 'Сыр', 'Яйца']) await addProduct(DAVE, home, fridge, name)
+    await addProduct(DAVE, home, pantry, 'Рис')
+    await addProduct(ERIN, strangerHome, strangerSection, 'Чужое')
+  })
+
+  it('продукт, который не переставляли, места не имеет и стоит по времени добавления', async () => {
+    const places = await as(DAVE, () => rows(`select sort_order from public.products where section_id = $1`, [fridge]))
+    expect(places).toEqual([{ sort_order: null }, { sort_order: null }, { sort_order: null }])
+    expect(await shown(fridge)).toEqual(['Молоко', 'Сыр', 'Яйца'])
+  })
+
+  it('reorder_products переставляет продукты раздела и не трогает updated_at', async () => {
+    const stamp = () =>
+      as(DAVE, async () => (await rows<{ updated_at: Date }>(`select updated_at from public.products where id = $1`, [ids['Яйца']]))[0].updated_at)
+    const before = await stamp()
+
+    await as(DAVE, () =>
+      db.query(`select public.reorder_products($1, $2)`, [fridge, [ids['Яйца'], ids['Молоко'], ids['Сыр']]]),
+    )
+
+    expect(await shown(fridge)).toEqual(['Яйца', 'Молоко', 'Сыр'])
+    // По updated_at упорядочен список покупок: перестановка не должна его перемешивать.
+    expect((await stamp()).getTime()).toBe(before.getTime())
+  })
+
+  it('продукт, добавленный после перестановки, встаёт в конец раздела', async () => {
+    await addProduct(DAVE, home, fridge, 'Масло')
+    expect(await shown(fridge)).toEqual(['Яйца', 'Молоко', 'Сыр', 'Масло'])
+  })
+
+  it('продукт из другого раздела, оказавшийся в списке, переносится в этот раздел', async () => {
+    await as(DAVE, () =>
+      db.query(`select public.reorder_products($1, $2)`, [pantry, [ids['Сыр'], ids['Рис']]]),
+    )
+    expect(await shown(pantry)).toEqual(['Сыр', 'Рис'])
+    expect(await shown(fridge)).toEqual(['Яйца', 'Молоко', 'Масло'])
+  })
+
+  it('отметки продукта по-прежнему обновляют updated_at', async () => {
+    const [before] = await as(DAVE, () => rows<{ updated_at: Date }>(`select updated_at from public.products where id = $1`, [ids['Рис']]))
+    await new Promise((resolve) => setTimeout(resolve, 5))
+    await as(DAVE, () => db.query(`update public.products set to_buy = true where id = $1`, [ids['Рис']]))
+    const [after] = await as(DAVE, () => rows<{ updated_at: Date }>(`select updated_at from public.products where id = $1`, [ids['Рис']]))
+    expect(after.updated_at.getTime()).toBeGreaterThan(before.updated_at.getTime())
+  })
+
+  it('посторонний не переставит чужие продукты и не утащит их к себе', async () => {
+    await as(ERIN, () =>
+      db.query(`select public.reorder_products($1, $2)`, [fridge, [ids['Масло'], ids['Молоко'], ids['Яйца']]]),
+    )
+    await as(ERIN, () => db.query(`select public.reorder_products($1, $2)`, [strangerSection, [ids['Молоко']]]))
+    expect(await shown(fridge)).toEqual(['Яйца', 'Молоко', 'Масло'])
+  })
+
+  it('свой продукт нельзя перенести в раздел чужого дома', async () => {
+    await expect(
+      as(DAVE, () => db.query(`select public.reorder_products($1, $2)`, [strangerSection, [ids['Молоко']]])),
+    ).rejects.toThrow()
+    expect(await shown(fridge)).toEqual(['Яйца', 'Молоко', 'Масло'])
+  })
+
+  it('reorder_sections меняет порядок разделов только своего дома', async () => {
+    const order = () =>
+      as(DAVE, async () =>
+        (await rows<{ name: string }>(`select name from public.sections where household_id = $1 order by sort_order, created_at`, [home])).map(
+          (row) => row.name,
+        ),
+      )
+    expect(await order()).toEqual(['Холодильник', 'Шкаф'])
+
+    await as(DAVE, () => db.query(`select public.reorder_sections($1)`, [[pantry, fridge]]))
+    expect(await order()).toEqual(['Шкаф', 'Холодильник'])
+
+    await as(ERIN, () => db.query(`select public.reorder_sections($1)`, [[fridge, pantry]]))
+    expect(await order()).toEqual(['Шкаф', 'Холодильник'])
+  })
+
+  it('без входа функции порядка недоступны', async () => {
+    await expect(as(null, () => db.query(`select public.reorder_sections($1)`, [[fridge]]))).rejects.toThrow()
+    await expect(as(null, () => db.query(`select public.reorder_products($1, $2)`, [fridge, [ids['Молоко']]]))).rejects.toThrow()
+  })
+})
+
 describe('обновление существующей базы', () => {
   it('0005: всё, что было в покупках, остаётся в них; разовые продукты не затронуты', async () => {
     const old = new PGlite()

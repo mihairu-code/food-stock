@@ -1,4 +1,6 @@
 import {
+  placeProducts,
+  placeSections,
   purchaseManualItem,
   removeProduct,
   removeSection,
@@ -174,6 +176,9 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
     deleteSection: async (sectionId) => {
       update((s) => ({ ...s, ...removeSection(s, sectionId) }))
     },
+    reorderSections: async (sectionIds) => {
+      update((s) => ({ ...s, sections: placeSections(s.sections, sectionIds) }))
+    },
 
     createProduct: async (householdId, input) => {
       const state = read()
@@ -197,6 +202,11 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
     },
     deleteProduct: async (productId) => {
       update((s) => ({ ...s, ...removeProduct(s, productId) }))
+    },
+    reorderProducts: async (sectionId, productIds) => {
+      const state = read()
+      if (!state.sections.some((s) => s.id === sectionId)) throw new Error('Раздел не найден')
+      write({ ...state, products: placeProducts(state.products, sectionId, productIds) })
     },
 
     createShoppingItem: async (householdId, input) => {

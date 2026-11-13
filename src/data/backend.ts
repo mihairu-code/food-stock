@@ -96,11 +96,18 @@ export interface Backend {
   updateSection(sectionId: string, patch: SectionPatch): Promise<void>
   /** Каскадно удаляет продукты раздела (и тем самым их строки в покупках). */
   deleteSection(sectionId: string): Promise<void>
+  /** Новый порядок разделов дома: идентификаторы сверху вниз. */
+  reorderSections(sectionIds: string[]): Promise<void>
 
   createProduct(householdId: string, input: NewProduct): Promise<Product>
   /** Записывает обе отметки продукта сразу: наличие дома и «в покупках». */
   setProductState(productId: string, state: ProductState): Promise<void>
   deleteProduct(productId: string): Promise<void>
+  /**
+   * Продукты раздела в новом порядке, сверху вниз. Продукт из другого раздела,
+   * оказавшийся в списке, переносится в этот раздел.
+   */
+  reorderProducts(sectionId: string, productIds: string[]): Promise<void>
 
   createShoppingItem(householdId: string, input: NewShoppingItem): Promise<ShoppingItem>
   deleteShoppingItem(itemId: string): Promise<void>

@@ -695,6 +695,69 @@ button {
   }
 }
 
+/* ---------- Перетаскивание ---------- */
+
+/* Долгое нажатие начинает перетаскивание, а не выделение текста и не системное меню. */
+.sortable-row,
+.section-head,
+.drag-ghost {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.sortable-row,
+.section {
+  position: relative;
+}
+
+/* Рамка фокуса внутри карточки: наружную обрезал бы её overflow. */
+.sortable-row:focus-visible,
+.section-head:focus-visible,
+.row-main:focus-visible {
+  outline-offset: -3px;
+  border-radius: 14px;
+}
+
+/* Место, откуда строку или раздел забрали: под пальцем едет «призрак». */
+.sortable-row[data-dragging='true'],
+.section[data-dragging='true'] {
+  opacity: 0.35;
+}
+
+.section {
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+/* Раздел, в который попадёт продукт, если отпустить палец. */
+.section[data-target='true'] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+/* Копия строки под пальцем: та же строка, только приподнятая. */
+.drag-ghost {
+  overflow: hidden;
+  border: 0;
+  border-radius: 14px;
+  background: var(--paper);
+  box-shadow: var(--float-shadow);
+  cursor: grabbing;
+}
+
+.drag-ghost .row {
+  border-top: 0;
+}
+
+.section-ghost {
+  display: flex;
+  min-height: 54px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  padding: 0 14px;
+}
+
 /* ---------- Шторка ---------- */
 
 .sheet {

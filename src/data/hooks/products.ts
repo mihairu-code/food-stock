@@ -1,7 +1,7 @@
 import { useSession } from '@/app/session'
 import { backend } from '@/data'
 import type { NewProduct } from '@/data/backend'
-import type { ProductState } from '@/domain/logic'
+import { placeProducts, type ProductState } from '@/domain/logic'
 import { useHomeMutation } from './useHomeMutation'
 
 export function useCreateProduct() {
@@ -41,5 +41,17 @@ export function useDeleteProduct() {
   return useHomeMutation(
     (productId: string) => backend.deleteProduct(productId),
     (cache, productId) => cache.products((list) => list.filter((p) => p.id !== productId)),
+  )
+}
+
+/**
+ * Раздел после перетаскивания: его продукты в новом порядке. Перенос из другого
+ * раздела — тот же вызов: перенесённый продукт просто стоит в списке.
+ */
+export function useReorderProducts() {
+  return useHomeMutation(
+    (v: { sectionId: string; productIds: string[] }) => backend.reorderProducts(v.sectionId, v.productIds),
+    (cache, { sectionId, productIds }) =>
+      cache.products((list) => placeProducts(list, sectionId, productIds)),
   )
 }

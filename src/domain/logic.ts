@@ -21,10 +21,20 @@ export function sortSections(sections: Section[]): Section[] {
   )
 }
 
-export function productsOf(products: Product[], sectionId: string): Product[] {
-  return products
-    .filter((p) => p.section_id === sectionId)
-    .sort((a, b) => byTime(a.created_at, b.created_at))
+/** Продукты, которые переставляли, идут по своим местам; остальные — после них, по времени добавления. */
+const byPlace = (a: Product, b: Product) =>
+  (a.sort_order ?? Infinity) - (b.sort_order ?? Infinity) || byTime(a.created_at, b.created_at)
+
+/** Продукты по разделам за один проход, в порядке показа. */
+export function groupBySection(products: Product[]): Map<string, Product[]> {
+  const groups = new Map<string, Product[]>()
+  const ordered = [...products].sort(byPlace)
+  for (const product of ordered) {
+    const group = groups.get(product.section_id)
+    if (group) group.push(product)
+    else groups.set(product.section_id, [product])
+  }
+  return groups
 }
 
 /**
@@ -80,6 +90,30 @@ export function setProductState(data: HomeData, productId: string, state: Produc
     ...data,
     products: data.products.map((p) => (p.id === productId ? { ...p, ...state, updated_at: now } : p)),
   }
+}
+
+/**
+ * Раздел после перетаскивания: перечисленные продукты оказываются в нём в этом порядке.
+ * Так же записывается и перенос из другого раздела — продукт просто есть в списке.
+ * Перестановка не меняет updated_at: по нему упорядочен список покупок.
+ */
+export function placeProducts(products: Product[], sectionId: string, productIds: string[]): Product[] {
+  const places = new Map(productIds.map((id, index) => [id, index + 1]))
+  return products.map((product) => {
+    const place = places.get(product.id)
+    if (place === undefined) return product
+    if (product.section_id === sectionId && product.sort_order === place) return product
+    return { ...product, section_id: sectionId, sort_order: place }
+  })
+}
+
+/** Разделы в новом порядке; не перечисленные остаются на своих местах. */
+export function placeSections(sections: Section[], sectionIds: string[]): Section[] {
+  const places = new Map(sectionIds.map((id, index) => [id, index + 1]))
+  return sections.map((section) => {
+    const place = places.get(section.id)
+    return place === undefined || section.sort_order === place ? section : { ...section, sort_order: place }
+  })
 }
 
 export function removeProduct(data: HomeData, productId: string): HomeData {
