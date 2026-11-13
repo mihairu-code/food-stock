@@ -4,18 +4,28 @@ import { useMemo, useState } from 'react'
 import { useReorderShopping } from '@/data/hooks'
 import type { ShoppingEntry } from '@/domain/logic'
 import { useDragSensors } from '@/hooks/useDragSensors'
+import { setDragActive } from '@/lib/dragState'
 import { haptic } from '@/lib/haptics'
 
 /**
  * Перетаскивание строк в списке покупок. Пока идёт жест, порядок живёт в черновике;
- * после отпускания он сохраняется одним запросом.
+ * после отпускания он сохраняется одним запросом, а черновик остаётся на экране, пока
+ * сюда не придут обновлённые данные, — строка не возвращается на старое место ни на кадр.
  */
 export function useShoppingDrag(entries: ShoppingEntry[]) {
   const saved = useMemo(() => entries.map((entry) => entry.id), [entries])
   const [draft, setDraft] = useState<string[] | null>(null)
   const [activeId, setActiveId] = useState<string | null>(null)
+  // Порядок, который был на экране в момент отпускания. Пока он не сменился, показываем черновик.
+  const [dropped, setDropped] = useState<string[] | null>(null)
   const { mutate: reorder } = useReorderShopping()
   const sensors = useDragSensors()
+
+  // Данные обновились (оптимистично или с сервера) — дальше показываем их, а не черновик.
+  if (draft && !activeId && dropped && saved !== dropped) {
+    setDraft(null)
+    setDropped(null)
+  }
 
   const ordered = useMemo(() => {
     if (!draft) return entries
@@ -26,11 +36,19 @@ export function useShoppingDrag(entries: ShoppingEntry[]) {
   }, [draft, entries])
 
   function stop() {
+    setDragActive(false)
     setActiveId(null)
+  }
+
+  /** Жест закончился без изменений. */
+  function reset() {
     setDraft(null)
+    setDropped(null)
   }
 
   function onDragStart({ active }: DragStartEvent) {
+    setDragActive(true)
+    setDropped(null)
     setDraft(saved)
     setActiveId(String(active.id))
     haptic('pick')
@@ -41,17 +59,21 @@ export function useShoppingDrag(entries: ShoppingEntry[]) {
   }
 
   function onDragEnd({ active, over }: DragEndEvent) {
-    const ids = ordered.map((entry) => entry.id)
     stop()
     haptic('drop')
+    const ids = ordered.map((entry) => entry.id)
     const from = ids.indexOf(String(active.id))
     const to = over ? ids.indexOf(String(over.id)) : -1
-    if (from < 0 || to < 0 || from === to) return
-    reorder(arrayMove(ids, from, to))
+    if (from < 0 || to < 0 || from === to) return reset()
+    const next = arrayMove(ids, from, to)
+    setDraft(next)
+    setDropped(saved)
+    reorder(next)
   }
 
   function onDragCancel() {
     stop()
+    reset()
   }
 
   return {

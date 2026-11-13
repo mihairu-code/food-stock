@@ -5,6 +5,7 @@ import { memo, useMemo } from 'react'
 import { AddRow } from '@/components'
 import type { Product, Section } from '@/domain/types'
 import { useT } from '@/i18n'
+import { SORT_TRANSITION } from '@/lib/dragMotion'
 import { sameItems } from '@/lib/sameItems'
 import { openSheet } from '@/sheets'
 import { ProductRow } from './ProductRow'
@@ -45,6 +46,7 @@ export const SectionCard = memo(function SectionCard({
   const sortable = useSortable({
     id: section.id,
     data: { kind: 'section' },
+    transition: SORT_TRANSITION,
     attributes: { role: 'group', roleDescription: t('dnd.section') },
   })
   const productIds = useMemo(() => products.map((product) => product.id), [products])

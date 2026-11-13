@@ -1,6 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import type { ReactNode } from 'react'
+import { SORT_TRANSITION } from '@/lib/dragMotion'
 
 interface SortableRowProps {
   id: string
@@ -26,6 +27,7 @@ export function SortableRow({ id, kind, label, description, disabled = false, dr
   const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
     id,
     data: { kind },
+    transition: SORT_TRANSITION,
     disabled: { draggable: disabled, droppable: !droppable },
     attributes: { role: 'group', roleDescription: description },
   })

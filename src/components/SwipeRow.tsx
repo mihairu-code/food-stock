@@ -1,6 +1,7 @@
 import { Trash2 } from 'lucide-react'
 import { useRef, useState, type PointerEvent, type ReactNode } from 'react'
 import { useT } from '@/i18n'
+import { isDragActive } from '@/lib/dragState'
 
 interface SwipeRowProps {
   /** Вызывается, если строку утянули влево дальше порога. */
@@ -45,6 +46,13 @@ export function SwipeRow({ onDelete, label, disabled = false, children }: SwipeR
   function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
     const start = gesture.current
     if (!start) return
+    if (isDragActive()) {
+      // Строку начали перетаскивать — свайп не наш, возвращаем её на место.
+      gesture.current = null
+      setOffset(0)
+      setDragging(false)
+      return
+    }
     const dx = event.clientX - start.x
     const dy = event.clientY - start.y
     if (!start.locked) {

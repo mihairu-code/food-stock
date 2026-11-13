@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import type { ShoppingEntry } from '@/domain/logic'
 import { useT } from '@/i18n'
 import { dragAnnouncements } from '@/lib/dragAnnouncements'
+import { DROP_ANIMATION } from '@/lib/dragMotion'
 import { ManualRow } from './ManualRow'
 import { ShoppingProductRow } from './ShoppingProductRow'
 import { useShoppingActions } from './useShoppingActions'
@@ -49,7 +50,7 @@ export function ShoppingList({ entries: saved }: { entries: ShoppingEntry[] }) {
       </div>
 
       {createPortal(
-        <DragOverlay>
+        <DragOverlay dropAnimation={DROP_ANIMATION}>
           {active?.type === 'product' && (
             <ShoppingProductRow
               product={active.product}

@@ -5,11 +5,12 @@ import { createPortal } from 'react-dom'
 import type { Product, Section } from '@/domain/types'
 import { useT } from '@/i18n'
 import { dragAnnouncements } from '@/lib/dragAnnouncements'
+import { DROP_ANIMATION } from '@/lib/dragMotion'
+import { boardCollision } from './boardCollision'
 import { ProductRow } from './ProductRow'
 import { SectionCard } from './SectionCard'
 import { SectionGhost } from './SectionGhost'
 import { sectionOf } from './board'
-import { boardCollision } from './boardCollision'
 import { useBoardDrag } from './useBoardDrag'
 import { useCollapsedSections } from './useCollapsedSections'
 import { useProductActions } from './useProductActions'
@@ -72,7 +73,7 @@ export function SectionBoard({ sections, products }: { sections: Section[]; prod
 
       {/* В body, а не внутри экрана: у экрана бывает transform, и «призрак» уехал бы из-под пальца. */}
       {createPortal(
-        <DragOverlay>
+        <DragOverlay dropAnimation={DROP_ANIMATION}>
           {draggedProduct && <ProductRow product={draggedProduct} actions={actions} ghost />}
           {draggedSection && <SectionGhost section={draggedSection} count={productsOf(draggedSection.id).length} />}
         </DragOverlay>,
