@@ -83,9 +83,6 @@ body {
   background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.4px);
   background-size: var(--dot-step) var(--dot-step);
   pointer-events: none;
-  /* Параллакс: сетка отстаёт от прокрутки (сдвиг считает src/lib/parallax.ts). */
-  transform: translate3d(0, var(--dots-shift, 0px), 0);
-  will-change: transform;
 }
 
 /* Полосы прокрутки не рисуются нигде: прокрутка работает, но выглядит как в приложении. */
