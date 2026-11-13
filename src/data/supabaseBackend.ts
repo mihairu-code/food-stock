@@ -238,6 +238,9 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
     deleteShoppingItem: async (itemId) => {
       check(await supabase.from('shopping_items').delete().eq('id', itemId))
     },
+    reorderShopping: async (ids) => {
+      check(await supabase.rpc('reorder_shopping', { p_ids: ids }))
+    },
     purchaseShoppingItem: async (itemId, sectionId, makeStaple) => {
       check(
         await supabase.rpc('purchase_shopping_item', {

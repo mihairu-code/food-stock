@@ -90,6 +90,8 @@ export interface Product {
    * после переставленных в порядке добавления.
    */
   sort_order?: number | null
+  /** Место в списке покупок, если список переставляли. Сбрасывается, когда продукт уходит из покупок. */
+  shopping_order?: number | null
   created_at: string
   updated_at: string
   created_by: string | null
@@ -101,6 +103,8 @@ export interface ShoppingItem {
   household_id: string
   name: string
   icon: string | null
+  /** Место в списке покупок, если список переставляли. */
+  sort_order?: number | null
   created_at: string
   created_by: string | null
 }

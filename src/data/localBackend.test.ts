@@ -242,6 +242,34 @@ describe('домашние запасы: основные потоки', () => {
     await expect(backend.reorderProducts('нет-такого-раздела', [milk.id])).rejects.toThrow()
   })
 
+  it('перетаскивание в покупках: порядок общий для продуктов и ручных позиций', async () => {
+    const fridge = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Холодильник', icon: null, sort_order: 0 })
+    const add = (name: string) =>
+      backend.createProduct(hid, { id: crypto.randomUUID(), section_id: fridge.id, name, icon: null, kind: 'one_off' })
+    const milk = await add('Молоко')
+    const cheese = await add('Сыр')
+    await setToBuy(milk.id, true)
+    const batteries = await backend.createShoppingItem(hid, { id: crypto.randomUUID(), name: 'Батарейки', icon: null })
+    const names = async () =>
+      (await snapshot()).shopping.map((entry) => (entry.type === 'product' ? entry.product.name : entry.item.name))
+
+    expect(await names()).toEqual(['Молоко', 'Батарейки'])
+
+    const stamp = (await product(milk.id)).updated_at
+    await backend.reorderShopping([batteries.id, milk.id])
+    expect(await names()).toEqual(['Батарейки', 'Молоко'])
+    // Перестановка не «обновляет» продукт.
+    expect((await product(milk.id)).updated_at).toBe(stamp)
+
+    // Новая строка — в конец; продукт, положенный в покупки заново, прежнее место не занимает.
+    await setToBuy(cheese.id, true)
+    expect(await names()).toEqual(['Батарейки', 'Молоко', 'Сыр'])
+    await setToBuy(milk.id, false)
+    await new Promise((resolve) => setTimeout(resolve, 5)) // время добавления в список — с точностью до миллисекунды
+    await setToBuy(milk.id, true)
+    expect(await names()).toEqual(['Батарейки', 'Сыр', 'Молоко'])
+  })
+
   it('демо-набор соответствует макету: молоко закончилось, в покупках три позиции', async () => {
     await backend.resetLocalData?.()
     hid = (await backend.listMemberships())[0].household.id

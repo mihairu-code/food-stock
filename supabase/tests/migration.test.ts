@@ -857,6 +857,86 @@ describe('порядок вручную: перетаскивание проду
     expect(await order()).toEqual(['Шкаф', 'Холодильник'])
   })
 
+  describe('список покупок', () => {
+    /** Список покупок так, как его показывает приложение: продукты с отметкой и ручные позиции вместе. */
+    const shopping = () =>
+      as(DAVE, async () =>
+        (
+          await rows<{ name: string }>(
+            `select name from (
+               select name, shopping_order as place, updated_at as added_at from public.products
+                 where household_id = $1 and to_buy
+               union all
+               select name, sort_order, created_at from public.shopping_items where household_id = $1
+             ) list order by place nulls last, added_at`,
+            [home],
+          )
+        ).map((row) => row.name),
+      )
+    const toBuy = (name: string, value: boolean) =>
+      as(DAVE, () => db.query(`update public.products set to_buy = $2 where id = $1`, [ids[name], value]))
+    const pause = () => new Promise((resolve) => setTimeout(resolve, 5))
+
+    beforeAll(async () => {
+      // «Рис» уже в покупках (см. выше); добавляем ещё продукт и ручную позицию.
+      await pause()
+      await toBuy('Молоко', true)
+      await pause()
+      const [item] = await as(DAVE, () =>
+        rows<{ id: string }>(`insert into public.shopping_items (household_id, name) values ($1, 'Батарейки') returning id`, [home]),
+      )
+      ids['Батарейки'] = item.id
+    })
+
+    it('пока список не переставляли, он идёт в порядке добавления', async () => {
+      expect(await shopping()).toEqual(['Рис', 'Молоко', 'Батарейки'])
+    })
+
+    it('reorder_shopping переставляет продукты и ручные позиции вперемешку и не трогает updated_at', async () => {
+      const stamp = () =>
+        as(DAVE, async () => (await rows<{ updated_at: Date }>(`select updated_at from public.products where id = $1`, [ids['Рис']]))[0].updated_at)
+      const before = await stamp()
+
+      await as(DAVE, () =>
+        db.query(`select public.reorder_shopping($1)`, [[ids['Батарейки'], ids['Рис'], ids['Молоко']]]),
+      )
+
+      expect(await shopping()).toEqual(['Батарейки', 'Рис', 'Молоко'])
+      expect((await stamp()).getTime()).toBe(before.getTime())
+    })
+
+    it('новая строка встаёт в конец переставленного списка', async () => {
+      await toBuy('Яйца', true)
+      expect(await shopping()).toEqual(['Батарейки', 'Рис', 'Молоко', 'Яйца'])
+    })
+
+    it('продукт, положенный в покупки заново, прежнее место не занимает', async () => {
+      await toBuy('Рис', false)
+      await pause()
+      await toBuy('Рис', true)
+      expect(await shopping()).toEqual(['Батарейки', 'Молоко', 'Яйца', 'Рис'])
+    })
+
+    it('прежняя версия приложения: закончившийся продукт сам попадает в конец списка', async () => {
+      await as(DAVE, () => db.query(`update public.products set is_available = true, to_buy = false where id = $1`, [ids['Молоко']]))
+      await pause()
+      // Старое приложение меняет только наличие.
+      await as(DAVE, () => db.query(`update public.products set is_available = false where id = $1`, [ids['Молоко']]))
+      expect(await shopping()).toEqual(['Батарейки', 'Яйца', 'Рис', 'Молоко'])
+    })
+
+    it('посторонний чужой список не переставит', async () => {
+      await as(ERIN, () =>
+        db.query(`select public.reorder_shopping($1)`, [[ids['Молоко'], ids['Рис'], ids['Яйца'], ids['Батарейки']]]),
+      )
+      expect(await shopping()).toEqual(['Батарейки', 'Яйца', 'Рис', 'Молоко'])
+    })
+
+    it('без входа функция недоступна', async () => {
+      await expect(as(null, () => db.query(`select public.reorder_shopping($1)`, [[ids['Рис']]]))).rejects.toThrow()
+    })
+  })
+
   it('без входа функции порядка недоступны', async () => {
     await expect(as(null, () => db.query(`select public.reorder_sections($1)`, [[fridge]]))).rejects.toThrow()
     await expect(as(null, () => db.query(`select public.reorder_products($1, $2)`, [fridge, [ids['Молоко']]]))).rejects.toThrow()

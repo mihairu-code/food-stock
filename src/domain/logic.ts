@@ -6,9 +6,18 @@ export interface HomeData {
   shoppingItems: ShoppingItem[]
 }
 
+interface ShoppingEntryBase {
+  /** Идентификатор продукта или ручной позиции. */
+  id: string
+  key: string
+  addedAt: string
+  /** Место, если список покупок переставляли вручную. */
+  place: number | null
+}
+
 export type ShoppingEntry =
-  | { type: 'product'; key: string; product: Product; section: Section | null }
-  | { type: 'manual'; key: string; item: ShoppingItem }
+  | (ShoppingEntryBase & { type: 'product'; product: Product; section: Section | null })
+  | (ShoppingEntryBase & { type: 'manual'; item: ShoppingItem })
 
 /** Две независимые отметки продукта: есть ли он дома и лежит ли в покупках. */
 export type ProductState = Pick<Product, 'is_available' | 'to_buy'>
@@ -41,26 +50,69 @@ export function groupBySection(products: Product[]): Map<string, Product[]> {
  * Список покупок — это продукты дома с отметкой `to_buy` плюс позиции, добавленные
  * вручную. Продукт не копируется в список, поэтому не может попасть в него дважды,
  * а удаление продукта или раздела убирает его и из покупок.
+ *
+ * Порядок: то, что переставляли вручную, — по своим местам; остальное — следом,
+ * в порядке добавления в список.
  */
 export function buildShoppingList(data: HomeData): ShoppingEntry[] {
   const sectionById = new Map(data.sections.map((s) => [s.id, s]))
-  const fromHome = data.products
+  const fromHome: ShoppingEntry[] = data.products
     .filter((p) => p.to_buy)
     .map((product) => ({
-      at: product.updated_at,
-      entry: {
-        type: 'product',
-        key: `product:${product.id}`,
-        product,
-        section: sectionById.get(product.section_id) ?? null,
-      } satisfies ShoppingEntry,
+      type: 'product',
+      id: product.id,
+      key: `product:${product.id}`,
+      addedAt: product.updated_at,
+      place: product.shopping_order ?? null,
+      product,
+      section: sectionById.get(product.section_id) ?? null,
     }))
-  const manual = data.shoppingItems.map((item) => ({
-    at: item.created_at,
-    entry: { type: 'manual', key: `item:${item.id}`, item } satisfies ShoppingEntry,
+  const manual: ShoppingEntry[] = data.shoppingItems.map((item) => ({
+    type: 'manual',
+    id: item.id,
+    key: `item:${item.id}`,
+    addedAt: item.created_at,
+    place: item.sort_order ?? null,
+    item,
   }))
-  // Одним списком в порядке добавления: продукт — по времени, когда его положили в покупки.
-  return [...fromHome, ...manual].sort((a, b) => byTime(a.at, b.at)).map(({ entry }) => entry)
+  return [...fromHome, ...manual].sort(
+    (a, b) => (a.place ?? Infinity) - (b.place ?? Infinity) || byTime(a.addedAt, b.addedAt),
+  )
+}
+
+/**
+ * Список покупок после перетаскивания: идентификаторы продуктов и ручных позиций
+ * вперемешку, сверху вниз. Как и перестановка в разделе, updated_at не меняет.
+ */
+export function placeShopping(
+  data: Pick<HomeData, 'products' | 'shoppingItems'>,
+  ids: string[],
+): Pick<HomeData, 'products' | 'shoppingItems'> {
+  const places = new Map(ids.map((id, index) => [id, index + 1]))
+  return {
+    products: data.products.map((product) => {
+      const place = places.get(product.id)
+      return place === undefined || product.shopping_order === place ? product : { ...product, shopping_order: place }
+    }),
+    shoppingItems: data.shoppingItems.map((item) => {
+      const place = places.get(item.id)
+      return place === undefined || item.sort_order === place ? item : { ...item, sort_order: place }
+    }),
+  }
+}
+
+/**
+ * Продукт с новыми отметками. Продукт, который положили в покупки заново, встаёт
+ * в конец списка: прежнее место в покупках ему не возвращается.
+ */
+export function withState(product: Product, state: ProductState, now: string): Product {
+  return {
+    ...product,
+    is_available: state.is_available,
+    to_buy: state.to_buy,
+    shopping_order: state.to_buy === product.to_buy ? product.shopping_order : null,
+    updated_at: now,
+  }
 }
 
 /**
@@ -84,11 +136,16 @@ export const PURCHASED: ProductState = { is_available: true, to_buy: false }
 /* Чистые переходы состояния. Их использует локальный режим; в Supabase то же
    самое делают внешние ключи с каскадом и RPC purchase_shopping_item. */
 
-export function setProductState(data: HomeData, productId: string, state: ProductState, now: string): HomeData {
+export function setProductState(
+  data: HomeData,
+  productId: string,
+  state: ProductState,
+  now: string,
+): HomeData {
   if (!data.products.some((p) => p.id === productId)) throw new Error('Продукт не найден')
   return {
     ...data,
-    products: data.products.map((p) => (p.id === productId ? { ...p, ...state, updated_at: now } : p)),
+    products: data.products.map((p) => (p.id === productId ? withState(p, state, now) : p)),
   }
 }
 

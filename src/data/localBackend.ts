@@ -1,6 +1,7 @@
 import {
   placeProducts,
   placeSections,
+  placeShopping,
   purchaseManualItem,
   removeProduct,
   removeSection,
@@ -221,6 +222,9 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
     },
     deleteShoppingItem: async (itemId) => {
       update((s) => ({ ...s, shoppingItems: s.shoppingItems.filter((i) => i.id !== itemId) }))
+    },
+    reorderShopping: async (ids) => {
+      update((s) => ({ ...s, ...placeShopping(s, ids) }))
     },
     purchaseShoppingItem: async (itemId, sectionId, makeStaple) => {
       update((s) => ({

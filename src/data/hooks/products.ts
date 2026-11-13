@@ -1,7 +1,7 @@
 import { useSession } from '@/app/session'
 import { backend } from '@/data'
 import type { NewProduct } from '@/data/backend'
-import { placeProducts, type ProductState } from '@/domain/logic'
+import { placeProducts, withState, type ProductState } from '@/domain/logic'
 import { useHomeMutation } from './useHomeMutation'
 
 export function useCreateProduct() {
@@ -31,9 +31,7 @@ export function useSetProductState() {
   return useHomeMutation(
     ({ id, state }: { id: string; state: ProductState }) => backend.setProductState(id, state),
     (cache, { id, state }) =>
-      cache.products((list) =>
-        list.map((p) => (p.id === id ? { ...p, ...state, updated_at: new Date().toISOString() } : p)),
-      ),
+      cache.products((list) => list.map((p) => (p.id === id ? withState(p, state, new Date().toISOString()) : p))),
   )
 }
 

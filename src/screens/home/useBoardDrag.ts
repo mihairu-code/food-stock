@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import { useReorderProducts, useReorderSections } from '@/data/hooks'
 import type { Product, Section } from '@/domain/types'
 import { useDragSensors } from '@/hooks/useDragSensors'
+import { haptic } from '@/lib/haptics'
 import { notify } from '@/lib/toast'
 import {
   buildBoard,
@@ -42,10 +43,12 @@ export function useBoardDrag(sections: Section[], products: Product[]) {
   function onDragStart({ active: item }: DragStartEvent) {
     setDraft(saved)
     setActive({ kind: item.data.current?.kind as DragKind, id: String(item.id) })
+    haptic('pick')
   }
 
   // Продукт оказался над другим разделом — он сразу переезжает туда, и раздел раздвигается.
   function onDragOver({ active: item, over }: DragOverEvent) {
+    if (over && over.id !== item.id) haptic('move')
     if (!over || item.data.current?.kind !== 'product') return
     const productId = String(item.id)
     const overId = String(over.id)
@@ -66,6 +69,7 @@ export function useBoardDrag(sections: Section[], products: Product[]) {
   function onDragEnd({ active: item, over }: DragEndEvent) {
     const board = draft ?? saved
     stop()
+    haptic('drop')
     const id = String(item.id)
     const overId = over ? String(over.id) : null
 

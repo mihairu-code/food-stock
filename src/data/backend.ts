@@ -111,6 +111,8 @@ export interface Backend {
 
   createShoppingItem(householdId: string, input: NewShoppingItem): Promise<ShoppingItem>
   deleteShoppingItem(itemId: string): Promise<void>
+  /** Список покупок в новом порядке: идентификаторы продуктов и ручных позиций вперемешку, сверху вниз. */
+  reorderShopping(ids: string[]): Promise<void>
   /** Атомарно: создать продукт в разделе и убрать позицию из покупок. */
   purchaseShoppingItem(itemId: string, sectionId: string, makeStaple: boolean): Promise<void>
 
