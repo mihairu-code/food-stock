@@ -34,6 +34,8 @@ export const ja: Messages = {
 
   'title.home': '家にあるもの',
 
+  'header.settingsLink': 'メンバーと設定',
+
   'home.loading': '読み込み中…',
   'home.emptyTitle': 'まずは置き場所を作りましょう',
   'home.emptyText': '置き場所とは、ものをしまっている場所のことです。「冷蔵庫」「戸棚」「おやつ」など。',

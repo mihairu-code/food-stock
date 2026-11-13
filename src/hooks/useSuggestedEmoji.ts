@@ -2,8 +2,8 @@ import { useDeferredValue, useMemo, useState } from 'react'
 import { useLang } from '@/i18n'
 import { suggestEmojis } from '@/lib/emojiSuggest'
 
-/** Два ряда подсказок под полем: больше на телефоне не помещается без прокрутки. */
-const SUGGESTIONS = 10
+/** Столько подсказок помещается в одну строку под полем. */
+const SUGGESTIONS = 5
 
 /**
  * Иконка продукта, подобранная по названию. Пока пользователь не выбрал иконку

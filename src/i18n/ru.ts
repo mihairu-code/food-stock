@@ -61,6 +61,8 @@ export const ru = {
 
   'title.home': 'Дома',
 
+  'header.settingsLink': 'Участники и настройки',
+
   'home.loading': 'Загружаем продукты…',
   'home.emptyTitle': 'Начните с раздела',
   'home.emptyText': 'Разделы — это места, где лежат продукты: «Холодильник», «Шкаф», «Вкусняшки».',

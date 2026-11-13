@@ -34,6 +34,8 @@ export const en: Messages = {
 
   'title.home': 'At home',
 
+  'header.settingsLink': 'Members and settings',
+
   'home.loading': 'Loading your food…',
   'home.emptyTitle': 'Start with a section',
   'home.emptyText': 'Sections are the places where food is kept: “Fridge”, “Cupboard”, “Treats”.',

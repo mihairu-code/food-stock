@@ -10,3 +10,6 @@ export const memberLabel = (member: Member, t: Translate) => member.display_name
 /** Что отличает участника от остальных: почта аккаунта или, без аккаунта, его устройство. */
 export const memberIdentity = (member: Member, t: Translate) =>
   [roleLabel(member, t), member.account_email ?? localizeDevice(member.device, t)].filter(Boolean).join(' · ')
+
+/** Первая буква имени для аватара. */
+export const memberInitial = (member: Member) => member.display_name.charAt(0).toUpperCase()

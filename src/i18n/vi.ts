@@ -34,6 +34,8 @@ export const vi: Messages = {
 
   'title.home': 'Trong nhà',
 
+  'header.settingsLink': 'Thành viên và cài đặt',
+
   'home.loading': 'Đang tải danh sách…',
   'home.emptyTitle': 'Hãy bắt đầu bằng một khu vực',
   'home.emptyText': 'Khu vực là nơi bạn cất đồ: “Tủ lạnh”, “Tủ bếp”, “Đồ ăn vặt”.',
