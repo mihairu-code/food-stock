@@ -299,3 +299,58 @@ launch, although the data barely changes between launches. Three things:
 One more small thing: by default TanStack notifies components on a timer, and when the
 phone is busy with a touch, an edit showed up on screen with a delay. I switched the
 scheduler to a microtask — feels noticeably snappier.
+
+## Nov 12, evening
+
+Finally the thing I've been missing myself since day one: my own order. I want milk at
+the top and spices at the bottom, not "in the order I added them".
+
+Native drag and drop was out right away — on iPhone with a finger it basically doesn't
+work. `@hello-pangea/dnd` is fine for a simple list, but here it's
+lists inside a list, and it's heavier. Went with dnd-kit
+([0008](decisions/0008-drag-and-drop-dnd-kit.md)): sensors for mouse, touch and
+keyboard, screen reader announcements out of the box.
+
+The main catch is one finger for three gestures: scrolling, the delete swipe and
+dragging. Split it like this: on touch dragging starts only after a 250 ms hold, with a
+mouse right away, but only vertically — horizontal stays with the swipe.
+
+The order is stored in the database (`0006`): an empty `sort_order` means "never
+reordered", those go after the rest by time. The older version on the phone doesn't
+know about the order and breaks nothing. And an important one: reordering doesn't touch
+`updated_at`, otherwise the shopping list gets shuffled.
+
+Moving to another section turned out to be the same call as reordering: the product
+just shows up in the other section's list. I had to write my own collision detection for
+the board — the stock ones got confused when you drag a row over a collapsed section's
+header.
+
+## Nov 13, Fri
+
+In the morning I merged the drag branch and right away did the same for shopping — in
+the store it's handy to lay the list out in the order you walk (`0007`). Vibration on
+pick-up and drop is Android only: Safari on iPhone has no `navigator.vibrate`, and
+there's no way around it.
+
+Then I finally got to the looks. Dotted background and translucent buttons, member
+initials in the header. Turned off page zoom: on the phone a double tap on the "+"
+button sometimes zoomed the screen, drove me nuts.
+
+Next — the keyboard on iPhone, which ate the whole second half of the day. The keyboard
+doesn't shrink the page, it lies on top of it, and a sheet with an input ends up under
+it. `lib/keyboard.ts` listens to `visualViewport` and writes into CSS variables how much
+is covered — the sheet uses them to sit higher. In Safari it's fine now, in the app
+from the Home Screen it still drifts sometimes. Noted it, will come back.
+
+Along the way a sheet can be swiped down, and the page under it no longer scrolls.
+
+In the evening I wanted a parallax: the dots move slower than the content. On desktop —
+pretty, on iPhone — it twitches: the `scroll` event and the actual scrolling aren't in
+step, the dots lag and jump. Spent half an hour trying to tune it and reverted. The
+background just stays put now, the content slides over it — nothing left to twitch.
+
+Last thing for the day: after a drop the row jumped back to its old place for a frame. I
+was clearing the draft order on drop, while the cache still held the old one until the
+optimistic update landed. Now the draft lives until fresh data arrives. And while a drag
+is active the delete swipe steps aside — via a module-level flag, so rows don't
+re-render just for that.

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.0 — 2026-11-13
+
+- Drag and drop on dnd-kit: products within and between sections, sections, the shopping
+  list (migrations `0006`, `0007`). Keyboard and screen reader support.
+- Haptics on Android while dragging.
+- Dotted background, glass buttons, home name and member initials in the header, no pinch zoom.
+- Sheet stays above the iOS keyboard; scroll lock and swipe down to close.
+- Dropped row no longer jumps back for a frame.
+
 ## 0.5.0 — 2026-11-12
 
 - Mutations moved into `data/hooks`; `useAction` for one-off actions; `notify()` toasts.
