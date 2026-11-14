@@ -1226,6 +1226,45 @@ img.avatar {
     scale 0.12s ease;
 }
 
+/* Кнопка «все иконки» — первая в ряду: с рамкой, как поле. */
+.emoji-more {
+  border-color: var(--line);
+  background: var(--bg);
+  color: var(--muted);
+}
+
+.emoji-more[aria-expanded='true'] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Панель со всеми иконками встаёт на место клавиатуры и прокручивается сама. */
+.emoji-panel {
+  display: grid;
+  max-height: 228px;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 2px;
+  padding: 6px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg);
+  overscroll-behavior: contain;
+}
+
+.emoji-panel button {
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 22px;
+}
+
+.emoji-panel button[aria-pressed='true'] {
+  background: var(--accent-soft);
+}
+
 .emoji-option[aria-pressed='true'] {
   border-color: var(--accent);
   background: var(--accent-soft);

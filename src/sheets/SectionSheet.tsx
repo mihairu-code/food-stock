@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { EmojiOptions, TextField } from '@/components'
+import { EmojiField, TextField } from '@/components'
 import { useCreateSection, useHomeData, useUpdateSection } from '@/data/hooks'
 import type { Section } from '@/domain/types'
 import { useT } from '@/i18n'
@@ -46,7 +46,7 @@ export function SectionSheet({ section, onRequestDelete }: SectionSheetProps) {
     >
       <form onSubmit={submit}>
         <TextField id="section-name" label={t('section.name')} value={name} onChange={setName} maxLength={60} autoFocus />
-        <EmojiOptions options={SECTION_EMOJIS} value={icon} onChange={setIcon} />
+        <EmojiField options={SECTION_EMOJIS} value={icon} onChange={setIcon} />
         <SheetActions submitLabel={t(section ? 'common.save' : 'common.create')} disabled={!name.trim()} />
         {onRequestDelete && (
           <button className="btn danger-text" type="button" onClick={onRequestDelete}>

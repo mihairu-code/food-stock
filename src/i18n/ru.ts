@@ -100,6 +100,7 @@ export const ru = {
 
   'emoji.label': 'Иконка — необязательно',
   'emoji.hint': 'подбирается по названию',
+  'emoji.custom': 'Все иконки',
 
   'section.title': 'Раздел',
   'section.newTitle': 'Новый раздел',

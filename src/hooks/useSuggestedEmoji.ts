@@ -2,7 +2,7 @@ import { useDeferredValue, useMemo, useState } from 'react'
 import { useLang } from '@/i18n'
 import { suggestEmojis } from '@/lib/emojiSuggest'
 
-/** Столько подсказок помещается в одну строку под полем. */
+/** Столько подсказок помещается в одну строку рядом с полем ввода. */
 const SUGGESTIONS = 5
 
 /**
@@ -15,9 +15,6 @@ export function useSuggestedEmoji(name: string) {
   const [manual, setManual] = useState<string | null>(null)
   const { lang } = useLang()
   const deferredName = useDeferredValue(name)
-  const { options, best } = useMemo(
-    () => suggestEmojis(deferredName, { lang, limit: SUGGESTIONS }),
-    [deferredName, lang],
-  )
+  const { options, best } = useMemo(() => suggestEmojis(deferredName, { lang, limit: SUGGESTIONS }), [deferredName, lang])
   return { icon: manual ?? best ?? '', setIcon: setManual, options }
 }

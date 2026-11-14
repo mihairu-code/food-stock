@@ -68,6 +68,7 @@ export const vi: Messages = {
 
   'emoji.label': 'Biểu tượng — không bắt buộc',
   'emoji.hint': 'tự chọn theo tên',
+  'emoji.custom': 'Tất cả biểu tượng',
 
   'section.title': 'Khu vực',
   'section.newTitle': 'Khu vực mới',

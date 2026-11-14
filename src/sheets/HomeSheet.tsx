@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useSession } from '@/app/session'
-import { EmojiOptions, TextField } from '@/components'
+import { EmojiField, TextField } from '@/components'
 import { useUpdateHousehold } from '@/data/hooks'
 import { useT } from '@/i18n'
 import { Sheet } from './Sheet'
@@ -30,7 +30,7 @@ export function HomeSheet() {
     <Sheet title={t('homeSheet.title')}>
       <form onSubmit={submit}>
         <TextField id="home-name" label={t('renameHome.label')} value={name} onChange={setName} maxLength={80} />
-        <EmojiOptions options={HOME_EMOJIS} value={icon} onChange={setIcon} hint={t('homeSheet.iconHint')} />
+        <EmojiField options={HOME_EMOJIS} value={icon} onChange={setIcon} hint={t('homeSheet.iconHint')} />
         <SheetActions submitLabel={t('common.save')} disabled={!name.trim()} />
       </form>
     </Sheet>

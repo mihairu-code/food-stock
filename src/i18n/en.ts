@@ -68,6 +68,7 @@ export const en: Messages = {
 
   'emoji.label': 'Icon — optional',
   'emoji.hint': 'suggested from the name',
+  'emoji.custom': 'All icons',
 
   'section.title': 'Section',
   'section.newTitle': 'New section',

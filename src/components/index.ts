@@ -1,5 +1,5 @@
 export { AddRow } from './AddRow'
-export { EmojiOptions } from './EmojiOptions'
+export { EmojiField } from './EmojiField'
 export { EmptyState } from './EmptyState'
 export { Notice } from './Notice'
 export { SectionPicker } from './SectionPicker'

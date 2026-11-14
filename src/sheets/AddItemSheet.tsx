@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { EmojiOptions, TextField } from '@/components'
+import { EmojiField, TextField } from '@/components'
 import { useCreateShoppingItem } from '@/data/hooks'
 import { useSuggestedEmoji } from '@/hooks/useSuggestedEmoji'
 import { useT } from '@/i18n'
@@ -36,7 +36,7 @@ export function AddItemSheet() {
           maxLength={80}
           autoFocus
         />
-        <EmojiOptions options={options} value={icon} onChange={setIcon} hint={t('emoji.hint')} />
+        <EmojiField options={options} value={icon} onChange={setIcon} hint={t('emoji.hint')} />
         <SheetActions submitLabel={t('common.add')} disabled={!name.trim()} />
       </form>
     </Sheet>

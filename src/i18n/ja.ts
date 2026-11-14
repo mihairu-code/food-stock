@@ -68,6 +68,7 @@ export const ja: Messages = {
 
   'emoji.label': 'アイコン（任意）',
   'emoji.hint': '名前から自動で選びます',
+  'emoji.custom': 'すべてのアイコン',
 
   'section.title': '置き場所',
   'section.newTitle': '新しい置き場所',
