@@ -1,15 +1,14 @@
-import { useState, type FormEvent } from 'react'
-import { EmojiField, TextField } from '@/components'
+import { useState } from 'react'
+import { NameIconFields } from '@/components'
 import { useCreateSection, useHomeData, useUpdateSection } from '@/data/hooks'
 import type { Section } from '@/domain/types'
 import { useT } from '@/i18n'
 import { notify } from '@/lib/toast'
-import { Sheet } from './Sheet'
-import { SheetActions } from './SheetActions'
+import { FormSheet } from './FormSheet'
 import { closeSheet } from './sheetStore'
 
-/** Самые частые места в доме. */
-const SECTION_EMOJIS = ['🧊', '🧺', '🍪', '🥫', '🧴', '❄️']
+/** Самые частые места в доме; остальные иконки — в панели. */
+const SECTION_EMOJIS = ['🧊', '🧺', '🍪', '🥫', '🧴']
 
 interface SectionSheetProps {
   /** Раздел для переименования; без него шторка создаёт новый. */
@@ -25,8 +24,7 @@ export function SectionSheet({ section, onRequestDelete }: SectionSheetProps) {
   const [name, setName] = useState(section?.name ?? '')
   const [icon, setIcon] = useState(section?.icon ?? '')
 
-  function submit(event: FormEvent) {
-    event.preventDefault()
+  function submit() {
     const trimmed = name.trim()
     if (!trimmed) return
     if (section) {
@@ -40,20 +38,31 @@ export function SectionSheet({ section, onRequestDelete }: SectionSheetProps) {
   }
 
   return (
-    <Sheet
+    <FormSheet
       title={t(section ? 'section.title' : 'section.newTitle')}
       description={section ? undefined : t('section.newDescription')}
-    >
-      <form onSubmit={submit}>
-        <TextField id="section-name" label={t('section.name')} value={name} onChange={setName} maxLength={60} autoFocus />
-        <EmojiField options={SECTION_EMOJIS} value={icon} onChange={setIcon} />
-        <SheetActions submitLabel={t(section ? 'common.save' : 'common.create')} disabled={!name.trim()} />
-        {onRequestDelete && (
+      submitLabel={t(section ? 'common.save' : 'common.create')}
+      disabled={!name.trim()}
+      onSubmit={submit}
+      footer={
+        section &&
+        onRequestDelete && (
           <button className="btn danger-text" type="button" onClick={onRequestDelete}>
             {t('section.delete')}
           </button>
-        )}
-      </form>
-    </Sheet>
+        )
+      }
+    >
+      <NameIconFields
+        id="section-name"
+        label={t('section.name')}
+        maxLength={60}
+        name={name}
+        onNameChange={setName}
+        icon={icon}
+        onIconChange={setIcon}
+        icons={SECTION_EMOJIS}
+      />
+    </FormSheet>
   )
 }

@@ -41,6 +41,7 @@ function toUser(user: AuthUser): User {
     email: user.email ?? null,
     name: meta?.full_name ?? meta?.name ?? null,
     avatarUrl: meta?.avatar_url ?? meta?.picture ?? null,
+    createdAt: user.created_at ?? null,
   }
 }
 

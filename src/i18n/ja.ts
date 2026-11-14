@@ -43,6 +43,9 @@ export const ja: Messages = {
   'home.sectionCount': '{count}品',
   'home.editSection': '置き場所「{name}」を編集',
   'home.addProductTo': '「{name}」に追加',
+  'home.hintLabel': '使い方',
+  'home.hint':
+    'アイコンの点は、家にあるかどうかを表します。なくなったらアイコンをタップしてください。＋で買い物リストに入れ、−で外します。並べ替えるには、品物や置き場所を長押ししてドラッグします。',
   'home.defaultName': 'わが家',
   'home.preparing': '準備しています…',
 
@@ -92,6 +95,9 @@ export const ja: Messages = {
   'shopping.manual': '手動で追加',
   'shopping.out': '在庫なし',
   'shopping.stillHome': 'まだ家にあります',
+  'shopping.hintLabel': 'スマートリスト',
+  'shopping.hint':
+    '購入したアイテムは「在庫あり」に戻り、元の置き場所に残ります。買わずに外すときは、行を左にスワイプしてください。',
   'shopping.addTitle': '買い物リストに追加',
   'shopping.addDescription': '置き場所は、買ったあとで選びます',
   'shopping.whatToBuy': '買うもの',
@@ -140,6 +146,7 @@ export const ja: Messages = {
   'toast.nameError': '名前を保存できませんでした',
   'toast.renameError': '家の名前を変更できませんでした',
 
+  'settings.demoLabel': 'デモモード',
   'settings.demoText':
     'データはこのブラウザにだけ保存されます。共有と端末間の同期は、Supabaseを接続すると使えます。手順はREADMEにあります。',
   'settings.groupHome': '家',
@@ -158,10 +165,12 @@ export const ja: Messages = {
   'settings.nameMeta': 'あなたの名前。家のメンバーに表示されます',
   'settings.joinMeta': '別の家への招待リンクを貼り付けます',
   'settings.signOut': 'ログアウト',
+  'settings.anonLabel': 'アカウントなし',
   'settings.anonGoogle':
     '家へのアクセスはこの端末にだけ保存されていて、ブラウザとホーム画面のアプリは別のメンバーとして扱われます。Googleでログインすると、どこでも同じ人として同じデータを使えます。',
   'settings.anonNoGoogle':
     '家へのアクセスはこの端末に保存されています。ブラウザのデータを消したり機種変更したりした場合は、ほかのメンバーから新しいリンクをもらうと戻れます。',
+  'settings.accountLabel': 'アカウント接続済み',
   'settings.accountText':
     'ブラウザやホーム画面のアプリで同じGoogleアカウントにログインすると、同じ家とアイテムが表示されます。',
   'settings.groupApp': 'アプリ',
@@ -172,6 +181,8 @@ export const ja: Messages = {
   'settings.themeLight': 'ライト',
   'settings.themeDark': 'ダーク',
   'settings.accent': 'アクセントカラー',
+  'settings.hints': 'ヒント',
+  'settings.hintsMeta': '画面上の説明。新しいユーザーには最初の3日間表示されます',
 
   'accent.green': 'グリーン',
   'accent.teal': 'ティール',
@@ -222,6 +233,7 @@ export const ja: Messages = {
     '相手がすでにホーム画面にアプリを追加している場合は、アプリ内でリンクを貼り付けてください：設定 →「リンクで参加」。',
   'invite.share': '共有',
   'invite.copy': 'コピー',
+  'invite.copyLink': 'リンクをコピー',
   'invite.shareTitle': '「おうちストック」への招待',
 
   'join.title': 'リンクで参加',

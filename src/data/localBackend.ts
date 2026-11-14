@@ -19,6 +19,8 @@ const LOCAL_USER: User = {
   email: null,
   name: null,
   avatarUrl: null,
+  // В демо-режиме учётной записи нет: срок считается от первого запуска на устройстве.
+  createdAt: null,
 }
 
 interface LocalState extends HomeData {

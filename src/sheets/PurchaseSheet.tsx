@@ -1,11 +1,11 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { SectionPicker, StapleCheckbox } from '@/components'
 import { useDeleteShoppingItem, usePurchaseShoppingItem, useSortedSections } from '@/data/hooks'
 import type { ShoppingItem } from '@/domain/types'
 import { useT } from '@/i18n'
 import { notify } from '@/lib/toast'
+import { FormSheet } from './FormSheet'
 import { Sheet } from './Sheet'
-import { SheetActions } from './SheetActions'
 import { closeSheet } from './sheetStore'
 
 /**
@@ -21,8 +21,7 @@ export function PurchaseSheet({ item }: { item: ShoppingItem }) {
   const [sectionId, setSectionId] = useState(sections[0]?.id ?? '')
   const [makeStaple, setMakeStaple] = useState(false)
 
-  function submit(event: FormEvent) {
-    event.preventDefault()
+  function submit() {
     const section = sections.find((s) => s.id === sectionId)
     if (!section) return
     purchase.mutate({ item, sectionId: section.id, makeStaple })
@@ -53,15 +52,19 @@ export function PurchaseSheet({ item }: { item: ShoppingItem }) {
   }
 
   return (
-    <Sheet title={t('purchase.title')} description={t('purchase.description', { name: item.name })}>
-      <form onSubmit={submit}>
-        <SectionPicker sections={sections} value={sectionId} onChange={setSectionId} />
-        <StapleCheckbox checked={makeStaple} onChange={setMakeStaple} />
-        <SheetActions submitLabel={t('purchase.submit')} />
+    <FormSheet
+      title={t('purchase.title')}
+      description={t('purchase.description', { name: item.name })}
+      submitLabel={t('purchase.submit')}
+      onSubmit={submit}
+      footer={
         <button className="btn text-only" type="button" onClick={skip}>
           {t('purchase.skip')}
         </button>
-      </form>
-    </Sheet>
+      }
+    >
+      <SectionPicker sections={sections} value={sectionId} onChange={setSectionId} />
+      <StapleCheckbox checked={makeStaple} onChange={setMakeStaple} />
+    </FormSheet>
   )
 }

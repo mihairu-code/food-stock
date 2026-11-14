@@ -1,6 +1,6 @@
 import { LogOut } from 'lucide-react'
 import { useSession } from '@/app/session'
-import { SettingRow, SettingsGroup } from '@/components'
+import { Hint, SettingRow, SettingsGroup } from '@/components'
 import { backend } from '@/data'
 import { useT } from '@/i18n'
 import { openSheet } from '@/sheets'
@@ -16,6 +16,7 @@ export function SettingsScreen() {
   if (backend.mode === 'local') {
     return (
       <>
+        <Hint label={t('settings.demoLabel')}>{t('settings.demoText')}</Hint>
         <HomeGroup />
         <AppGroup />
         <SettingsGroup label={t('settings.groupData')}>
@@ -26,7 +27,6 @@ export function SettingsScreen() {
             onClick={() => openSheet({ type: 'reset' })}
           />
         </SettingsGroup>
-        <p className="settings-note">{t('settings.demoText')}</p>
       </>
     )
   }

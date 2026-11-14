@@ -27,26 +27,27 @@ export function InviteLinkSheet({ link }: { link: string }) {
   }
 
   return (
-    <Sheet
-      title={t('invite.title')}
-      description={t('invite.sheetText')}
-    >
-      <TextField id="invite-link" label={t('invite.link')} value={link} onFocus={(event) => event.target.select()} />
+    <Sheet title={t('invite.title')} description={t('invite.sheetText')}>
+      <TextField
+        id="invite-link"
+        label={t('invite.link')}
+        value={link}
+        onFocus={(event) => event.target.select()}
+      />
       <p className="sheet-description">{t('invite.pwaNote')}</p>
       <div className="sheet-actions">
-        <button className="btn subtle" type="button" onClick={() => void copy()}>
-          {t('invite.copy')}
+        <button className="btn subtle" type="button" onClick={closeSheet}>
+          {t('common.done')}
         </button>
-        {canShare ? (
-          <button className="btn" type="button" onClick={() => void share()}>
-            {t('invite.share')}
-          </button>
-        ) : (
-          <button className="btn" type="button" onClick={closeSheet}>
-            {t('common.done')}
-          </button>
-        )}
+        <button className="btn" type="button" autoFocus onClick={() => void (canShare ? share() : copy())}>
+          {t(canShare ? 'invite.share' : 'invite.copy')}
+        </button>
       </div>
+      {canShare && (
+        <button className="btn danger-text link-copy" type="button" onClick={() => void copy()}>
+          {t('invite.copyLink')}
+        </button>
+      )}
     </Sheet>
   )
 }

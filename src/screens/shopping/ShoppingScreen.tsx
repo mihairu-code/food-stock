@@ -1,4 +1,4 @@
-import { EmptyState, StatusNote, SummaryBar } from '@/components'
+import { EmptyState, StatusNote, SummaryBar, Tip } from '@/components'
 import { useHomeData, useShoppingList } from '@/data/hooks'
 import { useT } from '@/i18n'
 import { rich } from '@/i18n/rich'
@@ -24,6 +24,8 @@ export function ShoppingScreen() {
       ) : (
         <ShoppingList entries={entries} />
       )}
+
+      <Tip label={t('shopping.hintLabel')}>{t('shopping.hint')}</Tip>
     </>
   )
 }

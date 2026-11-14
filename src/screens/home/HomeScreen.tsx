@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react'
-import { AddRow, EmptyState, StatusNote, SummaryBar } from '@/components'
+import { AddRow, EmptyState, StatusNote, SummaryBar, Tip } from '@/components'
 import { useHomeData, useSortedSections } from '@/data/hooks'
 import { useT } from '@/i18n'
 import { rich } from '@/i18n/rich'
@@ -37,6 +37,8 @@ export function HomeScreen() {
       <SectionBoard sections={sections} products={products} />
 
       <AddRow label={t('section.newTitle')} onClick={addSection} />
+
+      {products.length > 0 && <Tip label={t('home.hintLabel')}>{t('home.hint')}</Tip>}
     </>
   )
 }

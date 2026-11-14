@@ -43,6 +43,9 @@ export const vi: Messages = {
   'home.sectionCount': 'Số món: {count}',
   'home.editSection': 'Sửa khu vực “{name}”',
   'home.addProductTo': 'Thêm món vào “{name}”',
+  'home.hintLabel': 'Cách đánh dấu',
+  'home.hint':
+    'Chấm trên biểu tượng cho biết món đó còn ở nhà hay không: chạm vào biểu tượng khi món đã hết. Dấu cộng đưa món vào danh sách mua, dấu trừ bỏ ra. Để sắp xếp lại một món hoặc khu vực, hãy nhấn giữ rồi kéo.',
   'home.defaultName': 'Nhà mình',
   'home.preparing': 'Đang chuẩn bị nhà của bạn…',
 
@@ -92,6 +95,9 @@ export const vi: Messages = {
   'shopping.manual': 'Thêm thủ công',
   'shopping.out': 'đã hết',
   'shopping.stillHome': 'vẫn còn ở nhà',
+  'shopping.hintLabel': 'Danh sách thông minh',
+  'shopping.hint':
+    'Món đã mua được đánh dấu là còn ở nhà và vẫn nằm trong khu vực của nó. Vuốt dòng sang trái để bỏ ra mà không mua.',
   'shopping.addTitle': 'Thêm vào danh sách mua',
   'shopping.addDescription': 'Bạn sẽ chọn khu vực sau, khi đã mua',
   'shopping.whatToBuy': 'Cần mua gì',
@@ -140,6 +146,7 @@ export const vi: Messages = {
   'toast.nameError': 'Không lưu được tên',
   'toast.renameError': 'Không đổi được tên nhà',
 
+  'settings.demoLabel': 'Chế độ dùng thử',
   'settings.demoText':
     'Dữ liệu chỉ được lưu trong trình duyệt này. Chia sẻ và đồng bộ giữa các thiết bị sẽ hoạt động sau khi kết nối Supabase — các bước có trong README.',
   'settings.groupHome': 'Nhà',
@@ -158,10 +165,12 @@ export const vi: Messages = {
   'settings.nameMeta': 'Tên của bạn — các thành viên trong nhà sẽ thấy',
   'settings.joinMeta': 'Dán lời mời vào một nhà khác',
   'settings.signOut': 'Đăng xuất',
+  'settings.anonLabel': 'Chưa có tài khoản',
   'settings.anonGoogle':
     'Quyền vào nhà chỉ được lưu trên thiết bị này, còn trình duyệt và ứng dụng trên Màn hình chính bị coi là hai thành viên khác nhau. Hãy đăng nhập bằng Google để ở đâu bạn cũng là một người với cùng dữ liệu.',
   'settings.anonNoGoogle':
     'Quyền vào nhà được lưu trên thiết bị này. Nếu bạn xóa dữ liệu trình duyệt hoặc đổi điện thoại, bạn có thể quay lại bằng liên kết mới từ một thành viên khác.',
+  'settings.accountLabel': 'Đã kết nối tài khoản',
   'settings.accountText':
     'Hãy đăng nhập cùng tài khoản Google này trong trình duyệt hoặc trong ứng dụng trên Màn hình chính — ở đó sẽ có cùng nhà và cùng các món.',
   'settings.groupApp': 'Ứng dụng',
@@ -172,6 +181,8 @@ export const vi: Messages = {
   'settings.themeLight': 'Sáng',
   'settings.themeDark': 'Tối',
   'settings.accent': 'Màu nhấn',
+  'settings.hints': 'Gợi ý',
+  'settings.hintsMeta': 'Giải thích trên màn hình; người dùng mới thấy trong 3 ngày đầu',
 
   'accent.green': 'Xanh lá',
   'accent.teal': 'Xanh ngọc',
@@ -222,6 +233,7 @@ export const vi: Messages = {
     'Nếu người đó đã có ứng dụng trên Màn hình chính, hãy dán liên kết ngay trong ứng dụng: Cài đặt → “Tham gia bằng liên kết”.',
   'invite.share': 'Chia sẻ',
   'invite.copy': 'Sao chép',
+  'invite.copyLink': 'Sao chép liên kết',
   'invite.shareTitle': 'Lời mời vào “Kho Nhà”',
 
   'join.title': 'Tham gia bằng liên kết',

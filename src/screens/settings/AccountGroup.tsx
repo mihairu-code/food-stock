@@ -1,5 +1,5 @@
 import { useSession } from '@/app/session'
-import { SettingRow, SettingsGroup } from '@/components'
+import { SettingRow, SettingsGroup, Tip } from '@/components'
 import { useGoogleAvailable, useGoogleSignIn, useMembers } from '@/data/hooks'
 import { useT, type MessageKey } from '@/i18n'
 import { savedName } from '@/lib/invite'
@@ -42,7 +42,7 @@ export function AccountGroup() {
           onClick={() => openSheet({ type: 'join' })}
         />
       </SettingsGroup>
-      <p className="settings-note">{t(hint)}</p>
+      <Tip label={t(user.isAnonymous ? 'settings.anonLabel' : 'settings.accountLabel')}>{t(hint)}</Tip>
     </>
   )
 }

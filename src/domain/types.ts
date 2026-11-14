@@ -13,6 +13,8 @@ export interface User {
   name: string | null
   /** Фото из аккаунта Google, если есть. */
   avatarUrl: string | null
+  /** Когда человек впервые начал пользоваться приложением; по этой дате ему показывают подсказки. */
+  createdAt: string | null
 }
 
 export interface Household {

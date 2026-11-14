@@ -1,13 +1,12 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { useSession } from '@/app/session'
-import { EmojiField, TextField } from '@/components'
+import { NameIconFields } from '@/components'
 import { useUpdateHousehold } from '@/data/hooks'
 import { useT } from '@/i18n'
-import { Sheet } from './Sheet'
-import { SheetActions } from './SheetActions'
+import { FormSheet } from './FormSheet'
 import { closeSheet } from './sheetStore'
 
-/** Быстрый выбор аватарки дома. */
+/** Быстрый выбор аватарки дома; остальные иконки — в панели. */
 const HOME_EMOJIS = ['🏠', '🏡', '🏢', '🏰', '⛺']
 
 /** Название и аватарка дома. Меняет их владелец. */
@@ -18,8 +17,7 @@ export function HomeSheet() {
   const [name, setName] = useState(household.name)
   const [icon, setIcon] = useState(household.icon ?? '')
 
-  function submit(event: FormEvent) {
-    event.preventDefault()
+  function submit() {
     const next = name.trim()
     if (!next) return
     update.mutate({ name: next, icon: icon || null })
@@ -27,12 +25,18 @@ export function HomeSheet() {
   }
 
   return (
-    <Sheet title={t('homeSheet.title')}>
-      <form onSubmit={submit}>
-        <TextField id="home-name" label={t('renameHome.label')} value={name} onChange={setName} maxLength={80} />
-        <EmojiField options={HOME_EMOJIS} value={icon} onChange={setIcon} hint={t('homeSheet.iconHint')} />
-        <SheetActions submitLabel={t('common.save')} disabled={!name.trim()} />
-      </form>
-    </Sheet>
+    <FormSheet title={t('homeSheet.title')} submitLabel={t('common.save')} disabled={!name.trim()} onSubmit={submit}>
+      <NameIconFields
+        id="home-name"
+        label={t('renameHome.label')}
+        maxLength={80}
+        name={name}
+        onNameChange={setName}
+        icon={icon}
+        onIconChange={setIcon}
+        icons={HOME_EMOJIS}
+        iconHint={t('homeSheet.iconHint')}
+      />
+    </FormSheet>
   )
 }

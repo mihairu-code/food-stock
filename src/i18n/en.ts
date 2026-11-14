@@ -43,6 +43,9 @@ export const en: Messages = {
   'home.sectionCount': 'Items: {count}',
   'home.editSection': 'Edit section “{name}”',
   'home.addProductTo': 'Add an item to “{name}”',
+  'home.hintLabel': 'How to mark',
+  'home.hint':
+    'The dot on the icon shows whether the item is at home: tap the icon when it runs out. Plus puts the item on the shopping list, minus takes it off. To reorder an item or a section, press and hold it, then drag.',
   'home.defaultName': 'Our home',
   'home.preparing': 'Setting up your home…',
 
@@ -98,6 +101,9 @@ export const en: Messages = {
   'shopping.manual': 'Added by hand',
   'shopping.out': 'ran out',
   'shopping.stillHome': 'still at home',
+  'shopping.hintLabel': 'Smart list',
+  'shopping.hint':
+    'An item you bought is marked as at home again and stays in its section. Swipe a row left to remove it without buying.',
   'shopping.addTitle': 'Add to the shopping list',
   'shopping.addDescription': 'You’ll pick a section later, once it’s bought',
   'shopping.whatToBuy': 'What to buy',
@@ -146,6 +152,7 @@ export const en: Messages = {
   'toast.nameError': 'Couldn’t save the name',
   'toast.renameError': 'Couldn’t rename the home',
 
+  'settings.demoLabel': 'Demo mode',
   'settings.demoText':
     'Data is kept only in this browser. Sharing and syncing between devices turn on once Supabase is connected — the steps are in the README.',
   'settings.groupHome': 'Home',
@@ -167,10 +174,12 @@ export const en: Messages = {
   'settings.nameMeta': 'Your name — members of the home see it',
   'settings.joinMeta': 'Paste an invitation to another home',
   'settings.signOut': 'Sign out',
+  'settings.anonLabel': 'No account',
   'settings.anonGoogle':
     'Access to the home is kept only on this device, and the browser and the Home Screen app count as different members. Sign in with Google to be the same person with the same data everywhere.',
   'settings.anonNoGoogle':
     'Access to the home is kept on this device. If you clear the browser data or change phones, you can come back with a new link from another member.',
+  'settings.accountLabel': 'Account connected',
   'settings.accountText':
     'Sign in to the same Google account in the browser or in the Home Screen app — you’ll find the same homes and items there.',
   'settings.groupApp': 'App',
@@ -181,6 +190,8 @@ export const en: Messages = {
   'settings.themeLight': 'Light',
   'settings.themeDark': 'Dark',
   'settings.accent': 'Accent colour',
+  'settings.hints': 'Tips',
+  'settings.hintsMeta': 'Explanations on screens; shown to new users for the first 3 days',
 
   'accent.green': 'Green',
   'accent.teal': 'Teal',
@@ -231,6 +242,7 @@ export const en: Messages = {
     'If the person already has the app on their Home Screen, the link has to be pasted there: Settings → “Join with a link”.',
   'invite.share': 'Share',
   'invite.copy': 'Copy',
+  'invite.copyLink': 'Copy link',
   'invite.shareTitle': 'Invitation to Home Stock',
 
   'join.title': 'Join with a link',

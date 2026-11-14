@@ -1,22 +1,20 @@
-import { useState, type FormEvent } from 'react'
-import { EmojiField, TextField } from '@/components'
+import { useState } from 'react'
+import { NameIconFields } from '@/components'
 import { useCreateShoppingItem } from '@/data/hooks'
 import { useSuggestedEmoji } from '@/hooks/useSuggestedEmoji'
 import { useT } from '@/i18n'
 import { notify } from '@/lib/toast'
-import { Sheet } from './Sheet'
-import { SheetActions } from './SheetActions'
+import { FormSheet } from './FormSheet'
 import { closeSheet } from './sheetStore'
 
-/** Позиция покупок, добавленная вручную: того, чего в разделах дома нет. Раздел не нужен. */
+/** Позиция покупок, добавленная вручную: того, чего в разделах дома нет. */
 export function AddItemSheet() {
   const t = useT()
   const createItem = useCreateShoppingItem()
   const [name, setName] = useState('')
   const { icon, setIcon, options } = useSuggestedEmoji(name)
 
-  function submit(event: FormEvent) {
-    event.preventDefault()
+  function submit() {
     const trimmed = name.trim()
     if (!trimmed) return
     createItem.mutate({ id: crypto.randomUUID(), name: trimmed, icon: icon || null })
@@ -25,20 +23,25 @@ export function AddItemSheet() {
   }
 
   return (
-    <Sheet title={t('shopping.addTitle')} description={t('shopping.addDescription')}>
-      <form onSubmit={submit}>
-        <TextField
-          id="item-name"
-          label={t('shopping.whatToBuy')}
-          placeholder={t('shopping.placeholder')}
-          value={name}
-          onChange={setName}
-          maxLength={80}
-          autoFocus
-        />
-        <EmojiField options={options} value={icon} onChange={setIcon} hint={t('emoji.hint')} />
-        <SheetActions submitLabel={t('common.add')} disabled={!name.trim()} />
-      </form>
-    </Sheet>
+    <FormSheet
+      title={t('shopping.addTitle')}
+      description={t('shopping.addDescription')}
+      submitLabel={t('common.add')}
+      disabled={!name.trim()}
+      onSubmit={submit}
+    >
+      <NameIconFields
+        id="item-name"
+        label={t('shopping.whatToBuy')}
+        placeholder={t('shopping.placeholder')}
+        maxLength={80}
+        name={name}
+        onNameChange={setName}
+        icon={icon}
+        onIconChange={setIcon}
+        icons={options}
+        iconHint={t('emoji.hint')}
+      />
+    </FormSheet>
   )
 }

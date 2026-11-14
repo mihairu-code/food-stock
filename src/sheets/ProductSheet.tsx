@@ -1,11 +1,10 @@
-import { useState, type FormEvent } from 'react'
-import { EmojiField, SectionPicker, StapleCheckbox, TextField } from '@/components'
+import { useState } from 'react'
+import { NameIconFields, SectionPicker, StapleCheckbox } from '@/components'
 import { useCreateProduct, useSortedSections } from '@/data/hooks'
 import { useSuggestedEmoji } from '@/hooks/useSuggestedEmoji'
 import { useT } from '@/i18n'
 import { notify } from '@/lib/toast'
-import { Sheet } from './Sheet'
-import { SheetActions } from './SheetActions'
+import { FormSheet } from './FormSheet'
 import { closeSheet } from './sheetStore'
 
 /** Новый продукт; `sectionId` — раздел, из которого шторку открыли. */
@@ -14,12 +13,11 @@ export function ProductSheet({ sectionId: initialSectionId }: { sectionId?: stri
   const sections = useSortedSections()
   const createProduct = useCreateProduct()
   const [name, setName] = useState('')
-  const { icon, setIcon, options } = useSuggestedEmoji(name)
   const [sectionId, setSectionId] = useState(initialSectionId ?? sections[0]?.id ?? '')
-  const [staple, setStaple] = useState(true)
+  const [staple, setStaple] = useState(false)
+  const { icon, setIcon, options } = useSuggestedEmoji(name)
 
-  function submit(event: FormEvent) {
-    event.preventDefault()
+  function submit() {
     const trimmed = name.trim()
     const section = sections.find((s) => s.id === sectionId)
     if (!trimmed || !section) return
@@ -35,22 +33,27 @@ export function ProductSheet({ sectionId: initialSectionId }: { sectionId?: stri
   }
 
   return (
-    <Sheet title={t('productSheet.title')} description={t('productSheet.description')}>
-      <form onSubmit={submit}>
-        <TextField
-          id="product-name"
-          label={t('productSheet.name')}
-          placeholder={t('productSheet.placeholder')}
-          value={name}
-          onChange={setName}
-          maxLength={80}
-          autoFocus
-        />
-        <EmojiField options={options} value={icon} onChange={setIcon} hint={t('emoji.hint')} />
-        <SectionPicker sections={sections} value={sectionId} onChange={setSectionId} />
-        <StapleCheckbox checked={staple} onChange={setStaple} />
-        <SheetActions submitLabel={t('common.add')} disabled={!name.trim() || !sectionId} />
-      </form>
-    </Sheet>
+    <FormSheet
+      title={t('productSheet.title')}
+      description={t('productSheet.description')}
+      submitLabel={t('common.add')}
+      disabled={!name.trim() || !sectionId}
+      onSubmit={submit}
+    >
+      <NameIconFields
+        id="product-name"
+        label={t('productSheet.name')}
+        placeholder={t('productSheet.placeholder')}
+        maxLength={80}
+        name={name}
+        onNameChange={setName}
+        icon={icon}
+        onIconChange={setIcon}
+        icons={options}
+        iconHint={t('emoji.hint')}
+      />
+      <SectionPicker sections={sections} value={sectionId} onChange={setSectionId} />
+      <StapleCheckbox checked={staple} onChange={setStaple} />
+    </FormSheet>
   )
 }

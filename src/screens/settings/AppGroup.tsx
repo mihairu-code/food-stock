@@ -1,13 +1,16 @@
-import { SettingSelect, SettingsGroup } from '@/components'
+import { SettingSelect, SettingsGroup, SettingToggle } from '@/components'
+import { useHintsVisible } from '@/hooks/useHintsVisible'
 import { LANG_NAMES, LANGS, setLangSetting, useLang, useT, type LangSetting } from '@/i18n'
 import { setTheme, useAppearance, type ThemeSetting } from '@/lib/appearance'
+import { setHintsVisible } from '@/lib/hints'
 import { AccentPicker } from './AccentPicker'
 
-/** Приложение: язык и оформление. Выбор хранится на устройстве, а не в доме. */
+/** Приложение: язык, оформление и подсказки. Выбор хранится на устройстве, а не в доме. */
 export function AppGroup() {
   const t = useT()
   const { setting } = useLang()
   const { theme } = useAppearance()
+  const hints = useHintsVisible()
 
   return (
     <SettingsGroup label={t('settings.groupApp')}>
@@ -35,6 +38,13 @@ export function AppGroup() {
         <option value="dark">{t('settings.themeDark')}</option>
       </SettingSelect>
       <AccentPicker />
+      <SettingToggle
+        id="hints"
+        title={t('settings.hints')}
+        meta={t('settings.hintsMeta')}
+        checked={hints}
+        onChange={setHintsVisible}
+      />
     </SettingsGroup>
   )
 }
