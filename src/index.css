@@ -1086,6 +1086,33 @@ img.avatar {
   padding: 14px 20px calc(22px + env(safe-area-inset-bottom));
 }
 
+/* Над клавиатурой места мало, а форма должна помещаться целиком, с кнопками:
+   убираются пояснение под заголовком и лишний воздух между полями. */
+:root[data-keyboard] .sheet-body {
+  padding-top: 10px;
+  padding-bottom: 14px;
+}
+
+:root[data-keyboard] .sheet-grip {
+  margin-bottom: 10px;
+}
+
+:root[data-keyboard] .sheet-description {
+  display: none;
+}
+
+:root[data-keyboard] .sheet h2 {
+  margin-bottom: 12px;
+}
+
+:root[data-keyboard] .sheet .field {
+  margin-bottom: 11px;
+}
+
+:root[data-keyboard] .sheet .check {
+  margin-bottom: 12px;
+}
+
 .sheet-grip {
   width: 36px;
   height: 4px;

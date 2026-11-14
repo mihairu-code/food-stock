@@ -15,6 +15,8 @@ interface SheetProps {
 export function Sheet({ title, description, children }: SheetProps) {
   const ref = useRef<HTMLDialogElement>(null)
   const titleId = useId()
+  // Нажатие началось на затемнении, а не на самой шторке.
+  const pressedBackdrop = useRef(false)
   useSheetDismiss(ref)
 
   useEffect(() => {
@@ -32,9 +34,14 @@ export function Sheet({ title, description, children }: SheetProps) {
         event.preventDefault()
         closeSheet()
       }}
+      onPointerDown={(event) => {
+        pressedBackdrop.current = event.target === ref.current
+      }}
       onClick={(event) => {
-        // Нажатие на затемнение вокруг шторки.
-        if (event.target === ref.current) closeSheet()
+        // Закрывает только нажатие, которое и началось, и закончилось на затемнении. Шторка
+        // под пальцем может сдвинуться (закрылась панель иконок, выехала клавиатура) — тогда
+        // касание поля «заканчивается» на затемнении, и без этой проверки шторка закрывалась.
+        if (event.target === ref.current && pressedBackdrop.current) closeSheet()
       }}
     >
       <div className="sheet-body">
