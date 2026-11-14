@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { EmojiOptions, SectionSelect, StapleCheckbox, TextField } from '@/components'
+import { EmojiOptions, SectionPicker, StapleCheckbox, TextField } from '@/components'
 import { useCreateProduct, useSortedSections } from '@/data/hooks'
 import { useSuggestedEmoji } from '@/hooks/useSuggestedEmoji'
 import { useT } from '@/i18n'
@@ -47,7 +47,7 @@ export function ProductSheet({ sectionId: initialSectionId }: { sectionId?: stri
           autoFocus
         />
         <EmojiOptions options={options} value={icon} onChange={setIcon} hint={t('emoji.hint')} />
-        <SectionSelect sections={sections} value={sectionId} onChange={setSectionId} />
+        <SectionPicker sections={sections} value={sectionId} onChange={setSectionId} />
         <StapleCheckbox checked={staple} onChange={setStaple} />
         <SheetActions submitLabel={t('common.add')} disabled={!name.trim() || !sectionId} />
       </form>

@@ -11,7 +11,6 @@ export const ja: Messages = {
   'common.create': '作成',
   'common.delete': '削除',
   'common.done': '完了',
-  'common.ok': 'OK',
   'common.continue': '続ける',
   'common.retry': '再試行',
   'common.loading': '読み込み中…',
@@ -100,6 +99,7 @@ export const ja: Messages = {
   'purchase.title': 'どこにしまいますか？',
   'purchase.description': '「{name}」を購入しました',
   'purchase.submit': '家に追加',
+  'purchase.skip': '家には追加しない',
   'purchase.needSectionTitle': '先に置き場所が必要です',
   'purchase.needSectionText': '買ったものをしまうには、「ホーム」タブで置き場所を1つ以上作成してください。',
 
@@ -124,6 +124,7 @@ export const ja: Messages = {
   'toast.addedItem': '買い物リストに追加しました',
   'toast.purchasedStaple': '常備品として「{name}」に追加しました',
   'toast.purchasedOnce': '今回のみとして「{name}」に追加しました',
+  'toast.boughtNotStored': '「{name}」を購入済みにしました（家には追加していません）',
   'toast.sectionCreated': '置き場所「{name}」を作成しました',
   'toast.sectionDeleted': '置き場所「{name}」を削除しました',
   'toast.linkError': 'リンクを作成できませんでした',

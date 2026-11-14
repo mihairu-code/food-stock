@@ -11,7 +11,6 @@ export const vi: Messages = {
   'common.create': 'Tạo',
   'common.delete': 'Xóa',
   'common.done': 'Xong',
-  'common.ok': 'Đã hiểu',
   'common.continue': 'Tiếp tục',
   'common.retry': 'Thử lại',
   'common.loading': 'Đang tải…',
@@ -100,6 +99,7 @@ export const vi: Messages = {
   'purchase.title': 'Cất món này vào đâu?',
   'purchase.description': '“{name}” — đã mua',
   'purchase.submit': 'Thêm vào nhà',
+  'purchase.skip': 'Không thêm vào nhà',
   'purchase.needSectionTitle': 'Cần có khu vực trước',
   'purchase.needSectionText': 'Để cất món vừa mua, hãy tạo ít nhất một khu vực trong thẻ “Nhà”.',
 
@@ -124,6 +124,7 @@ export const vi: Messages = {
   'toast.addedItem': 'Đã thêm vào danh sách mua',
   'toast.purchasedStaple': 'Đã thêm vào “{name}” như món luôn có sẵn',
   'toast.purchasedOnce': 'Đã thêm vào “{name}” một lần',
+  'toast.boughtNotStored': 'Đã mua “{name}” — không thêm vào nhà',
   'toast.sectionCreated': 'Đã tạo khu vực “{name}”',
   'toast.sectionDeleted': 'Đã xóa khu vực “{name}”',
   'toast.linkError': 'Không tạo được liên kết',

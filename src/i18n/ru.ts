@@ -23,7 +23,6 @@ export const ru = {
   'common.create': 'Создать',
   'common.delete': 'Удалить',
   'common.done': 'Готово',
-  'common.ok': 'Понятно',
   'common.continue': 'Продолжить',
   'common.retry': 'Повторить',
   'common.loading': 'Загрузка…',
@@ -147,6 +146,7 @@ export const ru = {
   'purchase.title': 'Куда добавить продукт?',
   'purchase.description': '«{name}» — куплено',
   'purchase.submit': 'Добавить домой',
+  'purchase.skip': 'Не добавлять домой',
   'purchase.needSectionTitle': 'Сначала нужен раздел',
   'purchase.needSectionText':
     'Чтобы положить покупку домой, создайте хотя бы один раздел на вкладке «Дом».',
@@ -172,6 +172,7 @@ export const ru = {
   'toast.addedItem': 'Добавлено в список покупок',
   'toast.purchasedStaple': 'Добавлено в «{name}» как постоянный продукт',
   'toast.purchasedOnce': 'Добавлено в «{name}» один раз',
+  'toast.boughtNotStored': '«{name}» куплено — домой не добавлено',
   'toast.sectionCreated': 'Раздел «{name}» создан',
   'toast.sectionDeleted': 'Раздел «{name}» удалён',
   'toast.linkError': 'Не удалось создать ссылку',

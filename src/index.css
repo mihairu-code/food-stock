@@ -1146,6 +1146,41 @@ img.avatar {
   font-weight: 600;
 }
 
+/* Выбор раздела: плитки в один ряд, который листается вбок и уходит под края шторки.
+   Отрицательные отступы равны её полям; вертикальные — запас под рамку фокуса. */
+.chips {
+  display: flex;
+  gap: 8px;
+  margin: -4px -20px;
+  padding: 4px 20px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.chip {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 44px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: 15px;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    scale 0.12s ease;
+}
+
+.chip[aria-checked='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 600;
+}
+
 .field label small,
 .field-label small {
   margin-left: 6px;

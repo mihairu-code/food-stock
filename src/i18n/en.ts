@@ -11,7 +11,6 @@ export const en: Messages = {
   'common.create': 'Create',
   'common.delete': 'Delete',
   'common.done': 'Done',
-  'common.ok': 'Got it',
   'common.continue': 'Continue',
   'common.retry': 'Try again',
   'common.loading': 'Loading…',
@@ -106,6 +105,7 @@ export const en: Messages = {
   'purchase.title': 'Where does it go?',
   'purchase.description': '“{name}” — bought',
   'purchase.submit': 'Add to home',
+  'purchase.skip': 'Don’t add to home',
   'purchase.needSectionTitle': 'You need a section first',
   'purchase.needSectionText': 'To put the purchase away, create at least one section on the Home tab.',
 
@@ -130,6 +130,7 @@ export const en: Messages = {
   'toast.addedItem': 'Added to the shopping list',
   'toast.purchasedStaple': 'Added to “{name}” as an item you always keep',
   'toast.purchasedOnce': 'Added to “{name}” as a one-off',
+  'toast.boughtNotStored': '“{name}” bought — not added to home',
   'toast.sectionCreated': 'Section “{name}” created',
   'toast.sectionDeleted': 'Section “{name}” deleted',
   'toast.linkError': 'Couldn’t create the link',
