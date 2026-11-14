@@ -184,9 +184,21 @@ export const ru = {
   'toast.copied': 'Ссылка скопирована',
   'toast.copyError': 'Не удалось скопировать — выделите ссылку вручную',
   'toast.nameError': 'Не удалось сохранить имя',
+  'toast.renameError': 'Не удалось переименовать дом',
 
   'settings.demoText':
     'Данные хранятся только в этом браузере. Общий доступ и синхронизация между устройствами включаются после подключения Supabase — шаги описаны в README.',
+  'settings.groupHome': 'Дом',
+  'settings.homeName': 'Название дома',
+  'settings.sections': 'Разделы дома',
+  'settings.sectionsMeta': {
+    one: '{count} раздел · переименовать или удалить',
+    few: '{count} раздела · переименовать или удалить',
+    many: '{count} разделов · переименовать или удалить',
+    other: '{count} раздела · переименовать или удалить',
+  },
+  'settings.currentHome': 'Текущий дом',
+  'settings.manyHomes': 'У вас несколько домов',
   'settings.groupMembers': 'Участники',
   'settings.you': '(вы)',
   'settings.removeMemberAria': 'Удалить участника: {name}',
@@ -210,6 +222,20 @@ export const ru = {
   'settings.themeAuto': 'Как на устройстве',
   'settings.themeLight': 'Светлая',
   'settings.themeDark': 'Тёмная',
+  'settings.accent': 'Акцентный цвет',
+
+  'accent.green': 'Зелёный',
+  'accent.teal': 'Бирюзовый',
+  'accent.blue': 'Синий',
+  'accent.violet': 'Фиолетовый',
+  'accent.rose': 'Розовый',
+  'accent.graphite': 'Графитовый',
+
+  'settings.homeMeta': 'Название и аватарка дома',
+
+  'homeSheet.title': 'Дом',
+  'homeSheet.iconHint': 'аватарка дома',
+
   'settings.groupData': 'Данные',
   'settings.reset': 'Сбросить демо-данные',
   'settings.resetMeta': 'Вернуть исходный пример разделов и продуктов',
@@ -262,6 +288,8 @@ export const ru = {
   'name.title': 'Ваше имя',
   'name.description': 'Так вас увидят другие участники дома.',
   'name.label': 'Имя',
+
+  'renameHome.label': 'Как называется дом',
 
   'confirm.removeMemberTitle': 'Удалить участника?',
   'confirm.removeMemberText':

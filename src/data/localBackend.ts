@@ -13,7 +13,13 @@ import { translate as t } from '@/i18n'
 import type { Backend } from './backend'
 
 const STORAGE_KEY = 'home-stock:local:v1'
-const LOCAL_USER: User = { id: 'local-user', isAnonymous: true, email: null, name: null }
+const LOCAL_USER: User = {
+  id: 'local-user',
+  isAnonymous: true,
+  email: null,
+  name: null,
+  avatarUrl: null,
+}
 
 interface LocalState extends HomeData {
   household: Household
@@ -140,11 +146,22 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
       update((s) => ({ ...s, household: { ...s.household, name } }))
       return read().household.id
     },
+    updateHousehold: async (_householdId, patch) => {
+      update((s) => ({ ...s, household: { ...s.household, ...patch } }))
+    },
 
     listMembers: async () => {
       const { household } = read()
       return [
-        { household_id: household.id, user_id: LOCAL_USER.id, role: 'owner', display_name: '', device: '', account_email: null, created_at: household.created_at },
+        {
+          household_id: household.id,
+          user_id: LOCAL_USER.id,
+          role: 'owner',
+          display_name: '',
+          device: '',
+          account_email: null,
+          created_at: household.created_at,
+        },
       ]
     },
     setDisplayName: notSupported,

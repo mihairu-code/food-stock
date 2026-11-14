@@ -11,6 +11,7 @@ export type SheetRequest =
   | { type: 'invite-link'; link: string }
   | { type: 'join' }
   | { type: 'my-name'; current: string }
+  | { type: 'edit-home' }
   | { type: 'remove-member'; member: Member }
   | { type: 'sign-out' }
   | { type: 'reset' }

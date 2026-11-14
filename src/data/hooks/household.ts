@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useHouseholdId } from '@/app/session'
 import { backend } from '@/data'
+import type { HouseholdPatch } from '@/data/backend'
 import { savedName } from '@/lib/invite'
 import { qk } from './keys'
 import { invitesQuery, membersQuery } from './queries'
@@ -52,3 +53,11 @@ export function useSetDisplayName() {
   })
 }
 
+/** Название и аватарка дома. */
+export function useUpdateHousehold() {
+  const hid = useHouseholdId()
+  return useAction((patch: HouseholdPatch) => backend.updateHousehold(hid, patch), {
+    failed: 'toast.renameError',
+    refresh: qk.memberships,
+  })
+}

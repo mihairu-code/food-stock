@@ -136,9 +136,16 @@ export const ja: Messages = {
   'toast.copied': 'リンクをコピーしました',
   'toast.copyError': 'コピーできませんでした。リンクを手動で選択してください',
   'toast.nameError': '名前を保存できませんでした',
+  'toast.renameError': '家の名前を変更できませんでした',
 
   'settings.demoText':
     'データはこのブラウザにだけ保存されます。共有と端末間の同期は、Supabaseを接続すると使えます。手順はREADMEにあります。',
+  'settings.groupHome': '家',
+  'settings.homeName': '家の名前',
+  'settings.sections': '置き場所',
+  'settings.sectionsMeta': { other: '{count}か所 · 名前の変更・削除' },
+  'settings.currentHome': '現在の家',
+  'settings.manyHomes': '複数の家に参加しています',
   'settings.groupMembers': 'メンバー',
   'settings.you': '（自分）',
   'settings.removeMemberAria': 'メンバーを削除：{name}',
@@ -162,6 +169,20 @@ export const ja: Messages = {
   'settings.themeAuto': '端末の設定に合わせる',
   'settings.themeLight': 'ライト',
   'settings.themeDark': 'ダーク',
+  'settings.accent': 'アクセントカラー',
+
+  'accent.green': 'グリーン',
+  'accent.teal': 'ティール',
+  'accent.blue': 'ブルー',
+  'accent.violet': 'バイオレット',
+  'accent.rose': 'ローズ',
+  'accent.graphite': 'グラファイト',
+
+  'settings.homeMeta': '家の名前とアイコン',
+
+  'homeSheet.title': '家',
+  'homeSheet.iconHint': '家のアイコン',
+
   'settings.groupData': 'データ',
   'settings.reset': 'デモデータをリセット',
   'settings.resetMeta': '置き場所とアイテムを最初のサンプルに戻します',
@@ -214,6 +235,8 @@ export const ja: Messages = {
   'name.title': 'あなたの名前',
   'name.description': '家のほかのメンバーに、この名前で表示されます。',
   'name.label': '名前',
+
+  'renameHome.label': '家の名前',
 
   'confirm.removeMemberTitle': 'メンバーを削除しますか？',
   'confirm.removeMemberText':

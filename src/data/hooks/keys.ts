@@ -1,6 +1,5 @@
 /** Ключи кэша. Всё, что относится к дому, начинается с ['hh', id] — так его можно перечитать разом. */
 export const qk = {
-  user: ['user'] as const,
   memberships: ['memberships'] as const,
   googleAvailable: ['google-available'] as const,
   home: (hid: string) => ['hh', hid] as const,

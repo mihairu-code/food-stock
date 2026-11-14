@@ -142,9 +142,19 @@ export const en: Messages = {
   'toast.copied': 'Link copied',
   'toast.copyError': 'Couldn’t copy — select the link by hand',
   'toast.nameError': 'Couldn’t save the name',
+  'toast.renameError': 'Couldn’t rename the home',
 
   'settings.demoText':
     'Data is kept only in this browser. Sharing and syncing between devices turn on once Supabase is connected — the steps are in the README.',
+  'settings.groupHome': 'Home',
+  'settings.homeName': 'Home name',
+  'settings.sections': 'Sections',
+  'settings.sectionsMeta': {
+    one: '{count} section · rename or delete',
+    other: '{count} sections · rename or delete',
+  },
+  'settings.currentHome': 'Current home',
+  'settings.manyHomes': 'You have several homes',
   'settings.groupMembers': 'Members',
   'settings.you': '(you)',
   'settings.removeMemberAria': 'Remove member: {name}',
@@ -168,6 +178,20 @@ export const en: Messages = {
   'settings.themeAuto': 'Same as device',
   'settings.themeLight': 'Light',
   'settings.themeDark': 'Dark',
+  'settings.accent': 'Accent colour',
+
+  'accent.green': 'Green',
+  'accent.teal': 'Teal',
+  'accent.blue': 'Blue',
+  'accent.violet': 'Violet',
+  'accent.rose': 'Rose',
+  'accent.graphite': 'Graphite',
+
+  'settings.homeMeta': 'Home name and avatar',
+
+  'homeSheet.title': 'Home',
+  'homeSheet.iconHint': 'home avatar',
+
   'settings.groupData': 'Data',
   'settings.reset': 'Reset demo data',
   'settings.resetMeta': 'Bring back the sample sections and items',
@@ -219,6 +243,8 @@ export const en: Messages = {
   'name.title': 'Your name',
   'name.description': 'This is how other members of the home will see you.',
   'name.label': 'Name',
+
+  'renameHome.label': 'What is the home called',
 
   'confirm.removeMemberTitle': 'Remove this member?',
   'confirm.removeMemberText':

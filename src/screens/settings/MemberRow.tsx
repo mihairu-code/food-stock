@@ -5,6 +5,7 @@ import type { Member } from '@/domain/types'
 import { useT } from '@/i18n'
 import { memberIdentity, memberLabel } from '@/lib/memberText'
 import { openSheet } from '@/sheets'
+import { MemberAvatar } from './MemberAvatar'
 
 export function MemberRow({ member, removable }: { member: Member; removable: boolean }) {
   const t = useT()
@@ -13,6 +14,7 @@ export function MemberRow({ member, removable }: { member: Member; removable: bo
 
   return (
     <SettingRow
+      leading={<MemberAvatar member={member} />}
       title={member.user_id === user.id ? `${label} ${t('settings.you')}` : label}
       meta={memberIdentity(member, t)}
       trailing={

@@ -742,6 +742,73 @@ describe('аккаунт Google: слияние пользователя уст�
 })
 
 
+describe('аватарка дома и фото участника', () => {
+  const FRANK = { id: '00000000-0000-0000-0000-00000000000f' }
+  const GRACE = { id: '00000000-0000-0000-0000-000000000010', email: 'grace@example.com' }
+  const PHOTO = 'https://lh3.googleusercontent.com/a/photo-of-grace=s96-c'
+  let home: string
+
+  const avatarOf = async (userId: string) =>
+    (await rows<{ avatar_url: string | null }>(`select avatar_url from public.household_members where user_id = $1`, [userId]))[0]
+      .avatar_url
+
+  beforeAll(async () => {
+    await db.query(`insert into auth.users (id) values ($1)`, [FRANK.id])
+    await db.query(`insert into auth.users (id, email, is_anonymous) values ($1, $2, false)`, [GRACE.id, GRACE.email])
+    home = await createHousehold(FRANK, 'Дом Фрэнка')
+    const [{ token }] = await as(FRANK, () => rows<{ token: string }>(`select public.create_invite($1) as token`, [home]))
+    await as(GRACE, () => db.query(`select public.join_household($1, 'Грейс')`, [token]))
+  })
+
+  it('аватарку дома меняет владелец, участник — нет', async () => {
+    expect(await as(FRANK, () => affected(`update public.households set icon = '🏡' where id = $1`, [home]))).toBe(1)
+    expect(await as(GRACE, () => affected(`update public.households set icon = '🏰' where id = $1`, [home]))).toBe(0)
+    expect(await as(GRACE, () => rows(`select name, icon from public.households where id = $1`, [home]))).toEqual([
+      { name: 'Дом Фрэнка', icon: '🏡' },
+    ])
+  })
+
+  it('слишком длинная аватарка не принимается', async () => {
+    await expect(
+      as(FRANK, () => db.query(`update public.households set icon = $2 where id = $1`, [home, 'x'.repeat(17)])),
+    ).rejects.toThrow()
+  })
+
+  it('sync_profile записывает фото из аккаунта Google', async () => {
+    await as({ ...GRACE, avatar: PHOTO }, () => db.query(`select public.sync_profile('Safari · iPhone', '')`))
+    expect(await avatarOf(GRACE.id)).toBe(PHOTO)
+    // Фото видят другие участники дома.
+    expect(
+      await as(FRANK, () => rows(`select avatar_url from public.household_members where user_id = $1`, [GRACE.id])),
+    ).toEqual([{ avatar_url: PHOTO }])
+  })
+
+  it('картинка не с серверов Google не принимается', async () => {
+    for (const url of [
+      'https://evil.example.com/pixel.png',
+      'http://lh3.googleusercontent.com/a/photo',
+      'https://lh3.googleusercontent.com.evil.example/a/photo',
+      'javascript:alert(1)',
+    ]) {
+      await as({ ...GRACE, avatar: url }, () => db.query(`select public.sync_profile('Safari · iPhone', '')`))
+      expect(await avatarOf(GRACE.id)).toBeNull()
+    }
+  })
+
+  it('у участника без аккаунта фото нет, остальные данные записываются как раньше', async () => {
+    await as(FRANK, () => db.query(`select public.sync_profile('Chrome · Android', '')`))
+    expect(
+      await rows(`select device, account_email, avatar_url from public.household_members where user_id = $1`, [FRANK.id]),
+    ).toEqual([{ device: 'Chrome · Android', account_email: null, avatar_url: null }])
+  })
+
+  it('участник не может записать себе фото в обход функции', async () => {
+    await expect(
+      as(GRACE, () => db.query(`update public.household_members set avatar_url = 'https://evil.example.com/x.png' where user_id = $1`, [GRACE.id])),
+    ).rejects.toThrow()
+  })
+})
+
 describe('порядок вручную: перетаскивание продуктов и разделов', () => {
   const DAVE = { id: '00000000-0000-0000-0000-00000000000d' }
   const ERIN = { id: '00000000-0000-0000-0000-00000000000e' }

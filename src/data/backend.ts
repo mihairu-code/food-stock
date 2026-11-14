@@ -27,6 +27,11 @@ export interface SectionPatch {
   icon: string | null
 }
 
+export interface HouseholdPatch {
+  name: string
+  icon: string | null
+}
+
 export interface NewProduct {
   id: string
   section_id: string
@@ -70,12 +75,13 @@ export interface Backend {
   /** Возвращает дом, который стоит открыть; null — сливать было нечего. */
   completeMerge(ticket: string, keep: MergeKeep | null): Promise<string | null>
 
-  /** Записывает устройство, почту и (если своё не задано) имя во все дома пользователя. */
+  /** Записывает устройство, фото аккаунта и (если своё не задано) имя во все дома пользователя. */
   syncProfile(device: string, displayName: string): Promise<void>
 
   listMemberships(): Promise<Membership[]>
-  /** Создаёт дом и делает текущего пользователя владельцем; возвращает id дома. */
   createHousehold(name: string, displayName: string): Promise<string>
+  /** Название и аватарка дома; меняет владелец. */
+  updateHousehold(householdId: string, patch: HouseholdPatch): Promise<void>
 
   listMembers(householdId: string): Promise<Member[]>
   setDisplayName(householdId: string, displayName: string): Promise<void>
@@ -116,7 +122,7 @@ export interface Backend {
   /** Атомарно: создать продукт в разделе и убрать позицию из покупок. */
   purchaseShoppingItem(itemId: string, sectionId: string, makeStaple: boolean): Promise<void>
 
-  /** Сообщает об изменениях, сделанных не в этой вкладке. */
+  /** Сообщает об изменениях, сделанных не в этой вкладке (другой участник или устройство). */
   subscribe(onChange: () => void): () => void
 
   /** Только локальный режим: вернуть демо-данные к исходным. */

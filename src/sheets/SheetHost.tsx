@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useLocation } from 'react-router'
 import { lockPageScroll } from '@/lib/scrollLock'
 import { AddItemSheet } from './AddItemSheet'
+import { HomeSheet } from './HomeSheet'
 import { InviteLinkSheet } from './InviteLinkSheet'
 import { JoinSheet } from './JoinSheet'
 import { NameSheet } from './NameSheet'
@@ -46,6 +47,8 @@ export function SheetHost() {
       return <JoinSheet />
     case 'my-name':
       return <NameSheet current={sheet.current} />
+    case 'edit-home':
+      return <HomeSheet />
     case 'remove-member':
       return <RemoveMemberSheet member={sheet.member} />
     case 'sign-out':

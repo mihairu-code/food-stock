@@ -136,9 +136,16 @@ export const vi: Messages = {
   'toast.copied': 'Đã sao chép liên kết',
   'toast.copyError': 'Không sao chép được — hãy tự chọn liên kết',
   'toast.nameError': 'Không lưu được tên',
+  'toast.renameError': 'Không đổi được tên nhà',
 
   'settings.demoText':
     'Dữ liệu chỉ được lưu trong trình duyệt này. Chia sẻ và đồng bộ giữa các thiết bị sẽ hoạt động sau khi kết nối Supabase — các bước có trong README.',
+  'settings.groupHome': 'Nhà',
+  'settings.homeName': 'Tên nhà',
+  'settings.sections': 'Khu vực trong nhà',
+  'settings.sectionsMeta': { other: '{count} khu vực · đổi tên hoặc xóa' },
+  'settings.currentHome': 'Nhà hiện tại',
+  'settings.manyHomes': 'Bạn có nhiều nhà',
   'settings.groupMembers': 'Thành viên',
   'settings.you': '(bạn)',
   'settings.removeMemberAria': 'Xóa thành viên: {name}',
@@ -162,6 +169,20 @@ export const vi: Messages = {
   'settings.themeAuto': 'Theo thiết bị',
   'settings.themeLight': 'Sáng',
   'settings.themeDark': 'Tối',
+  'settings.accent': 'Màu nhấn',
+
+  'accent.green': 'Xanh lá',
+  'accent.teal': 'Xanh ngọc',
+  'accent.blue': 'Xanh dương',
+  'accent.violet': 'Tím',
+  'accent.rose': 'Hồng',
+  'accent.graphite': 'Xám than',
+
+  'settings.homeMeta': 'Tên và ảnh đại diện của nhà',
+
+  'homeSheet.title': 'Nhà',
+  'homeSheet.iconHint': 'ảnh đại diện của nhà',
+
   'settings.groupData': 'Dữ liệu',
   'settings.reset': 'Đặt lại dữ liệu mẫu',
   'settings.resetMeta': 'Khôi phục các khu vực và món mẫu ban đầu',
@@ -214,6 +235,8 @@ export const vi: Messages = {
   'name.title': 'Tên của bạn',
   'name.description': 'Các thành viên khác trong nhà sẽ thấy bạn với tên này.',
   'name.label': 'Tên',
+
+  'renameHome.label': 'Nhà tên là gì',
 
   'confirm.removeMemberTitle': 'Xóa thành viên?',
   'confirm.removeMemberText':

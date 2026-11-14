@@ -32,12 +32,15 @@ function check(result: { error: { message: string } | null }): void {
 }
 
 function toUser(user: AuthUser): User {
-  const meta = user.user_metadata as { full_name?: string; name?: string } | undefined
+  const meta = user.user_metadata as
+    | { full_name?: string; name?: string; avatar_url?: string; picture?: string }
+    | undefined
   return {
     id: user.id,
     isAnonymous: user.is_anonymous ?? false,
     email: user.email ?? null,
     name: meta?.full_name ?? meta?.name ?? null,
+    avatarUrl: meta?.avatar_url ?? meta?.picture ?? null,
   }
 }
 
@@ -58,16 +61,24 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
   let pendingAnonymous: Promise<User> | null = null
   let googleEnabled: Promise<boolean> | null = null
 
+  async function currentUserId(): Promise<string> {
+    const { data } = await supabase.auth.getSession()
+    const id = data.session?.user.id
+    if (!id) throw new Error('Нет активной сессии')
+    return id
+  }
+
   return {
     mode: 'supabase',
 
     currentUser: async () => {
+      // getSession дожидается инициализации клиента, в том числе обмена кода от Google.
       const { data, error } = await supabase.auth.getSession()
       if (error) throw new Error(error.message)
       return data.session ? toUser(data.session.user) : null
     },
     continueAnonymously: () => {
-      pendingAnonymous ??= (async () => {
+      pendingAnonymous ??= (async (): Promise<User> => {
         const existing = await supabase.auth.getSession()
         if (existing.data.session) return toUser(existing.data.session.user)
         const created = await supabase.auth.signInAnonymously()
@@ -110,7 +121,6 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       )
     },
     signOut: async () => {
-      // Только на этом устройстве: на остальных человек остаётся в аккаунте.
       check(await supabase.auth.signOut({ scope: 'local' }))
     },
 
@@ -124,37 +134,53 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
     },
 
     listMemberships: async () => {
-      const { data: session } = await supabase.auth.getSession()
-      const userId = session.session?.user.id
+      const { data: auth } = await supabase.auth.getSession()
+      const userId = auth.session?.user.id
       if (!userId) return []
       const rows = unwrap(
         await supabase
           .from('household_members')
-          .select('role, households(*)')
+          .select('role, created_at, household:households(id, name, icon, created_at)')
           .eq('user_id', userId)
           .order('created_at'),
-      ) as unknown as { role: Role; households: Household }[]
-      return rows.map((row): Membership => ({ household: row.households, role: row.role }))
+      ) as unknown as { role: Role; household: Household | null }[]
+      return rows.flatMap((row): Membership[] =>
+        row.household ? [{ household: row.household, role: row.role }] : [],
+      )
     },
     createHousehold: async (name, displayName) =>
-      unwrap(await supabase.rpc('create_household', { p_name: name, p_display_name: displayName })) as string,
+      unwrap(
+        await supabase.rpc('create_household', { p_name: name, p_display_name: displayName }),
+      ) as string,
+    updateHousehold: async (householdId, patch) => {
+      check(await supabase.from('households').update(patch).eq('id', householdId))
+    },
 
     listMembers: async (householdId) =>
       unwrap(
-        await supabase.from('household_members').select('*').eq('household_id', householdId).order('created_at'),
+        await supabase
+          .from('household_members')
+          .select('household_id, user_id, role, display_name, device, account_email, avatar_url, created_at')
+          .eq('household_id', householdId)
+          .order('created_at'),
       ) as Member[],
     setDisplayName: async (householdId, displayName) => {
-      const { data } = await supabase.auth.getSession()
       check(
         await supabase
           .from('household_members')
           .update({ display_name: displayName })
           .eq('household_id', householdId)
-          .eq('user_id', data.session?.user.id ?? ''),
+          .eq('user_id', await currentUserId()),
       )
     },
     removeMember: async (householdId, userId) => {
-      check(await supabase.from('household_members').delete().eq('household_id', householdId).eq('user_id', userId))
+      check(
+        await supabase
+          .from('household_members')
+          .delete()
+          .eq('household_id', householdId)
+          .eq('user_id', userId),
+      )
     },
 
     listInvites: async (householdId) =>
@@ -173,12 +199,18 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       check(await supabase.from('household_invites').delete().eq('id', inviteId))
     },
     joinHousehold: async (token, displayName) =>
-      unwrap(await supabase.rpc('join_household', { p_token: token, p_display_name: displayName })) as string,
+      unwrap(
+        await supabase.rpc('join_household', { p_token: token, p_display_name: displayName }),
+      ) as string,
 
     listSections: async (householdId) =>
-      unwrap(await supabase.from('sections').select('*').eq('household_id', householdId)) as Section[],
+      unwrap(
+        await supabase.from('sections').select('*').eq('household_id', householdId),
+      ) as Section[],
     listProducts: async (householdId) =>
-      unwrap(await supabase.from('products').select('*').eq('household_id', householdId)) as Product[],
+      unwrap(
+        await supabase.from('products').select('*').eq('household_id', householdId),
+      ) as Product[],
     listShoppingItems: async (householdId) =>
       unwrap(
         await supabase.from('shopping_items').select('*').eq('household_id', householdId),
@@ -256,7 +288,9 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       // Postgres Changes фильтровать не умеет. Любое событие — повод перечитать данные.
       let channel = supabase.channel(`home-stock-${crypto.randomUUID()}`)
       for (const table of REALTIME_TABLES) {
-        channel = channel.on('postgres_changes', { event: '*', schema: 'public', table }, () => onChange())
+        channel = channel.on('postgres_changes', { event: '*', schema: 'public', table }, () =>
+          onChange(),
+        )
       }
       channel.subscribe()
       return () => {

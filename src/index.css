@@ -56,6 +56,86 @@
   color-scheme: dark;
 }
 
+/* Акцентные цвета. Правило работает на любом элементе, а не только на <html>:
+   кружок в настройках с data-accent показывает свой цвет, какой бы акцент ни был выбран. */
+[data-accent='green'] {
+  --accent: #426b4d;
+  --accent-soft: #e9f0e7;
+  --on-accent: #ffffff;
+}
+
+[data-accent='teal'] {
+  --accent: #2c6e6a;
+  --accent-soft: #e2f0ee;
+  --on-accent: #ffffff;
+}
+
+[data-accent='blue'] {
+  --accent: #3a62a8;
+  --accent-soft: #e6ecf7;
+  --on-accent: #ffffff;
+}
+
+[data-accent='violet'] {
+  --accent: #6b55ad;
+  --accent-soft: #ece8f6;
+  --on-accent: #ffffff;
+}
+
+[data-accent='rose'] {
+  --accent: #a6456a;
+  --accent-soft: #f7e8ed;
+  --on-accent: #ffffff;
+}
+
+[data-accent='graphite'] {
+  --accent: #4b4e46;
+  --accent-soft: #ebebe5;
+  --on-accent: #ffffff;
+}
+
+[data-theme='dark'][data-accent='green'],
+[data-theme='dark'] [data-accent='green'] {
+  --accent: #98c49c;
+  --accent-soft: #2a382d;
+  --on-accent: #142017;
+}
+
+[data-theme='dark'][data-accent='teal'],
+[data-theme='dark'] [data-accent='teal'] {
+  --accent: #86c7c1;
+  --accent-soft: #233735;
+  --on-accent: #0e2422;
+}
+
+[data-theme='dark'][data-accent='blue'],
+[data-theme='dark'] [data-accent='blue'] {
+  --accent: #9bb9ee;
+  --accent-soft: #263249;
+  --on-accent: #101c33;
+}
+
+[data-theme='dark'][data-accent='violet'],
+[data-theme='dark'] [data-accent='violet'] {
+  --accent: #baa9ef;
+  --accent-soft: #302a49;
+  --on-accent: #1c1537;
+}
+
+[data-theme='dark'][data-accent='rose'],
+[data-theme='dark'] [data-accent='rose'] {
+  --accent: #eea4be;
+  --accent-soft: #40282f;
+  --on-accent: #33121f;
+}
+
+[data-theme='dark'][data-accent='graphite'],
+[data-theme='dark'] [data-accent='graphite'] {
+  --accent: #cfd1c8;
+  --accent-soft: #32342f;
+  --on-accent: #1f211c;
+}
+
 *,
 *::before,
 *::after {
@@ -179,6 +259,54 @@ a {
 .avatar.pending {
   background: var(--orange-soft);
   color: var(--orange);
+}
+
+/* Аватарка дома — эмодзи, фото участника — картинка из его аккаунта. */
+.avatar[data-icon='true'] {
+  font-size: 22px;
+}
+
+img.avatar {
+  object-fit: cover;
+}
+
+/* Выбор акцентного цвета: строка настроек с рядом кружков под подписью. */
+.setting-row.accent-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.swatches {
+  display: flex;
+  gap: 12px;
+}
+
+.swatch {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 3px solid var(--paper);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.swatch[aria-checked='true'] {
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+.content {
+  padding: 0 16px;
+  /* Лёгкое появление экрана при переключении вкладок. */
+  animation: screen-in 0.2s ease-out;
+}
+
+@keyframes screen-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
 }
 
 /* Навигация — отдельные кнопки, парящие над содержимым; общей панели нет. */

@@ -16,7 +16,7 @@ type AuthState =
   | { status: 'ready'; user: User }
 
 const sameUser = (a: User, b: User) =>
-  a.id === b.id && a.isAnonymous === b.isAnonymous && a.email === b.email
+  a.id === b.id && a.isAnonymous === b.isAnonymous && a.email === b.email && a.avatarUrl === b.avatarUrl
 
 /**
  * Решает, кто пользуется приложением. Если на устройстве уже есть сессия — берём её.

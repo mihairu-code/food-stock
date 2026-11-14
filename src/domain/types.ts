@@ -11,11 +11,15 @@ export interface User {
   email: string | null
   /** Имя из аккаунта Google, если есть. */
   name: string | null
+  /** Фото из аккаунта Google, если есть. */
+  avatarUrl: string | null
 }
 
 export interface Household {
   id: string
   name: string
+  /** Аватарка дома — эмодзи; без неё в шапке стоят инициалы участников. */
+  icon?: string | null
   created_at: string
 }
 
@@ -34,6 +38,8 @@ export interface Member {
   device: string
   /** Почта аккаунта Google; у участника без аккаунта — null. */
   account_email: string | null
+  /** Фото из аккаунта Google; у участника без аккаунта его нет. */
+  avatar_url?: string | null
   created_at: string
 }
 

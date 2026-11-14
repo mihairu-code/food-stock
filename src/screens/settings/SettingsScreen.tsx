@@ -6,6 +6,7 @@ import { useT } from '@/i18n'
 import { openSheet } from '@/sheets'
 import { AccountGroup } from './AccountGroup'
 import { AppGroup } from './AppGroup'
+import { HomeGroup } from './HomeGroup'
 import { MembersGroup } from './MembersGroup'
 
 export function SettingsScreen() {
@@ -15,6 +16,7 @@ export function SettingsScreen() {
   if (backend.mode === 'local') {
     return (
       <>
+        <HomeGroup />
         <AppGroup />
         <SettingsGroup label={t('settings.groupData')}>
           <SettingRow
@@ -31,6 +33,7 @@ export function SettingsScreen() {
 
   return (
     <>
+      <HomeGroup />
       <MembersGroup />
       <AccountGroup />
       <AppGroup />

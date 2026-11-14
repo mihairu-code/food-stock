@@ -270,6 +270,14 @@ describe('домашние запасы: основные потоки', () => {
     expect(await names()).toEqual(['Батарейки', 'Сыр', 'Молоко'])
   })
 
+  it('у дома меняются название и аватарка', async () => {
+    await backend.updateHousehold(hid, { name: 'Дача', icon: '🏡' })
+    expect((await backend.listMemberships())[0].household).toMatchObject({ name: 'Дача', icon: '🏡' })
+
+    await backend.updateHousehold(hid, { name: 'Дача', icon: null })
+    expect((await backend.listMemberships())[0].household.icon).toBeNull()
+  })
+
   it('демо-набор соответствует макету: молоко закончилось, в покупках три позиции', async () => {
     await backend.resetLocalData?.()
     hid = (await backend.listMemberships())[0].household.id

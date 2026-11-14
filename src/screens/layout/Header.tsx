@@ -20,9 +20,9 @@ export function Header() {
         </div>
         <h1>{t(titleKey(pathname))}</h1>
       </div>
-      {/* Инициалы участников — ссылка на настройки. */}
-      <Link className="avatar" to="/settings" aria-label={t('header.settingsLink')}>
-        {initials || <UserRound size={18} aria-hidden="true" />}
+      {/* Аватарка дома; пока её не выбрали — инициалы участников. */}
+      <Link className="avatar" to="/settings" data-icon={Boolean(household.icon)} aria-label={t('header.settingsLink')}>
+        {household.icon || initials || <UserRound size={18} aria-hidden="true" />}
       </Link>
     </header>
   )

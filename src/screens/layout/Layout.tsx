@@ -9,7 +9,6 @@ export function Layout() {
   return (
     <div className="app">
       <Header />
-      {/* key — чтобы при смене вкладки экран появлялся заново, с лёгким переходом. */}
       <main className="content" key={pathname}>
         <Outlet />
       </main>
