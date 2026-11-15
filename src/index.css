@@ -178,7 +178,9 @@ body {
   scale: 0.95;
 }
 
-:is(.setting-row, .add-row, .row-main, .section-toggle, .back-link):active:not(:disabled) {
+/* Только сами строки-кнопки и ссылки: у строки-div (тогл, выбор цвета) :active всплывает
+   от вложенного контрола, и иначе приглушалась бы вся строка целиком. */
+:is(a.setting-row, button.setting-row, .add-row, .row-main, .section-toggle, .back-link):active:not(:disabled) {
   scale: 1;
   opacity: 0.55;
 }

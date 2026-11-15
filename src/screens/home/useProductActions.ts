@@ -5,7 +5,7 @@ import type { Product } from '@/domain/types'
 import { notify } from '@/lib/toast'
 
 export interface ProductActions {
-  /** Нажатие на иконку или название: продукт закончился или снова дома. */
+  /** Нажатие на иконку: продукт закончился или снова дома. */
   toggleStock: (product: Product) => void
   /** Плюс и минус: положить в покупки или убрать из них, наличие не трогая. */
   toggleList: (product: Product) => void

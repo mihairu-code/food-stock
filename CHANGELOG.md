@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.7.0 — 2026-11-15
+
+- Accent colors; theme and accent applied before the first paint.
+- Home name and emoji avatar (migration `0008`), member photos from Google.
+- Sections screen in settings; home switcher for several homes.
+- Section tiles instead of the native select; "Don't add home" for manual purchases.
+- Emoji panel instead of the system emoji keyboard.
+- First-days hints with a settings toggle.
+- `FormSheet` / `NameIconFields` for every form; lighter swipe with flick and collapse.
+- Press feedback on iPhone; wide rows dim only when pressable as a whole.
+- Sheet above the keyboard computed only from the current visual viewport; compact
+  form while the keyboard is open; safer backdrop taps.
+
 ## 0.6.0 — 2026-11-13
 
 - Drag and drop on dnd-kit: products within and between sections, sections, the shopping

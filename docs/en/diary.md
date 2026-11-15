@@ -354,3 +354,75 @@ was clearing the draft order on drop, while the cache still held the old one unt
 optimistic update landed. Now the draft lives until fresh data arrives. And while a drag
 is active the delete swipe steps aside — via a module-level flag, so rows don't
 re-render just for that.
+
+## Nov 14, Sat
+
+In the morning I closed v0.6 and got to something I'd wanted for a while: making the
+app feel like your own.
+
+Accent color. Six of them, each with two sets of values — for light and dark, all
+through `data-accent` on `<html>` and variables. Tuned contrast by hand: rose on the
+dark background looked like an error at first, had to lighten it. `lib/theme.ts` became
+`lib/appearance.ts` with a small store. And I finally got rid of the flash: launching in
+the dark theme, the screen was light for a frame until the script loaded. Now a tiny
+inline script in `index.html` sets the theme before the first paint. The
+`localStorage` keys are the same as in `appearance.ts` — noted that in both places.
+
+The home avatar is an emoji, like sections have, and it replaces the initials in the
+header. Member photos from Google — here I thought a bit about security: other
+members' browsers will load the image URL, and a person can edit their account
+metadata themselves. So `sync_profile` (`0008`) accepts only
+`https://…googleusercontent.com/`, anything else becomes `null`. I didn't touch the
+function's signature, the photo comes from the token: the old version on the phone will
+send it too. Plus `referrerPolicy="no-referrer"` on the `<img>`, otherwise Google
+sometimes answers 403.
+
+Sections moved to their own settings screen, not just the pencil on the board.
+
+After lunch — the native `<select>` in a sheet. On iPhone it's the same thing every
+time: the keyboard hides, a wheel at the bottom, the sheet jumps twice. Made a row of
+tiles that scrolls sideways, tapping doesn't take focus from the field
+([0009](decisions/0009-section-tiles-not-select.md)). Along the way the purchase sheet
+got "Don't add home" — some one-off purchases aren't worth tracking at home.
+
+In the evening — the emoji panel. A web app can't open the system emoji keyboard, and
+pasting emoji into a text field is clumsy. Made a "＋" button in front of the
+suggestions and a panel with ~160 icons. The panel takes the keyboard's place: both
+don't fit in the sheet, so opening the panel blurs the field, and going back to the
+field closes the panel.
+
+Then the stuff that had piled up: hints for newcomers for the first three days,
+`FormSheet` — one frame for all forms (there were seven of them by now, each living its
+own life), a lighter delete swipe. I rewrote the swipe so the row moves via `style`
+directly, without a React re-render on every move — so it doesn't lag behind the finger. Added a flick: a quick move deletes from a short distance.
+
+Late evening — the keyboard again. Above it there's room for half a sheet, and in the
+product form the buttons ended up under the keyboard. While the keyboard is open I set
+`data-keyboard` and tighten the form. Plus two accidental closes: a tap on a field
+during which the sheet moved "ended" on the backdrop and closed the sheet; and the
+checkbox took focus and hid the keyboard.
+
+## Nov 15, Sun
+
+In the morning I tried to finally fix the Home Screen app, where the sheet sometimes
+sinks under the keyboard: remember the keyboard height when it can be measured honestly,
+and lift the sheet at least that much. Deployed, opened on the phone — the sheet flew
+off past the top edge. Great.
+
+Enough guessing. I made a temporary panel that prints the numbers from `keyboard.ts`
+right on top of the app, recorded the screen and went through it frame by frame. Here's
+the picture: when opening the keyboard, iPhone also shifts the screen itself up to show
+the field. The small bottom inset was true — the screen was already shifted, and the
+remembered height lifted the sheet hundreds of pixels too high. And sometimes the
+screen shifts once more after the last event, and the sheet stays where the event left
+it.
+
+Reverted the attempt and rewrote it: the position is a pure function of what the phone
+reports right now, the screen height comes from an invisible full-screen probe, and
+while the person types the numbers are re-measured on a timer
+([0010](decisions/0010-sheet-from-current-viewport.md)). The numbers from the recording
+went into the tests. Removed the numbers panel from the code.
+
+A small thing to finish: pressing a toggle in settings dimmed the whole row — `:active`
+bubbles up from the nested control. Now only rows that are pressable as a whole get
+dimmed.
