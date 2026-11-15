@@ -10,7 +10,7 @@
 и сразу видят изменения друг друга.
 
 Стек: React 19 + TypeScript + Vite, React Router, TanStack Query, Supabase
-(Postgres + Auth + Realtime), `vite-plugin-pwa`.
+(Postgres + Auth + Realtime), dnd-kit, `vite-plugin-pwa`.
 
 ## Запуск
 
@@ -71,13 +71,14 @@ npm run dev
 src/
   domain/     типы и чистая логика (список покупок, переходы состояния)
   data/       граница с хранилищем: интерфейс Backend и две реализации
-  app/        кто вошёл, какой дом открыт
+  app/        кто вошёл, какой дом открыт; приветствие и установка
   data/hooks/ запросы и мутации (оптимистичные правки, разовые действия)
   screens/    Дом, Покупки, Настройки — один компонент на файл
   sheets/     шторки; рисует их SheetHost, открывает openSheet()
   components/ мелкие общие элементы
   hooks/      общие хуки
-  lib/        мелкие самостоятельные модули (тема, ссылки-приглашения, подбор эмодзи)
+  lib/        мелкие самостоятельные модули (тема и акцент, клавиатура, перетаскивание,
+              ссылки-приглашения, подбор эмодзи, определение устройства для установки)
   i18n/       словари: ru.ts — образец, en/ja/vi — те же ключи
 supabase/
   migrations/ схема, политики RLS, RPC
@@ -85,8 +86,10 @@ supabase/
 ```
 
 Подробнее — в [docs/ru](docs/ru): [описание продукта](docs/ru/product-brief.md),
-[решения](docs/ru/decisions), [версии](docs/ru/releases) и
-[дневник разработки](docs/ru/diary.md).
+[решения](docs/ru/decisions), [версии](docs/ru/releases),
+[дневник разработки](docs/ru/diary.md) и [заметки про iPhone](docs/ru/ios-notes.md) —
+что Safari и приложение с экрана «Домой» делают со шторками и клавиатурой. Как вносить
+изменения — в [CONTRIBUTING](CONTRIBUTING.ru.md).
 
 ## Лицензия
 

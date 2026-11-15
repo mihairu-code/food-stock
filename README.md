@@ -10,7 +10,7 @@ your own — "Fridge", "Pantry", "Snacks". Several people share one home and see
 other's changes live.
 
 Stack: React 19 + TypeScript + Vite, React Router, TanStack Query, Supabase
-(Postgres + Auth + Realtime), `vite-plugin-pwa`.
+(Postgres + Auth + Realtime), dnd-kit, `vite-plugin-pwa`.
 
 ## Run
 
@@ -70,13 +70,14 @@ loading. The rules are in [decision 0004](docs/en/decisions/0004-safe-updates.md
 src/
   domain/     types and pure logic (shopping list, state transitions)
   data/       storage boundary: the Backend interface and two implementations
-  app/        gates: who's signed in, which home is open
+  app/        gates: who's signed in, which home is open; welcome and install guide
   data/hooks/ queries and mutations (optimistic edits, one-off actions)
   screens/    Home, Shopping, Settings — one component per file
   sheets/     bottom sheets; all rendered by SheetHost, opened with openSheet()
   components/ small shared pieces
   hooks/      shared hooks
-  lib/        small standalone helpers (theme, invite links, emoji suggestions)
+  lib/        small standalone helpers (theme and accent, keyboard, drag state,
+              invite links, emoji suggestions, install detection)
   i18n/       dictionaries: ru.ts is the reference, en/ja/vi have the same keys
 supabase/
   migrations/ schema, RLS policies, RPC
@@ -84,8 +85,10 @@ supabase/
 ```
 
 More in [docs/en](docs/en): the [product brief](docs/en/product-brief.md),
-[decisions](docs/en/decisions), [release notes](docs/en/releases) and a
-[dev diary](docs/en/diary.md).
+[decisions](docs/en/decisions), [release notes](docs/en/releases), a
+[dev diary](docs/en/diary.md) and [iPhone notes](docs/en/ios-notes.md) — what Safari
+and the Home Screen app do to sheets and the keyboard. How to make changes is in
+[CONTRIBUTING](CONTRIBUTING.md).
 
 ## License
 

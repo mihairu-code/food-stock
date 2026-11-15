@@ -426,3 +426,37 @@ went into the tests. Removed the numbers panel from the code.
 A small thing to finish: pressing a toggle in settings dimmed the whole row — `:active`
 bubbles up from the nested control. Now only rows that are pressable as a whole get
 dimmed.
+
+## Nov 15, afternoon
+
+"How do I put it on my phone?" is the first question when you open the link. I got
+tired of explaining it in words every time, so I made it part of the welcome screen.
+
+First — figure out the device. A pure function of the `userAgent` and two flags
+(already open as an app, and is there a touch screen), so it can be covered with tests
+on real browser strings. The funniest one is iPad: Safari there introduces itself as a
+Mac by default, only `maxTouchPoints` tells them apart. Chrome and Firefox on iPhone
+can't install by themselves — they have "Share" in their own toolbar, different steps.
+Chrome, Edge, Yandex and Opera on desktop are all Chromium and all call themselves
+Chrome, one path for all of them. Firefox on desktop can't install sites — I say so.
+
+The first version was text: "tap Share". I reread it as someone who doesn't use an
+iPhone every day — it's unclear which of the icons is "Share". So I drew a scheme of the
+window for every step: a few `div`s, lucide icons and an outlined button. Screenshots
+were out right away — they go stale with every iOS update, they're heavy and they don't
+recolor for the dark theme. The schemes recolor for free, through the same variables.
+
+Chrome and Edge can install by themselves via `beforeinstallprompt`, but the event
+arrives right after load, before the welcome screen even shows. I catch it at startup
+into a small store and hold on to it — the card shows a real "Install" button and
+tucks the steps under "How to install manually".
+
+Along the way, a global rule for "Reduce motion" — there's a lot of animation now.
+
+## Nov 15, evening
+
+While it's fresh, I wrote down the iPhone notes — everything the last few days went
+into: the keyboard, the screen shift, focus, what a web app just doesn't get. In a month
+I won't remember why the sheet is computed exactly this way and not simpler. Plus
+`CONTRIBUTING` with the code rules and what must not break while the old version lives
+on phones.

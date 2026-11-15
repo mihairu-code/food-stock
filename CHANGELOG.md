@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0 — 2026-11-15
+
+- Install guide on the welcome screen: steps for iPhone/iPad, Android, Chrome/Edge on
+  desktop and Safari on Mac, each with a drawn scheme of the system UI.
+- Native install button where the browser supports `beforeinstallprompt`.
+- Global `prefers-reduced-motion` rule.
+- Docs: iPhone notes, CONTRIBUTING.
+
 ## 0.7.0 — 2026-11-15
 
 - Accent colors; theme and accent applied before the first paint.
