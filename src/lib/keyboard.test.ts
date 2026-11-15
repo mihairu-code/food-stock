@@ -1,45 +1,55 @@
 import { describe, expect, it } from 'vitest'
-import { keyboardInset, keyboardOpen, sheetInset } from './keyboard'
+import { sheetPlacement } from './keyboard'
 
-/* Числа — с iPhone 14 Pro Max: окно 932 по высоте, над клавиатурой видно 456. */
-describe('место под клавиатурой', () => {
-  it('клавиатуры нет — снизу ничего не закрыто', () => {
-    expect(keyboardInset({ layout: 932, height: 932, offsetTop: 0 })).toBe(0)
+/*
+ * Где стоит шторка при разных состояниях экрана. Числа — с iPhone 14 Pro Max:
+ * экран 932 по высоте, над клавиатурой видно 456.
+ */
+describe('положение шторки над клавиатурой', () => {
+  it('клавиатуры нет — шторка у низа экрана и занимает сколько нужно', () => {
+    expect(sheetPlacement({ layout: 932, height: 932, offsetTop: 0 })).toEqual({
+      inset: 0,
+      visible: 932,
+      keyboard: false,
+    })
   })
 
-  it('клавиатура открыта — шторка поднимается на её высоту', () => {
-    expect(keyboardInset({ layout: 932, height: 456, offsetTop: 0 })).toBe(476)
+  it('клавиатура открыта, экран не сдвинут — шторка поднята на высоту клавиатуры', () => {
+    expect(sheetPlacement({ layout: 932, height: 456, offsetTop: 0 })).toEqual({
+      inset: 476,
+      visible: 456,
+      keyboard: true,
+    })
   })
 
-  it('видимая часть сдвинута — поднимаемся только на остаток', () => {
-    expect(keyboardInset({ layout: 932, height: 456, offsetTop: 410 })).toBe(66)
+  it('телефон сдвинул экран, чтобы показать поле, — шторка поднята только на остаток', () => {
+    // Низ видимой части: 410 + 456 = 866 из 932.
+    expect(sheetPlacement({ layout: 932, height: 456, offsetTop: 410 })).toEqual({
+      inset: 66,
+      visible: 456,
+      keyboard: true,
+    })
   })
 
-  it('ниже края не уходим', () => {
-    expect(keyboardInset({ layout: 932, height: 456, offsetTop: 500 })).toBe(0)
-  })
-})
-
-describe('открыта ли клавиатура', () => {
-  it('видимая часть заметно ниже окна — открыта', () => {
-    expect(keyboardOpen({ layout: 932, height: 456, offsetTop: 0 })).toBe(true)
+  it('при сдвинутом экране клавиатура всё равно считается открытой: форма должна ужаться', () => {
+    expect(sheetPlacement({ layout: 932, height: 456, offsetTop: 476 }).keyboard).toBe(true)
   })
 
-  it('видимая часть сдвинута — всё равно открыта, форма должна ужаться', () => {
-    expect(keyboardOpen({ layout: 932, height: 456, offsetTop: 476 })).toBe(true)
+  it('экран подвинулся ещё раз — шторка едет следом', () => {
+    const before = sheetPlacement({ layout: 932, height: 456, offsetTop: 410 })
+    const after = sheetPlacement({ layout: 932, height: 456, offsetTop: 320 })
+    expect(after.inset - before.inset).toBe(90)
   })
 
-  it('небольшая потеря высоты — это панели браузера', () => {
-    expect(keyboardOpen({ layout: 932, height: 850, offsetTop: 0 })).toBe(false)
-  })
-})
-
-describe('запомненная высота клавиатуры', () => {
-  it('отступ пришёл почти нулевым — шторка всё равно над клавиатурой', () => {
-    expect(sheetInset({ layout: 932, height: 456, offsetTop: 470 }, 476)).toBe(476)
+  it('экран сдвинут сильнее, чем нужно, — шторка не уходит ниже края', () => {
+    expect(sheetPlacement({ layout: 932, height: 456, offsetTop: 500 }).inset).toBe(0)
   })
 
-  it('клавиатура закрыта — запомненная высота не мешает', () => {
-    expect(sheetInset({ layout: 932, height: 932, offsetTop: 0 }, 476)).toBe(0)
+  it('небольшая потеря высоты — это панели браузера, а не клавиатура', () => {
+    expect(sheetPlacement({ layout: 932, height: 850, offsetTop: 0 })).toEqual({
+      inset: 82,
+      visible: 850,
+      keyboard: false,
+    })
   })
 })
