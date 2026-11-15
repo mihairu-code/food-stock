@@ -11,6 +11,7 @@ export const ja: Messages = {
   'common.create': '作成',
   'common.delete': '削除',
   'common.done': '完了',
+  'common.ok': 'OK',
   'common.continue': '続ける',
   'common.retry': '再試行',
   'common.loading': '読み込み中…',
@@ -18,7 +19,6 @@ export const ja: Messages = {
   'common.saveError': '変更を保存できませんでした',
   'common.actionError': '操作を完了できませんでした',
   'common.checkConnection': 'インターネット接続を確認して、もう一度お試しください。',
-
   quote: '「{name}」',
 
   'n.products': { other: '{count}品' },
@@ -30,9 +30,7 @@ export const ja: Messages = {
   'nav.shopping': '買い物',
   'nav.settings': '設定',
   'nav.shoppingCount': '買い物、{count}件',
-
   'title.home': '家にあるもの',
-
   'header.settingsLink': 'メンバーと設定',
 
   'home.loading': '読み込み中…',
@@ -66,7 +64,6 @@ export const ja: Messages = {
   'productSheet.description': '家にあるものを登録します',
   'productSheet.name': '名前',
   'productSheet.placeholder': '例：ヨーグルト',
-
   'field.section': '置き場所',
 
   'emoji.label': 'アイコン（任意）',
@@ -126,7 +123,6 @@ export const ja: Messages = {
   'dnd.over': '「{name}」は「{target}」の隣です',
   'dnd.dropped': '「{name}」を新しい位置に置きました',
   'dnd.cancelled': '並べ替えをキャンセルしました：「{name}」',
-
   'toast.addedTo': '「{name}」に追加しました',
   'toast.addedItem': '買い物リストに追加しました',
   'toast.purchasedStaple': '常備品として「{name}」に追加しました',
@@ -183,42 +179,82 @@ export const ja: Messages = {
   'settings.accent': 'アクセントカラー',
   'settings.hints': 'ヒント',
   'settings.hintsMeta': '画面上の説明。新しいユーザーには最初の3日間表示されます',
-
   'accent.green': 'グリーン',
   'accent.teal': 'ティール',
   'accent.blue': 'ブルー',
   'accent.violet': 'バイオレット',
   'accent.rose': 'ローズ',
   'accent.graphite': 'グラファイト',
-
   'settings.homeMeta': '家の名前とアイコン',
-
   'homeSheet.title': '家',
   'homeSheet.iconHint': '家のアイコン',
-
   'settings.groupData': 'データ',
   'settings.reset': 'デモデータをリセット',
   'settings.resetMeta': '置き場所とアイテムを最初のサンプルに戻します',
 
   'role.owner': 'オーナー',
   'role.member': 'メンバー',
-
   'device.app': 'アプリ',
   'device.browser': 'ブラウザ',
   'device.unknown': '端末',
 
   'auth.google': 'Googleでログイン',
-
   'welcome.invited': '共有の家に招待されました。ログイン方法を選んでください。',
   'welcome.googleNote':
     'データはアカウントに保存されます。機種変更しても消えず、ブラウザでもホーム画面のアプリでも同じデータを使えます。',
   'welcome.anon': 'アカウントなしで続ける',
   'welcome.later': 'あとから設定でログインすることもできます。',
-
+  'install.title': 'ブラウザかアプリか',
+  'install.leadIos':
+    'このままブラウザで使えます。ホーム画面に追加すると、ワンタップで、アドレスバーなしの全画面で開けます。',
+  'install.leadAndroid':
+    'このままブラウザで使えます。ホーム画面にインストールすると、ワンタップで、アドレスバーなしの全画面で開けます。',
+  'install.leadDesktop':
+    'このままブラウザで使えます。パソコンにインストールすると専用のウインドウで開き、タブの中で見失いません。',
+  'install.leadNone':
+    'このままブラウザで使えます。このブラウザはサイトをアプリとしてインストールできません。インストールするには Chrome か Edge でリンクを開いてください。',
+  'install.button': 'アプリをインストール',
+  'install.manual': '手動でインストールする方法',
+  'install.howTo': '{device}にインストールする方法',
+  'install.device.iphone': 'iPhone',
+  'install.device.ipad': 'iPad',
+  'install.device.android': 'Android',
+  'install.device.windows': 'パソコン',
+  'install.device.mac': 'Mac',
+  'install.device.computer': 'パソコン',
+  'install.ios1':
+    'アドレスの右の<b>⋯</b>をタップして<b>共有</b>を選びます。以前の iOS では「共有」ボタンが画面の下にあります。',
+  'install.iosOther1': '<b>共有</b>をタップします。Chrome ではアドレスバーのアイコン、ほかのブラウザではメニューの中です。',
+  'install.ios2': '一覧を下にスクロールして<b>ホーム画面に追加</b>を選びます。',
+  'install.ios3': '<b>Webアプリとして開く</b>をオンのまま<b>追加</b>をタップします。ホーム画面にアイコンが表示されます。',
+  'install.android1': 'ブラウザのメニューを開きます（右上の<b>⋮</b>）。',
+  'install.android2': '<b>アプリをインストール</b>を選びます。ブラウザによっては「ホーム画面に追加」という名前です。',
+  'install.android3': '<b>インストール</b>をタップします。ホーム画面にアイコンが表示されます。',
+  'install.desktop1':
+    'アドレスバーの右端にあるインストールのアイコンをクリックします。見つからなければ、ブラウザのメニュー ⋮ から<b>インストール</b>を探してください。',
+  'install.desktop2': '<b>インストール</b>で確定します。',
+  'install.desktop3Windows': 'アプリが専用のウインドウで開きます。タスクバーにピン留めすると、ワンクリックで開けます。',
+  'install.desktop3Mac': 'アプリが専用のウインドウで開きます。Dock にアイコンを残しておくと、ワンクリックで開けます。',
+  'install.safariMac1': '画面上部のメニューバーで<b>ファイル</b>を開き、<b>Dockに追加</b>を選びます。',
+  'install.safariMac2': '<b>追加</b>をクリックします。',
+  'install.safariMac3': 'Dock にアイコンが表示され、アプリは専用のウインドウで開きます。',
+  'install.appleNote':
+    'アプリではもう一度ログインが必要な場合があります。Google でログインすれば、家とリストがそのまま表示されます。',
+  'install.ui.share': '共有',
+  'install.ui.addHome': 'ホーム画面に追加',
+  'install.ui.webApp': 'Webアプリとして開く',
+  'install.ui.add': '追加',
+  'install.ui.cancel': 'キャンセル',
+  'install.ui.installApp': 'アプリをインストール',
+  'install.ui.installQuestion': 'アプリをインストールしますか？',
+  'install.ui.install': 'インストール',
+  'install.ui.file': 'ファイル',
+  'install.ui.edit': '編集',
+  'install.ui.view': '表示',
+  'install.ui.addDock': 'Dockに追加…',
+  'install.ui.addDockTitle': 'Dockに追加',
   'start.errorTitle': '開始できませんでした',
-
   'load.reloadError': 'データを読み込めませんでした。通信状況を確認して、ページを再読み込みしてください。',
-
   'create.failedTitle': '家を作成できませんでした',
 
   'invite.title': '招待リンク',
@@ -249,7 +285,6 @@ export const ja: Messages = {
   'name.title': 'あなたの名前',
   'name.description': '家のほかのメンバーに、この名前で表示されます。',
   'name.label': '名前',
-
   'renameHome.label': '家の名前',
 
   'confirm.removeMemberTitle': 'メンバーを削除しますか？',

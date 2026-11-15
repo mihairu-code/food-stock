@@ -11,6 +11,7 @@ export const vi: Messages = {
   'common.create': 'Tạo',
   'common.delete': 'Xóa',
   'common.done': 'Xong',
+  'common.ok': 'Đã hiểu',
   'common.continue': 'Tiếp tục',
   'common.retry': 'Thử lại',
   'common.loading': 'Đang tải…',
@@ -18,7 +19,6 @@ export const vi: Messages = {
   'common.saveError': 'Không lưu được thay đổi',
   'common.actionError': 'Không thực hiện được thao tác',
   'common.checkConnection': 'Hãy kiểm tra kết nối Internet rồi thử lại.',
-
   quote: '“{name}”',
 
   'n.products': { other: '{count} món' },
@@ -30,9 +30,7 @@ export const vi: Messages = {
   'nav.shopping': 'Mua sắm',
   'nav.settings': 'Cài đặt',
   'nav.shoppingCount': 'Mua sắm, số món: {count}',
-
   'title.home': 'Trong nhà',
-
   'header.settingsLink': 'Thành viên và cài đặt',
 
   'home.loading': 'Đang tải danh sách…',
@@ -66,7 +64,6 @@ export const vi: Messages = {
   'productSheet.description': 'Ghi lại thứ đang có trong nhà',
   'productSheet.name': 'Tên món',
   'productSheet.placeholder': 'Ví dụ: sữa chua',
-
   'field.section': 'Khu vực',
 
   'emoji.label': 'Biểu tượng — không bắt buộc',
@@ -126,7 +123,6 @@ export const vi: Messages = {
   'dnd.over': '“{name}” đang ở cạnh “{target}”',
   'dnd.dropped': '“{name}” đã ở vị trí mới',
   'dnd.cancelled': 'Đã hủy sắp xếp: “{name}”',
-
   'toast.addedTo': 'Đã thêm vào “{name}”',
   'toast.addedItem': 'Đã thêm vào danh sách mua',
   'toast.purchasedStaple': 'Đã thêm vào “{name}” như món luôn có sẵn',
@@ -183,42 +179,83 @@ export const vi: Messages = {
   'settings.accent': 'Màu nhấn',
   'settings.hints': 'Gợi ý',
   'settings.hintsMeta': 'Giải thích trên màn hình; người dùng mới thấy trong 3 ngày đầu',
-
   'accent.green': 'Xanh lá',
   'accent.teal': 'Xanh ngọc',
   'accent.blue': 'Xanh dương',
   'accent.violet': 'Tím',
   'accent.rose': 'Hồng',
   'accent.graphite': 'Xám than',
-
   'settings.homeMeta': 'Tên và ảnh đại diện của nhà',
-
   'homeSheet.title': 'Nhà',
   'homeSheet.iconHint': 'ảnh đại diện của nhà',
-
   'settings.groupData': 'Dữ liệu',
   'settings.reset': 'Đặt lại dữ liệu mẫu',
   'settings.resetMeta': 'Khôi phục các khu vực và món mẫu ban đầu',
 
   'role.owner': 'Chủ nhà',
   'role.member': 'Thành viên',
-
   'device.app': 'Ứng dụng',
   'device.browser': 'Trình duyệt',
   'device.unknown': 'thiết bị',
 
   'auth.google': 'Đăng nhập bằng Google',
-
   'welcome.invited': 'Bạn được mời vào một nhà chung. Hãy chọn cách đăng nhập.',
   'welcome.googleNote':
     'Dữ liệu được lưu vào tài khoản: không mất khi đổi điện thoại và giống nhau trong trình duyệt lẫn ứng dụng trên Màn hình chính.',
   'welcome.anon': 'Tiếp tục không cần tài khoản',
   'welcome.later': 'Bạn có thể đăng nhập sau, trong phần cài đặt.',
-
+  'install.title': 'Trình duyệt hay ứng dụng',
+  'install.leadIos':
+    'Bạn có thể tiếp tục ngay trong trình duyệt — mọi thứ đều hoạt động. Hoặc thêm ứng dụng vào Màn hình chính: mở bằng một chạm, toàn màn hình, không có thanh địa chỉ.',
+  'install.leadAndroid':
+    'Bạn có thể tiếp tục ngay trong trình duyệt — mọi thứ đều hoạt động. Hoặc cài ứng dụng lên màn hình chính: mở bằng một chạm, toàn màn hình, không có thanh địa chỉ.',
+  'install.leadDesktop':
+    'Bạn có thể tiếp tục ngay trong trình duyệt — mọi thứ đều hoạt động. Hoặc cài ứng dụng lên máy tính: nó mở trong cửa sổ riêng và không bị lẫn giữa các thẻ.',
+  'install.leadNone':
+    'Bạn có thể tiếp tục ngay trong trình duyệt — mọi thứ đều hoạt động. Trình duyệt này không cài được trang web thành ứng dụng; để cài, hãy mở liên kết trong Chrome hoặc Edge.',
+  'install.button': 'Cài đặt ứng dụng',
+  'install.manual': 'Cách cài đặt thủ công',
+  'install.howTo': 'Cách cài đặt trên {device}',
+  'install.device.iphone': 'iPhone',
+  'install.device.ipad': 'iPad',
+  'install.device.android': 'Android',
+  'install.device.windows': 'máy tính',
+  'install.device.mac': 'Mac',
+  'install.device.computer': 'máy tính',
+  'install.ios1':
+    'Chạm <b>⋯</b> bên phải địa chỉ và chọn <b>Chia sẻ</b>. Trên các phiên bản iOS cũ, nút Chia sẻ nằm ngay dưới cùng màn hình.',
+  'install.iosOther1':
+    'Chạm <b>Chia sẻ</b>: trong Chrome là biểu tượng trên thanh địa chỉ, trong trình duyệt khác là mục trong menu.',
+  'install.ios2': 'Cuộn danh sách xuống và chọn <b>Thêm vào MH chính</b>.',
+  'install.ios3': 'Để bật <b>Mở dưới dạng ứng dụng web</b> và chạm <b>Thêm</b>. Biểu tượng sẽ xuất hiện trên Màn hình chính.',
+  'install.android1': 'Mở menu của trình duyệt — <b>⋮</b> ở góc trên bên phải.',
+  'install.android2': 'Chọn <b>Cài đặt ứng dụng</b>. Một số trình duyệt gọi là “Thêm vào màn hình chính”.',
+  'install.android3': 'Chạm <b>Cài đặt</b>. Biểu tượng sẽ xuất hiện trên màn hình chính.',
+  'install.desktop1':
+    'Nhấn biểu tượng cài đặt ở đầu bên phải thanh địa chỉ. Nếu không thấy, hãy tìm <b>Cài đặt</b> trong menu trình duyệt ⋮.',
+  'install.desktop2': 'Xác nhận: <b>Cài đặt</b>.',
+  'install.desktop3Windows': 'Ứng dụng mở trong cửa sổ riêng. Ghim nó vào thanh tác vụ để mở bằng một cú nhấp.',
+  'install.desktop3Mac': 'Ứng dụng mở trong cửa sổ riêng. Giữ biểu tượng trong Dock để mở bằng một cú nhấp.',
+  'install.safariMac1': 'Trên thanh menu ở đầu màn hình, mở <b>Tệp</b> và chọn <b>Thêm vào Dock</b>.',
+  'install.safariMac2': 'Nhấn <b>Thêm</b>.',
+  'install.safariMac3': 'Biểu tượng xuất hiện trong Dock và ứng dụng mở trong cửa sổ riêng.',
+  'install.appleNote':
+    'Có thể bạn cần đăng nhập lại trong ứng dụng. Hãy đăng nhập bằng Google — nhà và danh sách sẽ có ngay ở đó.',
+  'install.ui.share': 'Chia sẻ',
+  'install.ui.addHome': 'Thêm vào MH chính',
+  'install.ui.webApp': 'Mở dưới dạng ứng dụng web',
+  'install.ui.add': 'Thêm',
+  'install.ui.cancel': 'Hủy',
+  'install.ui.installApp': 'Cài đặt ứng dụng',
+  'install.ui.installQuestion': 'Cài đặt ứng dụng?',
+  'install.ui.install': 'Cài đặt',
+  'install.ui.file': 'Tệp',
+  'install.ui.edit': 'Sửa',
+  'install.ui.view': 'Xem',
+  'install.ui.addDock': 'Thêm vào Dock…',
+  'install.ui.addDockTitle': 'Thêm vào Dock',
   'start.errorTitle': 'Không bắt đầu được',
-
   'load.reloadError': 'Không tải được dữ liệu. Hãy kiểm tra kết nối và tải lại trang.',
-
   'create.failedTitle': 'Không tạo được nhà',
 
   'invite.title': 'Liên kết mời',
@@ -249,7 +286,6 @@ export const vi: Messages = {
   'name.title': 'Tên của bạn',
   'name.description': 'Các thành viên khác trong nhà sẽ thấy bạn với tên này.',
   'name.label': 'Tên',
-
   'renameHome.label': 'Nhà tên là gì',
 
   'confirm.removeMemberTitle': 'Xóa thành viên?',

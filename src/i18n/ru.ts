@@ -23,6 +23,7 @@ export const ru = {
   'common.create': 'Создать',
   'common.delete': 'Удалить',
   'common.done': 'Готово',
+  'common.ok': 'Понятно',
   'common.continue': 'Продолжить',
   'common.retry': 'Повторить',
   'common.loading': 'Загрузка…',
@@ -30,7 +31,6 @@ export const ru = {
   'common.saveError': 'Не удалось сохранить изменение',
   'common.actionError': 'Не удалось выполнить действие',
   'common.checkConnection': 'Проверьте соединение с интернетом и попробуйте ещё раз.',
-
   quote: '«{name}»',
 
   'n.products': {
@@ -57,9 +57,7 @@ export const ru = {
   'nav.shopping': 'Покупки',
   'nav.settings': 'Настройки',
   'nav.shoppingCount': 'Покупки, позиций: {count}',
-
   'title.home': 'Дома',
-
   'header.settingsLink': 'Участники и настройки',
 
   'home.loading': 'Загружаем продукты…',
@@ -98,7 +96,6 @@ export const ru = {
   'productSheet.description': 'Внесите то, что есть дома',
   'productSheet.name': 'Название продукта',
   'productSheet.placeholder': 'Например, йогурт',
-
   'field.section': 'Раздел дома',
 
   'emoji.label': 'Иконка — необязательно',
@@ -174,7 +171,6 @@ export const ru = {
   'dnd.over': '«{name}» рядом с «{target}»',
   'dnd.dropped': '«{name}» на новом месте',
   'dnd.cancelled': 'Перестановка отменена: «{name}»',
-
   'toast.addedTo': 'Добавлено в «{name}»',
   'toast.addedItem': 'Добавлено в список покупок',
   'toast.purchasedStaple': 'Добавлено в «{name}» как постоянный продукт',
@@ -236,42 +232,87 @@ export const ru = {
   'settings.accent': 'Акцентный цвет',
   'settings.hints': 'Подсказки',
   'settings.hintsMeta': 'Пояснения на экранах; новым пользователям видны первые 3 дня',
-
   'accent.green': 'Зелёный',
   'accent.teal': 'Бирюзовый',
   'accent.blue': 'Синий',
   'accent.violet': 'Фиолетовый',
   'accent.rose': 'Розовый',
   'accent.graphite': 'Графитовый',
-
   'settings.homeMeta': 'Название и аватарка дома',
-
   'homeSheet.title': 'Дом',
   'homeSheet.iconHint': 'аватарка дома',
-
   'settings.groupData': 'Данные',
   'settings.reset': 'Сбросить демо-данные',
   'settings.resetMeta': 'Вернуть исходный пример разделов и продуктов',
 
   'role.owner': 'Владелец',
   'role.member': 'Участник',
-
   'device.app': 'Приложение',
   'device.browser': 'Браузер',
   'device.unknown': 'устройство',
 
   'auth.google': 'Войти через Google',
-
   'welcome.invited': 'Вас пригласили в общий дом. Выберите, как войти.',
   'welcome.googleNote':
     'Данные сохранятся в аккаунте: не пропадут при смене телефона и будут одними и теми же в браузере и в приложении на экране «Домой».',
   'welcome.anon': 'Продолжить без аккаунта',
   'welcome.later': 'Войти можно и позже — в настройках.',
-
+  'install.title': 'Браузер или приложение',
+  'install.leadIos':
+    'Продолжайте прямо в браузере — всё работает и так. А можно добавить приложение на экран «Домой»: оно будет открываться в одно касание, на весь экран, без адресной строки.',
+  'install.leadAndroid':
+    'Продолжайте прямо в браузере — всё работает и так. А можно установить приложение на главный экран: оно будет открываться в одно касание, на весь экран, без адресной строки.',
+  'install.leadDesktop':
+    'Продолжайте прямо в браузере — всё работает и так. А можно установить приложение на компьютер: оно откроется в своём окне и не потеряется среди вкладок.',
+  'install.leadNone':
+    'Продолжайте прямо в браузере — всё работает и так. Установить сайт как приложение этот браузер не умеет: для этого откройте ссылку в Chrome или Edge.',
+  'install.button': 'Установить приложение',
+  'install.manual': 'Как установить вручную',
+  'install.howTo': 'Как установить на {device}',
+  'install.device.iphone': 'iPhone',
+  'install.device.ipad': 'iPad',
+  'install.device.android': 'Android',
+  'install.device.windows': 'компьютер',
+  'install.device.mac': 'Mac',
+  'install.device.computer': 'компьютер',
+  'install.ios1':
+    'Нажмите <b>⋯</b> справа от адреса и выберите <b>Поделиться</b>. В прежних версиях iOS кнопка «Поделиться» стоит прямо внизу экрана.',
+  'install.iosOther1':
+    'Нажмите <b>Поделиться</b>: в Chrome это значок в адресной строке, в других браузерах — пункт меню.',
+  'install.ios2': 'Пролистайте список вниз и выберите <b>На экран «Домой»</b>.',
+  'install.ios3':
+    'Оставьте включённым <b>Открыть как веб-приложение</b> и нажмите <b>Добавить</b>. Значок появится на экране «Домой».',
+  'install.android1': 'Откройте меню браузера — <b>⋮</b> в правом верхнем углу.',
+  'install.android2':
+    'Выберите <b>Установить приложение</b>. В некоторых браузерах пункт называется «Добавить на главный экран».',
+  'install.android3': 'Нажмите <b>Установить</b>. Значок появится на главном экране.',
+  'install.desktop1':
+    'Нажмите значок установки в правом конце адресной строки. Если его нет — найдите <b>Установить</b> в меню браузера ⋮.',
+  'install.desktop2': 'Подтвердите: <b>Установить</b>.',
+  'install.desktop3Windows':
+    'Приложение откроется в своём окне. Закрепите его на панели задач — так оно будет открываться в один клик.',
+  'install.desktop3Mac':
+    'Приложение откроется в своём окне. Закрепите его значок в Dock — так оно будет открываться в один клик.',
+  'install.safariMac1': 'В строке меню вверху экрана откройте <b>Файл</b> и выберите <b>Добавить в Dock</b>.',
+  'install.safariMac2': 'Нажмите <b>Добавить</b>.',
+  'install.safariMac3': 'Значок появится в Dock, а приложение будет открываться в своём окне.',
+  'install.appleNote':
+    'В приложении может понадобиться войти ещё раз. Войдите через Google — дом и списки сразу окажутся там же.',
+  'install.ui.share': 'Поделиться',
+  'install.ui.addHome': 'На экран «Домой»',
+  'install.ui.webApp': 'Открыть как веб-приложение',
+  'install.ui.add': 'Добавить',
+  'install.ui.cancel': 'Отмена',
+  'install.ui.installApp': 'Установить приложение',
+  'install.ui.installQuestion': 'Установить приложение?',
+  'install.ui.install': 'Установить',
+  'install.ui.file': 'Файл',
+  'install.ui.edit': 'Правка',
+  'install.ui.view': 'Вид',
+  'install.ui.addDock': 'Добавить в Dock…',
+  'install.ui.addDockTitle': 'Добавить в Dock',
   'start.errorTitle': 'Не удалось начать работу',
-
   'load.reloadError': 'Не удалось загрузить данные. Проверьте соединение и обновите страницу.',
-
   'create.failedTitle': 'Не удалось создать дом',
 
   'invite.title': 'Ссылка-приглашение',
@@ -302,7 +343,6 @@ export const ru = {
   'name.title': 'Ваше имя',
   'name.description': 'Так вас увидят другие участники дома.',
   'name.label': 'Имя',
-
   'renameHome.label': 'Как называется дом',
 
   'confirm.removeMemberTitle': 'Удалить участника?',

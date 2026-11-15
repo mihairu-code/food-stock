@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import '@/index.css'
 import App from '@/App'
 import { startAppearance } from '@/lib/appearance'
+import { trackInstallPrompt } from '@/lib/installPrompt'
 import { enablePressFeedback } from '@/lib/pressFeedback'
 import { trackKeyboard } from '@/lib/keyboard'
 import { preventZoom } from '@/lib/preventZoom'
@@ -11,6 +12,7 @@ startAppearance()
 preventZoom()
 enablePressFeedback()
 trackKeyboard()
+trackInstallPrompt()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
