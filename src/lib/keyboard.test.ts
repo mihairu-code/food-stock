@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { keyboardInset, keyboardOpen } from './keyboard'
+import { keyboardInset, keyboardOpen, sheetInset } from './keyboard'
 
 /* Числа — с iPhone 14 Pro Max: окно 932 по высоте, над клавиатурой видно 456. */
 describe('место под клавиатурой', () => {
@@ -31,5 +31,15 @@ describe('открыта ли клавиатура', () => {
 
   it('небольшая потеря высоты — это панели браузера', () => {
     expect(keyboardOpen({ layout: 932, height: 850, offsetTop: 0 })).toBe(false)
+  })
+})
+
+describe('запомненная высота клавиатуры', () => {
+  it('отступ пришёл почти нулевым — шторка всё равно над клавиатурой', () => {
+    expect(sheetInset({ layout: 932, height: 456, offsetTop: 470 }, 476)).toBe(476)
+  })
+
+  it('клавиатура закрыта — запомненная высота не мешает', () => {
+    expect(sheetInset({ layout: 932, height: 932, offsetTop: 0 }, 476)).toBe(0)
   })
 })
