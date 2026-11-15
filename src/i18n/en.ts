@@ -11,6 +11,7 @@ export const en: Messages = {
   'common.create': 'Create',
   'common.delete': 'Delete',
   'common.done': 'Done',
+  'common.ok': 'Got it',
   'common.continue': 'Continue',
   'common.retry': 'Try again',
   'common.loading': 'Loading…',
@@ -18,7 +19,6 @@ export const en: Messages = {
   'common.saveError': 'Couldn’t save the change',
   'common.actionError': 'Something went wrong',
   'common.checkConnection': 'Check your internet connection and try again.',
-
   quote: '“{name}”',
 
   'n.products': { one: '{count} item', other: '{count} items' },
@@ -30,9 +30,7 @@ export const en: Messages = {
   'nav.shopping': 'Shopping',
   'nav.settings': 'Settings',
   'nav.shoppingCount': 'Shopping, items: {count}',
-
   'title.home': 'At home',
-
   'header.settingsLink': 'Members and settings',
 
   'home.loading': 'Loading your food…',
@@ -66,7 +64,6 @@ export const en: Messages = {
   'productSheet.description': 'Add something you have at home',
   'productSheet.name': 'Item name',
   'productSheet.placeholder': 'For example, yogurt',
-
   'field.section': 'Section',
 
   'emoji.label': 'Icon — optional',
@@ -132,7 +129,6 @@ export const en: Messages = {
   'dnd.over': '“{name}” is next to “{target}”',
   'dnd.dropped': '“{name}” is in its new place',
   'dnd.cancelled': 'Reordering cancelled: “{name}”',
-
   'toast.addedTo': 'Added to “{name}”',
   'toast.addedItem': 'Added to the shopping list',
   'toast.purchasedStaple': 'Added to “{name}” as an item you always keep',
@@ -192,38 +188,31 @@ export const en: Messages = {
   'settings.accent': 'Accent colour',
   'settings.hints': 'Tips',
   'settings.hintsMeta': 'Explanations on screens; shown to new users for the first 3 days',
-
   'accent.green': 'Green',
   'accent.teal': 'Teal',
   'accent.blue': 'Blue',
   'accent.violet': 'Violet',
   'accent.rose': 'Rose',
   'accent.graphite': 'Graphite',
-
   'settings.homeMeta': 'Home name and avatar',
-
   'homeSheet.title': 'Home',
   'homeSheet.iconHint': 'home avatar',
-
   'settings.groupData': 'Data',
   'settings.reset': 'Reset demo data',
   'settings.resetMeta': 'Bring back the sample sections and items',
 
   'role.owner': 'Owner',
   'role.member': 'Member',
-
   'device.app': 'App',
   'device.browser': 'Browser',
   'device.unknown': 'device',
 
   'auth.google': 'Sign in with Google',
-
   'welcome.invited': 'You’ve been invited to a shared home. Choose how to sign in.',
   'welcome.googleNote':
     'Your data is saved to the account: it survives a change of phone and is the same in the browser and in the Home Screen app.',
   'welcome.anon': 'Continue without an account',
   'welcome.later': 'You can sign in later, in Settings.',
-
   'install.title': 'Browser or app',
   'install.leadIos':
     'Keep going right here in the browser — everything works. Or add the app to your Home Screen: it opens with one tap, full screen, without the address bar.',
@@ -233,6 +222,8 @@ export const en: Messages = {
     'Keep going right here in the browser — everything works. Or install the app on your computer: it opens in its own window and never gets lost among tabs.',
   'install.leadNone':
     'Keep going right here in the browser — everything works. This browser can’t install sites as apps; to do that, open the link in Chrome or Edge.',
+  'install.button': 'Install the app',
+  'install.manual': 'How to install manually',
   'install.howTo': 'How to install on {device}',
   'install.device.iphone': 'iPhone',
   'install.device.ipad': 'iPad',
@@ -258,11 +249,21 @@ export const en: Messages = {
   'install.safariMac3': 'The icon appears in the Dock, and the app opens in its own window.',
   'install.appleNote':
     'You may need to sign in again inside the app. Sign in with Google and your home and lists will be right there.',
-
+  'install.ui.share': 'Share',
+  'install.ui.addHome': 'Add to Home Screen',
+  'install.ui.webApp': 'Open as Web App',
+  'install.ui.add': 'Add',
+  'install.ui.cancel': 'Cancel',
+  'install.ui.installApp': 'Install app',
+  'install.ui.installQuestion': 'Install app?',
+  'install.ui.install': 'Install',
+  'install.ui.file': 'File',
+  'install.ui.edit': 'Edit',
+  'install.ui.view': 'View',
+  'install.ui.addDock': 'Add to Dock…',
+  'install.ui.addDockTitle': 'Add to Dock',
   'start.errorTitle': 'Couldn’t get started',
-
   'load.reloadError': 'Couldn’t load the data. Check your connection and reload the page.',
-
   'create.failedTitle': 'Couldn’t create the home',
 
   'invite.title': 'Invitation link',
@@ -292,7 +293,6 @@ export const en: Messages = {
   'name.title': 'Your name',
   'name.description': 'This is how other members of the home will see you.',
   'name.label': 'Name',
-
   'renameHome.label': 'What is the home called',
 
   'confirm.removeMemberTitle': 'Remove this member?',

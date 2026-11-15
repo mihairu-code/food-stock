@@ -3,7 +3,7 @@ import { rich } from '@/i18n/rich'
 import type { InstallTarget } from '@/lib/install'
 import { stepsFor } from './stepsFor'
 
-/** Пронумерованные шаги установки. */
+/** Пронумерованные шаги: текст и под ним схема экрана с выделенной кнопкой. */
 export function InstallSteps({ id, target }: { id: string; target: InstallTarget }) {
   const t = useT()
   const apple = target.method === 'ios' || target.method === 'ios-other' || target.method === 'safari-mac'
@@ -12,12 +12,13 @@ export function InstallSteps({ id, target }: { id: string; target: InstallTarget
     <div className="install-steps" id={id}>
       <ol>
         {stepsFor(target).map((step, index) => (
-          <li key={step} className="install-step">
+          <li key={step.text} className="install-step">
             <span className="install-number" aria-hidden="true">
               {index + 1}
             </span>
             <div className="install-step-body">
-              <p>{rich(t(step))}</p>
+              <p>{rich(t(step.text))}</p>
+              {step.picture}
             </div>
           </li>
         ))}

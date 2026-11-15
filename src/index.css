@@ -1519,3 +1519,402 @@ img.avatar {
 .install-step-body strong {
   font-weight: 600;
 }
+
+/* Схема экрана: упрощённый вид системного окна, нужная кнопка обведена. */
+.mock {
+  position: relative;
+  display: flex;
+  height: 132px;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.mock-bottom {
+  justify-content: flex-end;
+}
+
+.mock-center {
+  align-items: center;
+  justify-content: center;
+}
+
+.mock span {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+}
+
+.mock-target {
+  position: relative;
+  flex: 0 0 auto;
+  border-radius: 9px;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.mock-target.round {
+  border-radius: 50%;
+}
+
+.mock-target::after {
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 var(--accent);
+  content: '';
+  animation: mock-pulse 1.8s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes mock-pulse {
+  from {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  to {
+    box-shadow: 0 0 0 9px transparent;
+  }
+}
+
+.mock-bar {
+  gap: 8px;
+}
+
+.mock-address {
+  flex: 1;
+  gap: 5px;
+  justify-content: center;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 15px;
+  background: var(--paper);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.mock-address.wide {
+  justify-content: flex-start;
+}
+
+.mock-address .mock-target {
+  margin-left: auto;
+}
+
+.mock-icon {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+}
+
+.mock-icon.small {
+  width: 22px;
+  height: 22px;
+  box-shadow: none;
+}
+
+.mock-popover {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: 2px;
+  min-width: 58%;
+  max-width: 92%;
+  padding: 5px;
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: var(--float-shadow);
+}
+
+.mock-popover.right {
+  align-self: flex-end;
+}
+
+.mock-popover.left {
+  align-self: flex-start;
+  margin-left: 34px;
+}
+
+.mock-row {
+  gap: 7px;
+  min-height: 24px;
+  padding: 3px 6px;
+  white-space: nowrap;
+}
+
+.mock-row.strong {
+  font-weight: 600;
+}
+
+.mock-row.spread {
+  justify-content: space-between;
+}
+
+.mock-target .mock-row {
+  width: 100%;
+}
+
+.mock-dot {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  border-radius: 4px;
+  background: var(--line);
+}
+
+.mock-line {
+  display: block;
+  height: 7px;
+  border-radius: 4px;
+  background: var(--line);
+}
+
+.mock-page {
+  flex-direction: column;
+  align-items: flex-start !important;
+  gap: 8px;
+  padding: 6px 4px;
+}
+
+.mock-sheet {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: 8px;
+  margin: 0 -10px -10px;
+  padding: 10px;
+  border-radius: 16px 16px 0 0;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.mock-sheet.top {
+  margin: -10px -10px 0;
+  border-radius: 0 0 16px 16px;
+  box-shadow: var(--float-shadow);
+}
+
+.mock-circles {
+  gap: 10px;
+}
+
+.mock-circles i {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--line);
+}
+
+.mock-list {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.mock-header {
+  justify-content: space-between;
+}
+
+.mock-muted {
+  color: var(--muted);
+}
+
+.mock-name {
+  font-weight: 600;
+}
+
+.mock-stack {
+  flex-direction: column;
+  align-items: flex-start !important;
+  gap: 2px;
+}
+
+.mock-action {
+  padding: 4px 8px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.mock-action.filled {
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.mock-switch {
+  position: relative;
+  width: 28px;
+  height: 17px;
+  flex: 0 0 auto;
+  border-radius: 9px;
+  background: var(--accent);
+}
+
+.mock-switch::after {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fff;
+  content: '';
+}
+
+.mock-app {
+  display: grid !important;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 24%;
+  background: var(--accent-soft);
+  line-height: 1;
+}
+
+.mock-dialog {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: 8px;
+  width: 78%;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--paper);
+  box-shadow: var(--float-shadow);
+}
+
+.mock-title {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.mock-buttons {
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.mock-window {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: 6px;
+  margin: -10px -10px 0;
+  padding: 8px 10px;
+  background: var(--paper);
+  box-shadow: 0 1px 0 var(--line);
+}
+
+.mock-tabs {
+  gap: 5px;
+}
+
+.mock-tabs i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--line);
+}
+
+.mock-tab {
+  width: 90px;
+  height: 18px;
+  margin-left: 8px;
+  border-radius: 6px 6px 0 0;
+  background: var(--bg);
+}
+
+.mock-window .mock-address {
+  height: 26px;
+  background: var(--bg);
+  box-shadow: none;
+}
+
+.mock-window .mock-icon {
+  background: transparent;
+  box-shadow: none;
+}
+
+.mock-menubar {
+  gap: 12px;
+  margin: -10px -10px 0;
+  padding: 5px 12px;
+  background: var(--paper);
+  box-shadow: 0 1px 0 var(--line);
+}
+
+.mock-menubar .mock-target {
+  padding: 1px 6px;
+  border-radius: 5px;
+}
+
+.mock-app-window {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: 6px;
+  align-self: center;
+  width: 58%;
+  margin-bottom: auto;
+  padding: 4px 8px 10px;
+  border-radius: 9px;
+  background: var(--paper);
+  box-shadow: var(--float-shadow);
+}
+
+.mock-dock {
+  gap: 9px;
+  align-self: center;
+  padding: 6px 10px;
+  border-radius: 16px;
+  background: var(--paper);
+  box-shadow: var(--float-shadow);
+}
+
+.mock-dock i {
+  width: 30px;
+  height: 30px;
+  border-radius: 24%;
+  background: var(--line);
+}
+
+.mock-dock.taskbar {
+  align-self: stretch;
+  justify-content: center;
+  margin: 0 -10px -10px;
+  border-radius: 0;
+}
+
+.mock-dock.taskbar i {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+}
+
+.mock-dock.taskbar .mock-start {
+  background: var(--accent-soft);
+}
+
+.mock-dock .mock-target {
+  border-radius: 9px;
+}
+
+.notice-detail {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

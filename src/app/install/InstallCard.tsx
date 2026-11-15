@@ -1,8 +1,9 @@
-import { ChevronDown, Monitor, Smartphone } from 'lucide-react'
+import { ChevronDown, Download, Monitor, Smartphone } from 'lucide-react'
 import { useState } from 'react'
 import type { MessageKey } from '@/i18n'
 import { useT } from '@/i18n'
 import type { InstallMethod, InstallTarget } from '@/lib/install'
+import { promptInstall, useCanPromptInstall } from '@/lib/installPrompt'
 import { InstallSteps } from './InstallSteps'
 
 const LEAD: Record<InstallMethod, MessageKey> = {
@@ -14,9 +15,13 @@ const LEAD: Record<InstallMethod, MessageKey> = {
   none: 'install.leadNone',
 }
 
-/** Под входом: можно остаться в браузере, а можно поставить приложение — по шагам. */
+/**
+ * Под входом: можно остаться в браузере, а можно поставить приложение. Где браузер
+ * умеет ставить сам (Chrome, Edge), — кнопка «Установить»; иначе и в запас — шаги.
+ */
 export function InstallCard({ target }: { target: InstallTarget }) {
   const t = useT()
+  const canPrompt = useCanPromptInstall()
   const [open, setOpen] = useState(false)
   const phone = target.device === 'iphone' || target.device === 'ipad' || target.device === 'android'
   const Icon = phone ? Smartphone : Monitor
@@ -27,6 +32,11 @@ export function InstallCard({ target }: { target: InstallTarget }) {
         <Icon size={18} aria-hidden="true" /> {t('install.title')}
       </h2>
       <p className="install-lead">{t(LEAD[target.method])}</p>
+      {canPrompt && (
+        <button className="btn" type="button" onClick={promptInstall}>
+          <Download size={16} aria-hidden="true" /> {t('install.button')}
+        </button>
+      )}
       {target.method !== 'none' && (
         <button
           className="btn subtle install-toggle"
@@ -35,7 +45,7 @@ export function InstallCard({ target }: { target: InstallTarget }) {
           aria-controls="install-steps"
           onClick={() => setOpen(!open)}
         >
-          {t('install.howTo', { device: t(`install.device.${target.device}`) })}
+          {canPrompt ? t('install.manual') : t('install.howTo', { device: t(`install.device.${target.device}`) })}
           <ChevronDown size={16} aria-hidden="true" />
         </button>
       )}
