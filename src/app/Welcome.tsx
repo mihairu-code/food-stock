@@ -1,18 +1,24 @@
 import { useState } from 'react'
 import { backend } from '@/data'
 import { useT } from '@/i18n'
+import { currentInstallTarget, type InstallTarget } from '@/lib/install'
 import { rememberInviteToken } from '@/lib/invite'
 import { notify } from '@/lib/toast'
+import { InstallCard } from './install/InstallCard'
 
 interface WelcomeProps {
   invited: boolean
   onContinue: () => void
+  /** Под какое устройство показать установку; по умолчанию — под это. null — не показывать. */
+  install?: InstallTarget | null
 }
 
-/** Первое знакомство: войти через Google или начать без аккаунта. */
-export function Welcome({ invited, onContinue }: WelcomeProps) {
+/** Первое знакомство: войти через Google или начать без аккаунта, а заодно — поставить приложение. */
+export function Welcome({ invited, onContinue, install: installOverride }: WelcomeProps) {
   const t = useT()
   const [busy, setBusy] = useState(false)
+  const [deviceInstall] = useState(currentInstallTarget)
+  const install = installOverride === undefined ? deviceInstall : installOverride
 
   function signIn() {
     setBusy(true)
@@ -39,6 +45,7 @@ export function Welcome({ invited, onContinue }: WelcomeProps) {
         </button>
         <p className="welcome-note">{t('welcome.later')}</p>
       </div>
+      {install && <InstallCard target={install} />}
     </main>
   )
 }

@@ -1440,18 +1440,82 @@ img.avatar {
   font-size: 13px;
 }
 
-/* ---------- Временное: элементы, которых ещё нет в общих стилях ---------- */
+/* Установка приложения под входом: выбор «браузер или приложение» и шаги со схемами. */
+.install-card {
+  display: grid;
+  width: 100%;
+  gap: 10px;
+  margin-top: 4px;
+  padding: 18px;
+  text-align: left;
+}
 
-.settings-note {
-  margin: 10px 6px 0;
+.install-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.install-title svg {
+  color: var(--accent);
+}
+
+.install-lead,
+.install-note {
   color: var(--muted);
   font-size: 13px;
 }
 
-.row-name.accent {
-  color: var(--accent);
+.install-toggle svg {
+  transition: rotate 0.18s ease;
 }
 
-.sheet-actions.single .btn {
-  flex: 1;
+.install-toggle[aria-expanded='true'] svg {
+  rotate: 180deg;
+}
+
+.install-steps ol {
+  display: grid;
+  gap: 16px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.install-steps {
+  display: grid;
+  gap: 14px;
+  animation: screen-in 0.2s ease-out;
+}
+
+.install-step {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 10px;
+}
+
+.install-number {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.install-step-body {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+  padding-top: 3px;
+  font-size: 14px;
+}
+
+.install-step-body strong {
+  font-weight: 600;
 }

@@ -215,6 +215,42 @@ export const vi: Messages = {
   'welcome.anon': 'Tiếp tục không cần tài khoản',
   'welcome.later': 'Bạn có thể đăng nhập sau, trong phần cài đặt.',
 
+  'install.title': 'Trình duyệt hay ứng dụng',
+  'install.leadIos':
+    'Bạn có thể tiếp tục ngay trong trình duyệt — mọi thứ đều hoạt động. Hoặc thêm ứng dụng vào Màn hình chính: mở bằng một chạm, toàn màn hình, không có thanh địa chỉ.',
+  'install.leadAndroid':
+    'Bạn có thể tiếp tục ngay trong trình duyệt — mọi thứ đều hoạt động. Hoặc cài ứng dụng lên màn hình chính: mở bằng một chạm, toàn màn hình, không có thanh địa chỉ.',
+  'install.leadDesktop':
+    'Bạn có thể tiếp tục ngay trong trình duyệt — mọi thứ đều hoạt động. Hoặc cài ứng dụng lên máy tính: nó mở trong cửa sổ riêng và không bị lẫn giữa các thẻ.',
+  'install.leadNone':
+    'Bạn có thể tiếp tục ngay trong trình duyệt — mọi thứ đều hoạt động. Trình duyệt này không cài được trang web thành ứng dụng; để cài, hãy mở liên kết trong Chrome hoặc Edge.',
+  'install.howTo': 'Cách cài đặt trên {device}',
+  'install.device.iphone': 'iPhone',
+  'install.device.ipad': 'iPad',
+  'install.device.android': 'Android',
+  'install.device.windows': 'máy tính',
+  'install.device.mac': 'Mac',
+  'install.device.computer': 'máy tính',
+  'install.ios1':
+    'Chạm <b>⋯</b> bên phải địa chỉ và chọn <b>Chia sẻ</b>. Trên các phiên bản iOS cũ, nút Chia sẻ nằm ngay dưới cùng màn hình.',
+  'install.iosOther1':
+    'Chạm <b>Chia sẻ</b>: trong Chrome là biểu tượng trên thanh địa chỉ, trong trình duyệt khác là mục trong menu.',
+  'install.ios2': 'Cuộn danh sách xuống và chọn <b>Thêm vào MH chính</b>.',
+  'install.ios3': 'Để bật <b>Mở dưới dạng ứng dụng web</b> và chạm <b>Thêm</b>. Biểu tượng sẽ xuất hiện trên Màn hình chính.',
+  'install.android1': 'Mở menu của trình duyệt — <b>⋮</b> ở góc trên bên phải.',
+  'install.android2': 'Chọn <b>Cài đặt ứng dụng</b>. Một số trình duyệt gọi là “Thêm vào màn hình chính”.',
+  'install.android3': 'Chạm <b>Cài đặt</b>. Biểu tượng sẽ xuất hiện trên màn hình chính.',
+  'install.desktop1':
+    'Nhấn biểu tượng cài đặt ở đầu bên phải thanh địa chỉ. Nếu không thấy, hãy tìm <b>Cài đặt</b> trong menu trình duyệt ⋮.',
+  'install.desktop2': 'Xác nhận: <b>Cài đặt</b>.',
+  'install.desktop3Windows': 'Ứng dụng mở trong cửa sổ riêng. Ghim nó vào thanh tác vụ để mở bằng một cú nhấp.',
+  'install.desktop3Mac': 'Ứng dụng mở trong cửa sổ riêng. Giữ biểu tượng trong Dock để mở bằng một cú nhấp.',
+  'install.safariMac1': 'Trên thanh menu ở đầu màn hình, mở <b>Tệp</b> và chọn <b>Thêm vào Dock</b>.',
+  'install.safariMac2': 'Nhấn <b>Thêm</b>.',
+  'install.safariMac3': 'Biểu tượng xuất hiện trong Dock và ứng dụng mở trong cửa sổ riêng.',
+  'install.appleNote':
+    'Có thể bạn cần đăng nhập lại trong ứng dụng. Hãy đăng nhập bằng Google — nhà và danh sách sẽ có ngay ở đó.',
+
   'start.errorTitle': 'Không bắt đầu được',
 
   'load.reloadError': 'Không tải được dữ liệu. Hãy kiểm tra kết nối và tải lại trang.',

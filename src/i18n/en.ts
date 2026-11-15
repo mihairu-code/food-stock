@@ -224,6 +224,41 @@ export const en: Messages = {
   'welcome.anon': 'Continue without an account',
   'welcome.later': 'You can sign in later, in Settings.',
 
+  'install.title': 'Browser or app',
+  'install.leadIos':
+    'Keep going right here in the browser — everything works. Or add the app to your Home Screen: it opens with one tap, full screen, without the address bar.',
+  'install.leadAndroid':
+    'Keep going right here in the browser — everything works. Or install the app on your home screen: it opens with one tap, full screen, without the address bar.',
+  'install.leadDesktop':
+    'Keep going right here in the browser — everything works. Or install the app on your computer: it opens in its own window and never gets lost among tabs.',
+  'install.leadNone':
+    'Keep going right here in the browser — everything works. This browser can’t install sites as apps; to do that, open the link in Chrome or Edge.',
+  'install.howTo': 'How to install on {device}',
+  'install.device.iphone': 'iPhone',
+  'install.device.ipad': 'iPad',
+  'install.device.android': 'Android',
+  'install.device.windows': 'your computer',
+  'install.device.mac': 'Mac',
+  'install.device.computer': 'your computer',
+  'install.ios1':
+    'Tap <b>⋯</b> next to the address and choose <b>Share</b>. On older iOS versions the Share button sits right at the bottom of the screen.',
+  'install.iosOther1': 'Tap <b>Share</b>: in Chrome it’s the icon in the address bar, in other browsers it’s in the menu.',
+  'install.ios2': 'Scroll down the list and choose <b>Add to Home Screen</b>.',
+  'install.ios3': 'Leave <b>Open as Web App</b> on and tap <b>Add</b>. The icon appears on your Home Screen.',
+  'install.android1': 'Open the browser menu — <b>⋮</b> in the top right corner.',
+  'install.android2': 'Choose <b>Install app</b>. Some browsers call it “Add to Home screen”.',
+  'install.android3': 'Tap <b>Install</b>. The icon appears on your home screen.',
+  'install.desktop1':
+    'Click the install icon at the right end of the address bar. If it isn’t there, look for <b>Install</b> in the browser menu ⋮.',
+  'install.desktop2': 'Confirm: <b>Install</b>.',
+  'install.desktop3Windows': 'The app opens in its own window. Pin it to the taskbar to open it with one click.',
+  'install.desktop3Mac': 'The app opens in its own window. Keep its icon in the Dock to open it with one click.',
+  'install.safariMac1': 'In the menu bar at the top of the screen, open <b>File</b> and choose <b>Add to Dock</b>.',
+  'install.safariMac2': 'Click <b>Add</b>.',
+  'install.safariMac3': 'The icon appears in the Dock, and the app opens in its own window.',
+  'install.appleNote':
+    'You may need to sign in again inside the app. Sign in with Google and your home and lists will be right there.',
+
   'start.errorTitle': 'Couldn’t get started',
 
   'load.reloadError': 'Couldn’t load the data. Check your connection and reload the page.',

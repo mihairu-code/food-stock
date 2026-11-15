@@ -215,6 +215,41 @@ export const ja: Messages = {
   'welcome.anon': 'アカウントなしで続ける',
   'welcome.later': 'あとから設定でログインすることもできます。',
 
+  'install.title': 'ブラウザかアプリか',
+  'install.leadIos':
+    'このままブラウザで使えます。ホーム画面に追加すると、ワンタップで、アドレスバーなしの全画面で開けます。',
+  'install.leadAndroid':
+    'このままブラウザで使えます。ホーム画面にインストールすると、ワンタップで、アドレスバーなしの全画面で開けます。',
+  'install.leadDesktop':
+    'このままブラウザで使えます。パソコンにインストールすると専用のウインドウで開き、タブの中で見失いません。',
+  'install.leadNone':
+    'このままブラウザで使えます。このブラウザはサイトをアプリとしてインストールできません。インストールするには Chrome か Edge でリンクを開いてください。',
+  'install.howTo': '{device}にインストールする方法',
+  'install.device.iphone': 'iPhone',
+  'install.device.ipad': 'iPad',
+  'install.device.android': 'Android',
+  'install.device.windows': 'パソコン',
+  'install.device.mac': 'Mac',
+  'install.device.computer': 'パソコン',
+  'install.ios1':
+    'アドレスの右の<b>⋯</b>をタップして<b>共有</b>を選びます。以前の iOS では「共有」ボタンが画面の下にあります。',
+  'install.iosOther1': '<b>共有</b>をタップします。Chrome ではアドレスバーのアイコン、ほかのブラウザではメニューの中です。',
+  'install.ios2': '一覧を下にスクロールして<b>ホーム画面に追加</b>を選びます。',
+  'install.ios3': '<b>Webアプリとして開く</b>をオンのまま<b>追加</b>をタップします。ホーム画面にアイコンが表示されます。',
+  'install.android1': 'ブラウザのメニューを開きます（右上の<b>⋮</b>）。',
+  'install.android2': '<b>アプリをインストール</b>を選びます。ブラウザによっては「ホーム画面に追加」という名前です。',
+  'install.android3': '<b>インストール</b>をタップします。ホーム画面にアイコンが表示されます。',
+  'install.desktop1':
+    'アドレスバーの右端にあるインストールのアイコンをクリックします。見つからなければ、ブラウザのメニュー ⋮ から<b>インストール</b>を探してください。',
+  'install.desktop2': '<b>インストール</b>で確定します。',
+  'install.desktop3Windows': 'アプリが専用のウインドウで開きます。タスクバーにピン留めすると、ワンクリックで開けます。',
+  'install.desktop3Mac': 'アプリが専用のウインドウで開きます。Dock にアイコンを残しておくと、ワンクリックで開けます。',
+  'install.safariMac1': '画面上部のメニューバーで<b>ファイル</b>を開き、<b>Dockに追加</b>を選びます。',
+  'install.safariMac2': '<b>追加</b>をクリックします。',
+  'install.safariMac3': 'Dock にアイコンが表示され、アプリは専用のウインドウで開きます。',
+  'install.appleNote':
+    'アプリではもう一度ログインが必要な場合があります。Google でログインすれば、家とリストがそのまま表示されます。',
+
   'start.errorTitle': '開始できませんでした',
 
   'load.reloadError': 'データを読み込めませんでした。通信状況を確認して、ページを再読み込みしてください。',
