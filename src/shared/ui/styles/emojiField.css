@@ -1,0 +1,69 @@
+/* EmojiField: подсказки иконок и панель всех иконок. */
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--space-1-5);
+}
+
+.field .emoji-input,
+.emoji-option {
+  width: 100%;
+  min-height: var(--tap-size);
+  padding: 0;
+  border-radius: var(--radius-lg);
+  text-align: center;
+  font-size: var(--text-2xl);
+}
+
+.emoji-option {
+  border: 1px solid transparent;
+  background: transparent;
+  transition: background-color 0.15s ease,
+    border-color 0.15s ease,
+    scale 0.12s ease;
+}
+
+/* Кнопка «все иконки» — первая в ряду: с рамкой, как поле. */
+.emoji-more {
+  border-color: var(--line);
+  background: var(--bg);
+  color: var(--muted);
+}
+
+.emoji-more[aria-expanded='true'] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Панель со всеми иконками встаёт на место клавиатуры и прокручивается сама. */
+.emoji-panel {
+  display: grid;
+  max-height: 14.25rem;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: var(--space-0-5);
+  padding: var(--space-1-5);
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--bg);
+  overscroll-behavior: contain;
+}
+
+.emoji-panel button {
+  height: 2.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  font-size: var(--text-3xl);
+}
+
+.emoji-panel button[aria-pressed='true'] {
+  background: var(--accent-soft);
+}
+
+.emoji-option[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}

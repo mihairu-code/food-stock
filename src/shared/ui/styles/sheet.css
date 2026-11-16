@@ -1,0 +1,186 @@
+/* Шторка: каркас, кнопки, поведение при открытой клавиатуре. */
+
+.sheet {
+  width: min(100%, 30rem);
+  max-width: none;
+  /* Шторка стоит над экранной клавиатурой и целиком помещается в видимую часть экрана,
+     где бы ни была прокручена страница (числа считает src/lib/keyboard.ts). Третье
+     ограничение — на случай, когда видимая область ещё не измерена: шторка не заходит
+     под строку состояния. */
+  max-height: min(
+    92dvh,
+    calc(var(--visible-height, 100dvh) - 0.625rem),
+    calc(100dvh - var(--keyboard-inset, 0px) - env(safe-area-inset-top, 0px) - 0.625rem)
+  );
+  margin: auto auto var(--keyboard-inset, 0px);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-4xl) var(--radius-4xl) 0 0;
+  background: var(--paper);
+  color: var(--ink);
+  /* Вторая тень — сплошное продолжение шторки вниз. Над клавиатурой iPhone висит системная
+     полоса со стрелками: без продолжения под ней просвечивала бы страница, и шторка выглядела
+     по-разному в зависимости от того, что под ней. Без клавиатуры оно уходит за край экрана. */
+  box-shadow: var(--shadow),
+    0 140px 0 0 var(--paper);
+  overscroll-behavior: contain;
+  transition: margin-bottom 0.2s ease,
+    transform 0.2s ease;
+  animation: sheet-in 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Фокус на самой шторке ставится только затем, чтобы не держать его на первой кнопке:
+   рамка вокруг всей шторки ни о чём бы не говорила. */
+.sheet:focus {
+  outline: none;
+}
+
+/* Пока шторку тянут пальцем, она идёт за ним без запаздывания. */
+.sheet[data-pulling='true'] {
+  transition: none;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+      animation: none;
+    }
+}
+
+.sheet::backdrop {
+  /* Цвет прямо здесь, а не переменной: до iOS 17.4 ::backdrop не наследует переменные
+     от страницы, и затемнение пропало бы. Одно на обе темы. */
+  background: rgb(18 20 15 / 46%);
+}
+
+.sheet-body {
+  padding: var(--space-3-5) var(--space-5) calc(var(--space-6) + env(safe-area-inset-bottom));
+}
+
+/* Над клавиатурой места мало, а форма должна помещаться целиком, с кнопками:
+   убираются пояснение под заголовком и лишний воздух между полями. */
+:root[data-keyboard] .sheet-body {
+  padding-top: var(--space-2-5);
+  padding-bottom: var(--space-3-5);
+}
+
+:root[data-keyboard] .sheet-grip {
+  margin-bottom: var(--space-2-5);
+}
+
+:root[data-keyboard] .sheet-description {
+  display: none;
+}
+
+:root[data-keyboard] .sheet h2 {
+  margin-bottom: var(--space-3);
+}
+
+:root[data-keyboard] .sheet .field {
+  margin-bottom: var(--space-3);
+}
+
+:root[data-keyboard] .sheet .check {
+  margin-bottom: var(--space-3);
+}
+
+.sheet-grip {
+  width: 2.25rem;
+  height: 0.25rem;
+  margin: 0 auto var(--space-4);
+  border-radius: var(--radius-xs);
+  background: var(--line);
+}
+
+.sheet h2 {
+  margin-bottom: var(--space-1-5);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.sheet-description {
+  margin-bottom: var(--space-4);
+  color: var(--muted);
+  font-size: var(--text-md);
+}
+
+.sheet h2 + form,
+.sheet h2 + .sheet-actions {
+  margin-top: var(--space-4);
+}
+
+.sheet-actions {
+  display: flex;
+  gap: var(--space-2-5);
+}
+
+.sheet-actions .btn {
+  min-height: var(--tap-size);
+  flex: 1;
+}
+
+/* Лёгкое «стекло» на кнопках шторки — только там, где браузер умеет размывать фон
+   и смешивать цвета; остальные видят обычные сплошные кнопки. */
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) and
+  (color: color-mix(in srgb, red 50%, transparent)) {
+  .sheet .btn:not(.danger-text, .text-only) {
+    border-color: var(--glass-edge);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 74%, transparent),
+      color-mix(in srgb, var(--accent) 90%, transparent)
+    );
+    box-shadow: inset 0 1px 0 var(--glass-shine),
+      0 8px 20px color-mix(in srgb, var(--accent) 26%, transparent);
+    -webkit-backdrop-filter: blur(14px) saturate(170%);
+    backdrop-filter: blur(14px) saturate(170%);
+  }
+
+  .sheet .btn.subtle {
+    border-color: color-mix(in srgb, var(--ink) 10%, transparent);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ink) 3%, transparent),
+      color-mix(in srgb, var(--ink) 8%, transparent)
+    );
+    box-shadow: inset 0 1px 0 var(--glass-shine),
+      0 6px 16px rgb(0 0 0 / 6%);
+  }
+
+  .sheet .btn.danger {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--red) 74%, transparent),
+      color-mix(in srgb, var(--red) 90%, transparent)
+    );
+    box-shadow: inset 0 1px 0 var(--glass-shine),
+      0 8px 20px color-mix(in srgb, var(--red) 26%, transparent);
+  }
+
+  /* Человек попросил систему убрать прозрачность — возвращаем сплошные кнопки. */
+  @media (prefers-reduced-transparency: reduce) {
+    .sheet .btn:not(.danger-text, .text-only) {
+      border-color: transparent;
+      background: var(--accent);
+      box-shadow: none;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+
+    .sheet .btn.subtle {
+      border-color: var(--line);
+      background: var(--paper);
+    }
+
+    .sheet .btn.danger {
+      background: var(--red);
+    }
+  }
+}

@@ -1,0 +1,33 @@
+/* SwipeRow: строка, которую удаляют свайпом влево. */
+
+.swipe {
+  position: relative;
+  overflow: hidden;
+}
+
+.swipe:not([data-active='true']) .swipe-under {
+  visibility: hidden;
+}
+
+/* Красная подложка с подписью — видна, пока строку тянут влево. */
+.swipe-under {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4375rem;
+  padding-right: 1.125rem;
+  background: var(--red);
+  color: #fff;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+/* Длительность та же, что SLIDE_MS в SwipeRow.tsx. Пока строку ведёт палец,
+   переход отключает сам компонент — иначе она отставала бы от пальца. */
+.swipe-content {
+  position: relative;
+  touch-action: pan-y;
+  transition: transform 0.17s cubic-bezier(0.2, 0.8, 0.2, 1);
+}

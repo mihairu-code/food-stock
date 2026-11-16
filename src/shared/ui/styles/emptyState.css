@@ -1,0 +1,25 @@
+/* EmptyState: пустой экран с эмодзи. */
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-11) var(--space-6);
+  text-align: center;
+}
+
+.empty-emoji {
+  font-size: 2.5rem;
+}
+
+.empty h2 {
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+
+.empty p {
+  max-width: 30ch;
+  margin-bottom: var(--space-2-5);
+  color: var(--muted);
+  font-size: var(--text-md);
+}

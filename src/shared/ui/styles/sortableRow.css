@@ -1,0 +1,38 @@
+/* Перетаскивание: строка в движении и её копия под пальцем. */
+
+/* Долгое нажатие начинает перетаскивание, а не выделение текста и не системное меню. */
+.sortable-row,
+.drag-ghost {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.sortable-row {
+  position: relative;
+}
+
+/* Рамка фокуса внутри карточки: наружную обрезал бы её overflow. */
+.sortable-row:focus-visible {
+  outline-offset: -3px;
+  border-radius: var(--radius-xl);
+}
+
+/* Место, откуда строку забрали: под пальцем едет «призрак». */
+.sortable-row[data-dragging='true'] {
+  opacity: 0.35;
+}
+
+/* Копия строки под пальцем: та же строка, только приподнятая. */
+.drag-ghost {
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-xl);
+  background: var(--paper);
+  box-shadow: var(--float-shadow);
+  cursor: grabbing;
+}
+
+.drag-ghost .row {
+  border-top: 0;
+}

@@ -1,0 +1,487 @@
+/* Экран входа: карточка входа, установка приложения и схемы шагов. */
+
+.welcome-card {
+  display: grid;
+  width: 100%;
+  gap: var(--space-2-5);
+  padding: var(--space-5);
+  text-align: left;
+}
+
+.welcome-note {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+/* Установка приложения под входом: выбор «браузер или приложение» и шаги со схемами. */
+.install-card {
+  display: grid;
+  width: 100%;
+  gap: var(--space-2-5);
+  margin-top: var(--space-1);
+  padding: var(--space-5);
+  text-align: left;
+}
+
+.install-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  font-weight: 600;
+}
+
+.install-title svg {
+  color: var(--accent);
+}
+
+.install-lead,
+.install-note {
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.install-toggle svg {
+  transition: rotate 0.18s ease;
+}
+
+.install-toggle[aria-expanded='true'] svg {
+  rotate: 180deg;
+}
+
+.install-steps ol {
+  display: grid;
+  gap: var(--space-4);
+  margin: var(--space-1-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.install-steps {
+  display: grid;
+  gap: var(--space-3-5);
+  animation: welcome-in 0.2s ease-out;
+}
+
+.install-step {
+  display: grid;
+  grid-template-columns: 1.625rem 1fr;
+  gap: var(--space-2-5);
+}
+
+.install-number {
+  display: grid;
+  width: 1.625rem;
+  height: 1.625rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.install-step-body {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-2);
+  padding-top: var(--space-1);
+  font-size: var(--text-md);
+}
+
+.install-step-body strong {
+  font-weight: 600;
+}
+
+/* Схема экрана: упрощённый вид системного окна, нужная кнопка обведена. */
+.mock {
+  position: relative;
+  display: flex;
+  height: 8.25rem;
+  flex-direction: column;
+  gap: var(--space-2);
+  overflow: hidden;
+  padding: var(--space-2-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: var(--text-2xs);
+  line-height: 1.2;
+}
+
+.mock-bottom {
+  justify-content: flex-end;
+}
+
+.mock-center {
+  align-items: center;
+  justify-content: center;
+}
+
+.mock span {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+}
+
+.mock-target {
+  position: relative;
+  flex: 0 0 auto;
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.mock-target.round {
+  border-radius: 50%;
+}
+
+.mock-target::after {
+  position: absolute;
+  inset: -0.125rem;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 var(--accent);
+  content: '';
+  animation: mock-pulse 1.8s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes mock-pulse {
+  from {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  to {
+    box-shadow: 0 0 0 9px transparent;
+  }
+}
+
+.mock-bar {
+  gap: var(--space-2);
+}
+
+.mock-address {
+  flex: 1;
+  gap: var(--space-1-5);
+  justify-content: center;
+  height: 1.875rem;
+  padding: 0 var(--space-2-5);
+  border-radius: var(--radius-xl);
+  background: var(--paper);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.mock-address.wide {
+  justify-content: flex-start;
+}
+
+.mock-address .mock-target {
+  margin-left: auto;
+}
+
+.mock-icon {
+  width: 1.875rem;
+  height: 1.875rem;
+  flex: 0 0 auto;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+}
+
+.mock-icon.small {
+  width: 1.375rem;
+  height: 1.375rem;
+  box-shadow: none;
+}
+
+.mock-popover {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: var(--space-0-5);
+  min-width: 58%;
+  max-width: 92%;
+  padding: var(--space-1-5);
+  border-radius: var(--radius-lg);
+  background: var(--paper);
+  box-shadow: var(--float-shadow);
+}
+
+.mock-popover.right {
+  align-self: flex-end;
+}
+
+.mock-popover.left {
+  align-self: flex-start;
+  margin-left: 2.125rem;
+}
+
+.mock-row {
+  gap: var(--space-2);
+  min-height: 1.5rem;
+  padding: var(--space-1) var(--space-1-5);
+  white-space: nowrap;
+}
+
+.mock-row.strong {
+  font-weight: 600;
+}
+
+.mock-row.spread {
+  justify-content: space-between;
+}
+
+.mock-target .mock-row {
+  width: 100%;
+}
+
+.mock-dot {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex: 0 0 auto;
+  border-radius: var(--radius-xs);
+  background: var(--line);
+}
+
+.mock-line {
+  display: block;
+  height: 0.4375rem;
+  border-radius: var(--radius-xs);
+  background: var(--line);
+}
+
+.mock-page {
+  flex-direction: column;
+  align-items: flex-start !important;
+  gap: var(--space-2);
+  padding: var(--space-1-5) var(--space-1);
+}
+
+.mock-sheet {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: var(--space-2);
+  margin: 0 -0.625rem -0.625rem;
+  padding: var(--space-2-5);
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.mock-sheet.top {
+  margin: -0.625rem -0.625rem 0;
+  border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+  box-shadow: var(--float-shadow);
+}
+
+.mock-circles {
+  gap: var(--space-2-5);
+}
+
+.mock-circles i {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--line);
+}
+
+.mock-list {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: var(--space-0-5);
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.mock-header {
+  justify-content: space-between;
+}
+
+.mock-muted {
+  color: var(--muted);
+}
+
+.mock-name {
+  font-weight: 600;
+}
+
+.mock-stack {
+  flex-direction: column;
+  align-items: flex-start !important;
+  gap: var(--space-0-5);
+}
+
+.mock-action {
+  padding: var(--space-1) var(--space-2);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.mock-action.filled {
+  border-radius: var(--radius-md);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.mock-switch {
+  position: relative;
+  width: 1.75rem;
+  height: 1.0625rem;
+  flex: 0 0 auto;
+  border-radius: var(--radius-md);
+  background: var(--accent);
+}
+
+.mock-switch::after {
+  position: absolute;
+  top: 0.125rem;
+  right: 0.125rem;
+  width: 0.8125rem;
+  height: 0.8125rem;
+  border-radius: 50%;
+  background: #fff;
+  content: '';
+}
+
+.mock-app {
+  display: grid !important;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 24%;
+  background: var(--accent-soft);
+  line-height: 1;
+}
+
+.mock-dialog {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: var(--space-2);
+  width: 78%;
+  padding: var(--space-2-5) var(--space-3);
+  border-radius: var(--radius-xl);
+  background: var(--paper);
+  box-shadow: var(--float-shadow);
+}
+
+.mock-title {
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.mock-buttons {
+  gap: var(--space-2-5);
+  justify-content: flex-end;
+}
+
+.mock-window {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: var(--space-1-5);
+  margin: -0.625rem -0.625rem 0;
+  padding: var(--space-2) var(--space-2-5);
+  background: var(--paper);
+  box-shadow: 0 1px 0 var(--line);
+}
+
+.mock-tabs {
+  gap: var(--space-1-5);
+}
+
+.mock-tabs i {
+  width: 0.5625rem;
+  height: 0.5625rem;
+  border-radius: 50%;
+  background: var(--line);
+}
+
+.mock-tab {
+  width: 5.625rem;
+  height: 1.125rem;
+  margin-left: var(--space-2);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: var(--bg);
+}
+
+.mock-window .mock-address {
+  height: 1.625rem;
+  background: var(--bg);
+  box-shadow: none;
+}
+
+.mock-window .mock-icon {
+  background: transparent;
+  box-shadow: none;
+}
+
+.mock-menubar {
+  gap: var(--space-3);
+  margin: -0.625rem -0.625rem 0;
+  padding: var(--space-1-5) var(--space-3);
+  background: var(--paper);
+  box-shadow: 0 1px 0 var(--line);
+}
+
+.mock-menubar .mock-target {
+  padding: 1px var(--space-1-5);
+  border-radius: var(--radius-xs);
+}
+
+.mock-app-window {
+  flex-direction: column;
+  align-items: stretch !important;
+  gap: var(--space-1-5);
+  align-self: center;
+  width: 58%;
+  margin-bottom: auto;
+  padding: var(--space-1) var(--space-2) var(--space-2-5);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  box-shadow: var(--float-shadow);
+}
+
+.mock-dock {
+  gap: var(--space-2-5);
+  align-self: center;
+  padding: var(--space-1-5) var(--space-2-5);
+  border-radius: var(--radius-2xl);
+  background: var(--paper);
+  box-shadow: var(--float-shadow);
+}
+
+.mock-dock i {
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 24%;
+  background: var(--line);
+}
+
+.mock-dock.taskbar {
+  align-self: stretch;
+  justify-content: center;
+  margin: 0 -0.625rem -0.625rem;
+  border-radius: 0;
+}
+
+.mock-dock.taskbar i {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.mock-dock.taskbar .mock-start {
+  background: var(--accent-soft);
+}
+
+.mock-dock .mock-target {
+  border-radius: var(--radius-md);
+}
+
+/* Мягкое появление шагов установки, когда их раскрывают. */
+@keyframes welcome-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.375rem);
+  }
+}

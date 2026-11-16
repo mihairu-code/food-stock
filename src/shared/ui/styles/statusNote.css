@@ -1,0 +1,12 @@
+/* StatusNote: «Загрузка…» и «Не удалось загрузить». */
+
+.status-note {
+  padding: var(--space-10) var(--space-5);
+  color: var(--muted);
+  text-align: center;
+  font-size: var(--text-md);
+}
+
+.splash {
+  padding-top: 40dvh;
+}

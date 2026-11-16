@@ -1,0 +1,123 @@
+/* Главный экран: разделы-карточки с продуктами. */
+
+.section {
+  margin-bottom: var(--space-2-5);
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  padding-right: var(--space-1);
+  border-bottom: 1px solid var(--line)
+}
+
+.section-toggle {
+  display: flex;
+  min-width: 0;
+  min-height: 3.375rem;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-2-5);
+  padding: 0 var(--space-1-5) 0 var(--space-3-5);
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.section-title {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.section-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.count {
+  min-width: 1.4375rem;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--muted);
+  text-align: center;
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.caret {
+  flex: 0 0 auto;
+  color: var(--muted);
+  transition: transform 0.16s ease;
+}
+
+.section[data-open='false'] .caret {
+  transform: rotate(-90deg);
+}
+
+.section-body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.16s ease;
+}
+
+.section[data-open='false'] .section-body {
+  grid-template-rows: 0fr;
+}
+
+.section-products {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.section-products .add-row {
+  padding: 0 var(--space-3-5);
+  border-top: 1px solid var(--line);
+}
+
+/* Долгое нажатие начинает перетаскивание, а не выделение текста и не системное меню. */
+.section-head {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.section {
+  position: relative;
+}
+
+/* Рамка фокуса внутри карточки: наружную обрезал бы её overflow. */
+.section-head:focus-visible {
+  outline-offset: -3px;
+  border-radius: var(--radius-xl);
+}
+
+/* Место, откуда раздел забрали: под пальцем едет «призрак», как у строки. */
+.section[data-dragging='true'] {
+  opacity: 0.35;
+}
+
+.section {
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+/* Раздел, в который попадёт продукт, если отпустить палец. */
+.section[data-target='true'] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.section-ghost {
+  display: flex;
+  min-height: 3.375rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2-5);
+  padding: 0 var(--space-3-5);
+}

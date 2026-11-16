@@ -1,0 +1,21 @@
+/* Каркас приложения: содержимое между шапкой и вкладками. */
+
+.app {
+  width: min(100%, 30rem);
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding-bottom: calc(var(--tab-size) + var(--tabs-bottom) + var(--space-7));
+}
+
+.content {
+  padding: 0 var(--space-4);
+  /* Лёгкое появление экрана при переключении вкладок. */
+  animation: screen-in 0.2s ease-out;
+}
+
+@keyframes screen-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.375rem);
+  }
+}

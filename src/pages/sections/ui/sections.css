@@ -1,0 +1,12 @@
+/* Экран разделов. */
+
+.back-link {
+  display: inline-flex;
+  min-height: var(--tap-size);
+  align-items: center;
+  gap: var(--space-1);
+  margin: -0.5rem 0 var(--space-2);
+  color: var(--accent);
+  font-size: var(--text-md);
+  font-weight: 600;
+}

@@ -1,0 +1,72 @@
+/* Кнопки: основная, второстепенная, опасная, иконка. */
+
+.btn {
+  display: inline-flex;
+  min-height: var(--tap-size);
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: var(--text-md);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.btn.subtle {
+  border-color: var(--line);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.btn.danger {
+  background: var(--red);
+  color: var(--paper);
+}
+
+.btn.danger-text {
+  width: 100%;
+  margin-top: var(--space-2-5);
+  background: transparent;
+  color: var(--red);
+}
+
+/* Второстепенное действие под основными кнопками шторки: только текст. */
+.btn.text-only {
+  width: 100%;
+  margin-top: var(--space-2-5);
+  background: transparent;
+  color: var(--accent);
+}
+
+.btn.link-copy {
+  color: var(--accent);
+}
+
+.btn.small {
+  min-height: 2.25rem;
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+}
+
+.icon-btn {
+  display: inline-grid;
+  flex: 0 0 auto;
+  width: var(--tap-size);
+  height: var(--tap-size);
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--muted);
+}

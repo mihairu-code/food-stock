@@ -1,0 +1,37 @@
+/* Круглая аватарка: дом в шапке, участник в настройках. */
+
+.avatar {
+  display: grid;
+  flex: 0 0 auto;
+  width: var(--tap-size);
+  height: var(--tap-size);
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--accent);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.avatar.small {
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  background: var(--accent-soft);
+  font-size: var(--text-xs);
+}
+
+.avatar.pending {
+  background: var(--orange-soft);
+  color: var(--orange);
+}
+
+/* Аватарка дома — эмодзи, фото участника — картинка из его аккаунта. */
+.avatar[data-icon='true'] {
+  font-size: var(--text-3xl);
+}
+
+img.avatar {
+  object-fit: cover;
+}
