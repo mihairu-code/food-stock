@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { readInviteToken } from '@/entities/invite/lib/inviteToken'
+import { Welcome } from '@/pages/welcome/ui/Welcome'
 import { backend } from '@/shared/api/currentBackend'
 import { queryClient } from '@/shared/api/queryClient'
 import { dropSnapshot, openSnapshot } from '@/shared/api/snapshot'
@@ -8,7 +9,6 @@ import { useT } from '@/shared/i18n'
 import { notify } from '@/shared/lib/toast'
 import { Notice } from '@/shared/ui/Notice'
 import { Splash } from '@/shared/ui/Splash'
-import { Welcome } from './Welcome'
 
 type AuthState =
   | { status: 'loading' }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { rememberHousehold } from '@/entities/household/lib/preferredHousehold'
+import { MergeChoice } from '@/pages/merge-choice/ui/MergeChoice'
 import { backend } from '@/shared/api/currentBackend'
 import { queryClient } from '@/shared/api/queryClient'
 import type { MergeKeep, MergePreview, User } from '@/shared/api/types'
@@ -8,7 +9,6 @@ import { clearMergeTicket, readMergeTicket } from '@/shared/lib/mergeTicket'
 import { notify } from '@/shared/lib/toast'
 import { Notice } from '@/shared/ui/Notice'
 import { Splash } from '@/shared/ui/Splash'
-import { MergeChoice } from './MergeChoice'
 
 type MergeState =
   | { status: 'idle' }

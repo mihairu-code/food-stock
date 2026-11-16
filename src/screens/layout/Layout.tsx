@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from 'react-router'
 import { SheetHost } from '@/sheets/SheetHost'
-import { Header } from './Header'
-import { TabBar } from './TabBar'
+import { Header } from '@/widgets/header/ui/Header'
+import { TabBar } from '@/widgets/tab-bar/ui/TabBar'
 
 /** Каркас всех экранов: заголовок, содержимое, вкладки и общее место для шторок. */
 export function Layout() {
