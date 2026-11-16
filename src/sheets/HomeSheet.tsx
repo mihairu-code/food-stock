@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { useSession } from '@/app/session'
-import { NameIconFields } from '@/components'
-import { useUpdateHousehold } from '@/data/hooks'
-import { useT } from '@/i18n'
-import { FormSheet } from './FormSheet'
-import { closeSheet } from './sheetStore'
+import { useUpdateHousehold } from '@/entities/household/api/householdApi'
+import { useT } from '@/shared/i18n'
+import { useSession } from '@/shared/session/session'
+import { NameIconFields } from '@/shared/ui/NameIconFields'
+import { FormSheet } from '@/shared/ui/sheet/FormSheet'
+import { closeSheet } from '@/shared/ui/sheet/sheetStore'
 
 /** Быстрый выбор аватарки дома; остальные иконки — в панели. */
 const HOME_EMOJIS = ['🏠', '🏡', '🏢', '🏰', '⛺']

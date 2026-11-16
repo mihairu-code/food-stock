@@ -1,7 +1,7 @@
 import { House, Settings, ShoppingCart } from 'lucide-react'
 import { NavLink } from 'react-router'
-import { useShoppingList } from '@/data/hooks'
-import { useT } from '@/i18n'
+import { useShoppingList } from '@/shared/api/useHomeData'
+import { useT } from '@/shared/i18n'
 
 /**
  * Кнопки парят над содержимым по отдельности, без общей панели. Подписей нет,

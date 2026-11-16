@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { backend } from '@/data'
-import { queryClient } from '@/data/queryClient'
-import { translate } from '@/i18n'
-import { clearInviteToken, readInviteToken } from '@/lib/invite'
-import { notify } from '@/lib/toast'
+import { clearInviteToken, readInviteToken } from '@/entities/invite/lib/inviteToken'
+import { backend } from '@/shared/api/currentBackend'
+import { queryClient } from '@/shared/api/queryClient'
+import { translate } from '@/shared/i18n'
+import { notify } from '@/shared/lib/toast'
 
 type Bootstrap = 'idle' | 'joining' | 'creating' | 'join-failed' | 'create-failed'
 

@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { useDeleteSection, useHomeData } from '@/data/hooks'
-import type { Section } from '@/domain/types'
-import { useT } from '@/i18n'
-import { rich } from '@/i18n/rich'
-import { notify } from '@/lib/toast'
-import { ConfirmSheet } from './ConfirmSheet'
+import { useDeleteSection } from '@/entities/section/api/sectionApi'
+import type { Section } from '@/shared/api/types'
+import { useHomeData } from '@/shared/api/useHomeData'
+import { useT } from '@/shared/i18n'
+import { rich } from '@/shared/i18n/rich'
+import { notify } from '@/shared/lib/toast'
+import { ConfirmSheet } from '@/shared/ui/sheet/ConfirmSheet'
+import { closeSheet } from '@/shared/ui/sheet/sheetStore'
 import { SectionSheet } from './SectionSheet'
-import { closeSheet } from './sheetStore'
 
 /**
  * Управление разделом: переименование и удаление. Пустой раздел удаляется сразу,

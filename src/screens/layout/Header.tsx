@@ -1,8 +1,8 @@
 import { UserRound } from 'lucide-react'
 import { Link, useLocation } from 'react-router'
-import { useSession } from '@/app/session'
-import { useMembers } from '@/data/hooks'
-import { useT } from '@/i18n'
+import { useMembers } from '@/entities/household/api/householdApi'
+import { useT } from '@/shared/i18n'
+import { useSession } from '@/shared/session/session'
 import { memberInitials, titleKey } from './headerText'
 
 export function Header() {

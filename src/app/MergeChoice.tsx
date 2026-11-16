@@ -1,5 +1,5 @@
-import type { MergeKeep, MergePreview } from '@/domain/types'
-import { useT } from '@/i18n'
+import type { MergeKeep, MergePreview } from '@/shared/api/types'
+import { useT } from '@/shared/i18n'
 import { fateOf, homeNames, homeSummary } from './mergeText'
 
 interface MergeChoiceProps {

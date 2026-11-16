@@ -1,6 +1,6 @@
-import { useSignOut } from '@/data/hooks'
-import { useT } from '@/i18n'
-import { ConfirmSheet } from './ConfirmSheet'
+import { useSignOut } from '@/data/hooks/account'
+import { useT } from '@/shared/i18n'
+import { ConfirmSheet } from '@/shared/ui/sheet/ConfirmSheet'
 
 export function SignOutSheet() {
   const t = useT()

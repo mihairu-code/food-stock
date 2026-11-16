@@ -1,5 +1,5 @@
-import type { MergeHome } from '@/domain/types'
-import type { Translate } from '@/i18n'
+import type { MergeHome } from '@/shared/api/types'
+import type { Translate } from '@/shared/i18n'
 
 /** «3 раздела · 12 продуктов · 2 участника». */
 export const homeSummary = (home: MergeHome, t: Translate) =>

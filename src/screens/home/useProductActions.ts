@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
-import { useDeleteProduct, useSetProductState } from '@/data/hooks'
-import { withAvailability, withToBuy } from '@/domain/logic'
-import type { Product } from '@/domain/types'
-import { notify } from '@/lib/toast'
+import { useDeleteProduct, useSetProductState } from '@/entities/product/api/productApi'
+import { withAvailability, withToBuy } from '@/shared/api/homeDataRules'
+import type { Product } from '@/shared/api/types'
+import { notify } from '@/shared/lib/toast'
 
 export interface ProductActions {
   /** Нажатие на иконку: продукт закончился или снова дома. */

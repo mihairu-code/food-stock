@@ -1,5 +1,4 @@
-import type { MessageKey } from '@/i18n'
-import { useT } from '@/i18n'
+import { type MessageKey, useT } from '@/shared/i18n'
 import { AppTile } from './AppTile'
 import { Mock } from './Mock'
 import { Target } from './Target'

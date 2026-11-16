@@ -1,9 +1,9 @@
-import { useSession } from '@/app/session'
-import { useRemoveMember } from '@/data/hooks'
-import type { Member } from '@/domain/types'
-import { useT } from '@/i18n'
-import { memberLabel } from '@/lib/memberText'
-import { ConfirmSheet } from './ConfirmSheet'
+import { useRemoveMember } from '@/entities/household/api/householdApi'
+import { memberLabel } from '@/entities/member/lib/memberText'
+import type { Member } from '@/shared/api/types'
+import { useT } from '@/shared/i18n'
+import { useSession } from '@/shared/session/session'
+import { ConfirmSheet } from '@/shared/ui/sheet/ConfirmSheet'
 
 export function RemoveMemberSheet({ member }: { member: Member }) {
   const t = useT()

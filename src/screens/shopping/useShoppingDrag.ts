@@ -1,11 +1,11 @@
 import type { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import { useMemo, useState } from 'react'
-import { useReorderShopping } from '@/data/hooks'
-import type { ShoppingEntry } from '@/domain/logic'
-import { useDragSensors } from '@/hooks/useDragSensors'
-import { setDragActive } from '@/lib/dragState'
-import { haptic } from '@/lib/haptics'
+import { useReorderShopping } from '@/entities/shopping-item/api/shoppingItemApi'
+import type { ShoppingEntry } from '@/shared/api/homeDataRules'
+import { setDragActive } from '@/shared/lib/drag/dragState'
+import { useDragSensors } from '@/shared/lib/drag/useDragSensors'
+import { haptic } from '@/shared/lib/haptics'
 
 /**
  * Перетаскивание строк в списке покупок. Пока идёт жест, порядок живёт в черновике;

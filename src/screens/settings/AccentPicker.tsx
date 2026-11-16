@@ -1,5 +1,5 @@
-import { useT } from '@/i18n'
-import { ACCENTS, setAccent, useAppearance } from '@/lib/appearance'
+import { useT } from '@/shared/i18n'
+import { ACCENTS, setAccent, useAppearance } from '@/shared/lib/appearance'
 
 /** Строка настроек с выбором акцентного цвета: ряд кружков, каждый — своего оттенка. */
 export function AccentPicker() {

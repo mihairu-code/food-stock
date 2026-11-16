@@ -1,7 +1,8 @@
 import { X } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { SortableRow, SwipeRow } from '@/components'
-import { useT } from '@/i18n'
+import { useT } from '@/shared/i18n'
+import { SortableRow } from '@/shared/ui/SortableRow'
+import { SwipeRow } from '@/shared/ui/SwipeRow'
 
 interface ShoppingRowProps {
   /** Идентификатор строки в списке покупок: продукта или ручной позиции. */

@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
-import { backend } from '@/data'
-import { queryClient } from '@/data/queryClient'
-import type { Membership, User } from '@/domain/types'
-import { currentDevice } from '@/lib/device'
+import { backend } from '@/shared/api/currentBackend'
+import { queryClient } from '@/shared/api/queryClient'
+import type { Membership, User } from '@/shared/api/types'
+import { currentDevice } from '@/shared/lib/device'
 
 /** Что уже записано на сервер с этого устройства: повторять тот же запрос при каждом запуске незачем. */
 const SYNCED_KEY = 'home-stock:profile-synced'

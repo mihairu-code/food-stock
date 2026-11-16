@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { backend } from '@/data'
-import { queryClient } from '@/data/queryClient'
+import { backend } from '@/shared/api/currentBackend'
+import { queryClient } from '@/shared/api/queryClient'
 
 const DEBOUNCE_MS = 150
 

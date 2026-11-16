@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { TextField } from '@/components'
-import { useSetDisplayName } from '@/data/hooks'
-import { useT } from '@/i18n'
-import { saveName } from '@/lib/invite'
-import { FormSheet } from './FormSheet'
-import { closeSheet } from './sheetStore'
+import { useSetDisplayName } from '@/entities/household/api/householdApi'
+import { saveName } from '@/entities/invite/lib/inviteToken'
+import { useT } from '@/shared/i18n'
+import { TextField } from '@/shared/ui/TextField'
+import { FormSheet } from '@/shared/ui/sheet/FormSheet'
+import { closeSheet } from '@/shared/ui/sheet/sheetStore'
 
 /** Имя, под которым человека видят другие участники дома. */
 export function NameSheet({ current }: { current: string }) {

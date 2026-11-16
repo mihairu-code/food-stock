@@ -1,11 +1,11 @@
 import { X } from 'lucide-react'
-import { useSession } from '@/app/session'
-import { SettingRow } from '@/components'
-import type { Member } from '@/domain/types'
-import { useT } from '@/i18n'
-import { memberIdentity, memberLabel } from '@/lib/memberText'
-import { openSheet } from '@/sheets'
-import { MemberAvatar } from './MemberAvatar'
+import { memberIdentity, memberLabel } from '@/entities/member/lib/memberText'
+import { MemberAvatar } from '@/entities/member/ui/MemberAvatar'
+import type { Member } from '@/shared/api/types'
+import { useT } from '@/shared/i18n'
+import { useSession } from '@/shared/session/session'
+import { SettingRow } from '@/shared/ui/SettingRow'
+import { openSheet } from '@/shared/ui/sheet/sheetStore'
 
 export function MemberRow({ member, removable }: { member: Member; removable: boolean }) {
   const t = useT()

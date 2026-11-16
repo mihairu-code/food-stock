@@ -1,7 +1,7 @@
 import { memo } from 'react'
-import { StockIcon } from '@/components'
-import type { Product } from '@/domain/types'
-import { useT } from '@/i18n'
+import { StockIcon } from '@/entities/product/ui/StockIcon'
+import type { Product } from '@/shared/api/types'
+import { useT } from '@/shared/i18n'
 import { ShoppingRow } from './ShoppingRow'
 import type { ShoppingActions } from './useShoppingActions'
 

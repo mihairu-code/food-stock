@@ -1,4 +1,4 @@
-import { useT } from '@/i18n'
+import { useT } from '@/shared/i18n'
 import { Lines } from './Lines'
 import { Mock } from './Mock'
 import { Target } from './Target'

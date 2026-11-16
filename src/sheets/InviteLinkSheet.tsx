@@ -1,8 +1,8 @@
-import { TextField } from '@/components'
-import { useT } from '@/i18n'
-import { notify } from '@/lib/toast'
-import { Sheet } from './Sheet'
-import { closeSheet } from './sheetStore'
+import { useT } from '@/shared/i18n'
+import { notify } from '@/shared/lib/toast'
+import { TextField } from '@/shared/ui/TextField'
+import { Sheet } from '@/shared/ui/sheet/Sheet'
+import { closeSheet } from '@/shared/ui/sheet/sheetStore'
 
 /** Только что созданная ссылка-приглашение: поделиться или скопировать. Второй раз её не показать. */
 export function InviteLinkSheet({ link }: { link: string }) {

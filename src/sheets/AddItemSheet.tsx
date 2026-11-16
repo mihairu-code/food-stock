@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { NameIconFields } from '@/components'
-import { useCreateShoppingItem } from '@/data/hooks'
-import { useSuggestedEmoji } from '@/hooks/useSuggestedEmoji'
-import { useT } from '@/i18n'
-import { notify } from '@/lib/toast'
-import { FormSheet } from './FormSheet'
-import { closeSheet } from './sheetStore'
+import { useCreateShoppingItem } from '@/entities/shopping-item/api/shoppingItemApi'
+import { useT } from '@/shared/i18n'
+import { useSuggestedEmoji } from '@/shared/lib/emoji/useSuggestedEmoji'
+import { notify } from '@/shared/lib/toast'
+import { NameIconFields } from '@/shared/ui/NameIconFields'
+import { FormSheet } from '@/shared/ui/sheet/FormSheet'
+import { closeSheet } from '@/shared/ui/sheet/sheetStore'
 
 /** Позиция покупок, добавленная вручную: того, чего в разделах дома нет. */
 export function AddItemSheet() {

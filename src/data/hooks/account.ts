@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
-import { useSession } from '@/app/session'
-import { backend } from '@/data'
-import { saveMergeTicket } from '@/lib/mergeTicket'
-import { qk } from './keys'
-import { useAction } from './useAction'
+import { backend } from '@/shared/api/currentBackend'
+import { qk } from '@/shared/api/queryKeys'
+import { useAction } from '@/shared/api/useAction'
+import { saveMergeTicket } from '@/shared/lib/mergeTicket'
+import { useSession } from '@/shared/session/session'
 
 /** Настроен ли на сервере вход через Google. */
 export function useGoogleAvailable(): boolean {

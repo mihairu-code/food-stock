@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { useSession } from '@/app/session'
-import { TextField } from '@/components'
-import { useJoinHousehold } from '@/data/hooks'
-import { useT, type MessageKey } from '@/i18n'
-import { parseInviteToken } from '@/lib/invite'
-import { notify } from '@/lib/toast'
-import { FormSheet } from './FormSheet'
-import { closeSheet } from './sheetStore'
+import { useJoinHousehold } from '@/entities/household/api/householdApi'
+import { parseInviteToken } from '@/entities/invite/lib/inviteToken'
+import { useT, type MessageKey } from '@/shared/i18n'
+import { notify } from '@/shared/lib/toast'
+import { useSession } from '@/shared/session/session'
+import { TextField } from '@/shared/ui/TextField'
+import { FormSheet } from '@/shared/ui/sheet/FormSheet'
+import { closeSheet } from '@/shared/ui/sheet/sheetStore'
 
 /** Вступление в чужой дом по вставленной ссылке — для приложения на экране «Домой», куда ссылку не открыть. */
 export function JoinSheet() {

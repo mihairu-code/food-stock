@@ -1,8 +1,11 @@
-import { EmptyState, StatusNote, SummaryBar, Tip } from '@/components'
-import { useHomeData, useShoppingList } from '@/data/hooks'
-import { useT } from '@/i18n'
-import { rich } from '@/i18n/rich'
-import { openSheet } from '@/sheets'
+import { useHomeData, useShoppingList } from '@/shared/api/useHomeData'
+import { useT } from '@/shared/i18n'
+import { rich } from '@/shared/i18n/rich'
+import { EmptyState } from '@/shared/ui/EmptyState'
+import { StatusNote } from '@/shared/ui/StatusNote'
+import { SummaryBar } from '@/shared/ui/SummaryBar'
+import { Tip } from '@/shared/ui/Tip'
+import { openSheet } from '@/shared/ui/sheet/sheetStore'
 import { ShoppingList } from './ShoppingList'
 
 export function ShoppingScreen() {

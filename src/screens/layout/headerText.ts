@@ -1,6 +1,6 @@
-import type { Member } from '@/domain/types'
-import type { MessageKey } from '@/i18n'
-import { memberInitial } from '@/lib/memberText'
+import { memberInitial } from '@/entities/member/lib/memberText'
+import type { Member } from '@/shared/api/types'
+import type { MessageKey } from '@/shared/i18n'
 
 /** Заголовок экрана по адресу. */
 export function titleKey(pathname: string): MessageKey {

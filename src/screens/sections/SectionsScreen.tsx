@@ -1,9 +1,10 @@
 import { ChevronLeft } from 'lucide-react'
 import { Link } from 'react-router'
-import { AddRow, SettingRow } from '@/components'
-import { useHomeData, useSortedSections } from '@/data/hooks'
-import { useT } from '@/i18n'
-import { openSheet } from '@/sheets'
+import { useHomeData, useSortedSections } from '@/shared/api/useHomeData'
+import { useT } from '@/shared/i18n'
+import { AddRow } from '@/shared/ui/AddRow'
+import { SettingRow } from '@/shared/ui/SettingRow'
+import { openSheet } from '@/shared/ui/sheet/sheetStore'
 
 export function SectionsScreen() {
   const t = useT()

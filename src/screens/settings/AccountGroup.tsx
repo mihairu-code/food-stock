@@ -1,9 +1,12 @@
-import { useSession } from '@/app/session'
-import { SettingRow, SettingsGroup, Tip } from '@/components'
-import { useGoogleAvailable, useGoogleSignIn, useMembers } from '@/data/hooks'
-import { useT, type MessageKey } from '@/i18n'
-import { savedName } from '@/lib/invite'
-import { openSheet } from '@/sheets'
+import { useGoogleAvailable, useGoogleSignIn } from '@/data/hooks/account'
+import { useMembers } from '@/entities/household/api/householdApi'
+import { savedName } from '@/entities/invite/lib/inviteToken'
+import { useT, type MessageKey } from '@/shared/i18n'
+import { useSession } from '@/shared/session/session'
+import { SettingRow } from '@/shared/ui/SettingRow'
+import { SettingsGroup } from '@/shared/ui/SettingsGroup'
+import { Tip } from '@/shared/ui/Tip'
+import { openSheet } from '@/shared/ui/sheet/sheetStore'
 
 /** Аккаунт: вход через Google, своё имя и вступление в другой дом по ссылке. */
 export function AccountGroup() {

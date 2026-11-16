@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { backend } from '@/data'
-import { useT } from '@/i18n'
-import { currentInstallTarget, type InstallTarget } from '@/lib/install'
-import { rememberInviteToken } from '@/lib/invite'
-import { notify } from '@/lib/toast'
-import { InstallCard } from './install/InstallCard'
+import { InstallCard } from '@/app/install/InstallCard'
+import { rememberInviteToken } from '@/entities/invite/lib/inviteToken'
+import { backend } from '@/shared/api/currentBackend'
+import { useT } from '@/shared/i18n'
+import { currentInstallTarget, type InstallTarget } from '@/shared/lib/install/install'
+import { notify } from '@/shared/lib/toast'
 
 interface WelcomeProps {
   invited: boolean

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router'
-import { lockPageScroll } from '@/lib/scrollLock'
+import { lockPageScroll } from '@/shared/lib/scrollLock'
+import { closeSheet, useActiveSheet } from '@/shared/ui/sheet/sheetStore'
 import { AddItemSheet } from './AddItemSheet'
 import { HomeSheet } from './HomeSheet'
 import { InviteLinkSheet } from './InviteLinkSheet'
@@ -13,7 +14,6 @@ import { ResetDataSheet } from './ResetDataSheet'
 import { SectionManagerSheet } from './SectionManagerSheet'
 import { SectionSheet } from './SectionSheet'
 import { SignOutSheet } from './SignOutSheet'
-import { closeSheet, useActiveSheet } from './sheetStore'
 
 /**
  * Единственное место, где рисуются шторки. Стоит в корневом Layout; экраны только

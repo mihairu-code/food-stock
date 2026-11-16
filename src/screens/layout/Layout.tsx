@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from 'react-router'
-import { SheetHost } from '@/sheets'
+import { SheetHost } from '@/sheets/SheetHost'
 import { Header } from './Header'
 import { TabBar } from './TabBar'
 

@@ -1,9 +1,13 @@
 import { Plus } from 'lucide-react'
-import { AddRow, EmptyState, StatusNote, SummaryBar, Tip } from '@/components'
-import { useHomeData, useSortedSections } from '@/data/hooks'
-import { useT } from '@/i18n'
-import { rich } from '@/i18n/rich'
-import { openSheet } from '@/sheets'
+import { useHomeData, useSortedSections } from '@/shared/api/useHomeData'
+import { useT } from '@/shared/i18n'
+import { rich } from '@/shared/i18n/rich'
+import { AddRow } from '@/shared/ui/AddRow'
+import { EmptyState } from '@/shared/ui/EmptyState'
+import { StatusNote } from '@/shared/ui/StatusNote'
+import { SummaryBar } from '@/shared/ui/SummaryBar'
+import { Tip } from '@/shared/ui/Tip'
+import { openSheet } from '@/shared/ui/sheet/sheetStore'
 import { SectionBoard } from './SectionBoard'
 
 const addSection = () => openSheet({ type: 'add-section' })

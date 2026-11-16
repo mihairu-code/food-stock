@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { NameIconFields } from '@/components'
-import { useCreateSection, useHomeData, useUpdateSection } from '@/data/hooks'
-import type { Section } from '@/domain/types'
-import { useT } from '@/i18n'
-import { notify } from '@/lib/toast'
-import { FormSheet } from './FormSheet'
-import { closeSheet } from './sheetStore'
+import { useCreateSection, useUpdateSection } from '@/entities/section/api/sectionApi'
+import type { Section } from '@/shared/api/types'
+import { useHomeData } from '@/shared/api/useHomeData'
+import { useT } from '@/shared/i18n'
+import { notify } from '@/shared/lib/toast'
+import { NameIconFields } from '@/shared/ui/NameIconFields'
+import { FormSheet } from '@/shared/ui/sheet/FormSheet'
+import { closeSheet } from '@/shared/ui/sheet/sheetStore'
 
 /** Самые частые места в доме; остальные иконки — в панели. */
 const SECTION_EMOJIS = ['🧊', '🧺', '🍪', '🥫', '🧴']

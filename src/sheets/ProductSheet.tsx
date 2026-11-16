@@ -1,11 +1,14 @@
 import { useState } from 'react'
-import { NameIconFields, SectionPicker, StapleCheckbox } from '@/components'
-import { useCreateProduct, useSortedSections } from '@/data/hooks'
-import { useSuggestedEmoji } from '@/hooks/useSuggestedEmoji'
-import { useT } from '@/i18n'
-import { notify } from '@/lib/toast'
-import { FormSheet } from './FormSheet'
-import { closeSheet } from './sheetStore'
+import { useCreateProduct } from '@/entities/product/api/productApi'
+import { StapleCheckbox } from '@/entities/product/ui/StapleCheckbox'
+import { SectionPicker } from '@/entities/section/ui/SectionPicker'
+import { useSortedSections } from '@/shared/api/useHomeData'
+import { useT } from '@/shared/i18n'
+import { useSuggestedEmoji } from '@/shared/lib/emoji/useSuggestedEmoji'
+import { notify } from '@/shared/lib/toast'
+import { NameIconFields } from '@/shared/ui/NameIconFields'
+import { FormSheet } from '@/shared/ui/sheet/FormSheet'
+import { closeSheet } from '@/shared/ui/sheet/sheetStore'
 
 /** Новый продукт; `sectionId` — раздел, из которого шторку открыли. */
 export function ProductSheet({ sectionId: initialSectionId }: { sectionId?: string }) {

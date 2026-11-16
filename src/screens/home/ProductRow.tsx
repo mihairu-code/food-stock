@@ -1,9 +1,11 @@
 import { Minus, Plus, X } from 'lucide-react'
 import { memo } from 'react'
-import { SortableRow, StockIcon, SwipeRow } from '@/components'
-import { isPendingProduct } from '@/data/hooks'
-import type { Product } from '@/domain/types'
-import { useT, type MessageKey } from '@/i18n'
+import { StockIcon } from '@/entities/product/ui/StockIcon'
+import { isPendingProduct } from '@/entities/shopping-item/api/shoppingItemApi'
+import type { Product } from '@/shared/api/types'
+import { useT, type MessageKey } from '@/shared/i18n'
+import { SortableRow } from '@/shared/ui/SortableRow'
+import { SwipeRow } from '@/shared/ui/SwipeRow'
 import type { ProductActions } from './useProductActions'
 
 interface ProductRowProps {

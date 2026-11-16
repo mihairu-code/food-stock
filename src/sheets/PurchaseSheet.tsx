@@ -1,12 +1,14 @@
 import { useState } from 'react'
-import { SectionPicker, StapleCheckbox } from '@/components'
-import { useDeleteShoppingItem, usePurchaseShoppingItem, useSortedSections } from '@/data/hooks'
-import type { ShoppingItem } from '@/domain/types'
-import { useT } from '@/i18n'
-import { notify } from '@/lib/toast'
-import { FormSheet } from './FormSheet'
-import { Sheet } from './Sheet'
-import { closeSheet } from './sheetStore'
+import { StapleCheckbox } from '@/entities/product/ui/StapleCheckbox'
+import { SectionPicker } from '@/entities/section/ui/SectionPicker'
+import { useDeleteShoppingItem, usePurchaseShoppingItem } from '@/entities/shopping-item/api/shoppingItemApi'
+import type { ShoppingItem } from '@/shared/api/types'
+import { useSortedSections } from '@/shared/api/useHomeData'
+import { useT } from '@/shared/i18n'
+import { notify } from '@/shared/lib/toast'
+import { FormSheet } from '@/shared/ui/sheet/FormSheet'
+import { Sheet } from '@/shared/ui/sheet/Sheet'
+import { closeSheet } from '@/shared/ui/sheet/sheetStore'
 
 /**
  * Ручная позиция куплена. Её можно положить в раздел — тогда она станет продуктом дома —

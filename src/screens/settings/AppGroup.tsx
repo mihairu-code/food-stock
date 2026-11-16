@@ -1,8 +1,10 @@
-import { SettingSelect, SettingsGroup, SettingToggle } from '@/components'
-import { useHintsVisible } from '@/hooks/useHintsVisible'
-import { LANG_NAMES, LANGS, setLangSetting, useLang, useT, type LangSetting } from '@/i18n'
-import { setTheme, useAppearance, type ThemeSetting } from '@/lib/appearance'
-import { setHintsVisible } from '@/lib/hints'
+import { LANG_NAMES, LANGS, setLangSetting, useLang, useT, type LangSetting } from '@/shared/i18n'
+import { setTheme, useAppearance, type ThemeSetting } from '@/shared/lib/appearance'
+import { setHintsVisible } from '@/shared/lib/hints/hints'
+import { useHintsVisible } from '@/shared/lib/hints/useHintsVisible'
+import { SettingSelect } from '@/shared/ui/SettingSelect'
+import { SettingToggle } from '@/shared/ui/SettingToggle'
+import { SettingsGroup } from '@/shared/ui/SettingsGroup'
 import { AccentPicker } from './AccentPicker'
 
 /** Приложение: язык, оформление и подсказки. Выбор хранится на устройстве, а не в доме. */

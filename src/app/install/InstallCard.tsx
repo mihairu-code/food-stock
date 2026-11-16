@@ -1,9 +1,8 @@
 import { ChevronDown, Download, Monitor, Smartphone } from 'lucide-react'
 import { useState } from 'react'
-import type { MessageKey } from '@/i18n'
-import { useT } from '@/i18n'
-import type { InstallMethod, InstallTarget } from '@/lib/install'
-import { promptInstall, useCanPromptInstall } from '@/lib/installPrompt'
+import { type MessageKey, useT } from '@/shared/i18n'
+import type { InstallMethod, InstallTarget } from '@/shared/lib/install/install'
+import { promptInstall, useCanPromptInstall } from '@/shared/lib/install/installPrompt'
 import { InstallSteps } from './InstallSteps'
 
 const LEAD: Record<InstallMethod, MessageKey> = {

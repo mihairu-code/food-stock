@@ -1,6 +1,6 @@
 import { arrayMove } from '@dnd-kit/sortable'
-import { groupBySection } from '@/domain/logic'
-import type { Product, Section } from '@/domain/types'
+import { groupBySection } from '@/shared/api/homeDataRules'
+import type { Product, Section } from '@/shared/api/types'
 
 /** Что перетаскивают: продукт или целый раздел. */
 export type DragKind = 'product' | 'section'

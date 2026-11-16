@@ -1,8 +1,9 @@
 import { useMemo } from 'react'
-import { useDeleteShoppingItem, useSetProductState } from '@/data/hooks'
-import { PURCHASED, withToBuy } from '@/domain/logic'
-import type { Product, ShoppingItem } from '@/domain/types'
-import { notify } from '@/lib/toast'
+import { useSetProductState } from '@/entities/product/api/productApi'
+import { useDeleteShoppingItem } from '@/entities/shopping-item/api/shoppingItemApi'
+import { PURCHASED, withToBuy } from '@/shared/api/homeDataRules'
+import type { Product, ShoppingItem } from '@/shared/api/types'
+import { notify } from '@/shared/lib/toast'
 
 export interface ShoppingActions {
   /** Продукт дома куплен: он снова есть и уходит из списка. */

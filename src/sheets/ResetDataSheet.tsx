@@ -1,6 +1,6 @@
-import { useResetLocalData } from '@/data/hooks'
-import { useT } from '@/i18n'
-import { ConfirmSheet } from './ConfirmSheet'
+import { useResetLocalData } from '@/data/hooks/account'
+import { useT } from '@/shared/i18n'
+import { ConfirmSheet } from '@/shared/ui/sheet/ConfirmSheet'
 
 /** Только демо-режим: вернуть демо-данные к исходным. */
 export function ResetDataSheet() {

@@ -1,11 +1,12 @@
 import type { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit/core'
 import { useMemo, useState } from 'react'
-import { useReorderProducts, useReorderSections } from '@/data/hooks'
-import type { Product, Section } from '@/domain/types'
-import { useDragSensors } from '@/hooks/useDragSensors'
-import { setDragActive } from '@/lib/dragState'
-import { haptic } from '@/lib/haptics'
-import { notify } from '@/lib/toast'
+import { useReorderProducts } from '@/entities/product/api/productApi'
+import { useReorderSections } from '@/entities/section/api/sectionApi'
+import type { Product, Section } from '@/shared/api/types'
+import { setDragActive } from '@/shared/lib/drag/dragState'
+import { useDragSensors } from '@/shared/lib/drag/useDragSensors'
+import { haptic } from '@/shared/lib/haptics'
+import { notify } from '@/shared/lib/toast'
 import {
   buildBoard,
   moveSection,

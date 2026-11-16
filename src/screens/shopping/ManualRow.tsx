@@ -1,7 +1,7 @@
 import { memo } from 'react'
-import type { ShoppingItem } from '@/domain/types'
-import { useT } from '@/i18n'
-import { openSheet } from '@/sheets'
+import type { ShoppingItem } from '@/shared/api/types'
+import { useT } from '@/shared/i18n'
+import { openSheet } from '@/shared/ui/sheet/sheetStore'
 import { ShoppingRow } from './ShoppingRow'
 import type { ShoppingActions } from './useShoppingActions'
 

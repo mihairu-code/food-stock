@@ -1,6 +1,6 @@
-import { useT } from '@/i18n'
-import { rich } from '@/i18n/rich'
-import type { InstallTarget } from '@/lib/install'
+import { useT } from '@/shared/i18n'
+import { rich } from '@/shared/i18n/rich'
+import type { InstallTarget } from '@/shared/lib/install/install'
 import { stepsFor } from './stepsFor'
 
 /** Пронумерованные шаги: текст и под ним схема экрана с выделенной кнопкой. */

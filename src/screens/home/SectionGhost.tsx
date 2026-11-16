@@ -1,4 +1,4 @@
-import type { Section } from '@/domain/types'
+import type { Section } from '@/shared/api/types'
 
 /** Раздел под пальцем во время перетаскивания: только шапка. */
 export function SectionGhost({ section, count }: { section: Section; count: number }) {
