@@ -2,12 +2,11 @@ import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-
 import { CSS } from '@dnd-kit/utilities'
 import { ChevronDown, Pencil } from 'lucide-react'
 import { memo, useMemo } from 'react'
-import type { Product, Section } from '@/shared/api/types'
+import type { Product, Section } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import { SORT_TRANSITION } from '@/shared/lib/drag/dragMotion'
 import { sameItems } from '@/shared/lib/sameItems'
-import { AddRow } from '@/shared/ui/AddRow'
-import { openSheet } from '@/shared/ui/sheet/sheetStore'
+import { AddRow, openSheet } from '@/shared/ui'
 import type { ProductActions } from '../model/useProductActions'
 import { ProductRow } from './ProductRow'
 
@@ -61,7 +60,7 @@ export const SectionCard = memo(function SectionCard({
       data-target={target}
       style={{ transform: CSS.Translate.toString(sortable.transform), transition: sortable.transition }}
     >
-      <div
+      <header
         className="section-head"
         ref={sortable.setActivatorNodeRef}
         {...sortable.attributes}
@@ -92,7 +91,7 @@ export const SectionCard = memo(function SectionCard({
         >
           <Pencil size={16} />
         </button>
-      </div>
+      </header>
       {/* Содержимое не размонтируется: высота плавно сворачивается, а inert убирает его из фокуса. */}
       <div className="section-body" id={panelId} inert={!open}>
         <div className="section-products">

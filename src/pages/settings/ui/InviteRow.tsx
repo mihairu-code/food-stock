@@ -1,8 +1,8 @@
 import { X } from 'lucide-react'
-import { useRevokeInvite } from '@/entities/household/api/householdApi'
-import type { Invite } from '@/shared/api/types'
+import { useRevokeInvite } from '@/entities/invite'
+import type { Invite } from '@/shared/api'
 import { useLang, useT } from '@/shared/i18n'
-import { SettingRow } from '@/shared/ui/SettingRow'
+import { SettingRow } from '@/shared/ui'
 
 /** Действующая ссылка-приглашение: до какого числа работает и кнопка отзыва. */
 export function InviteRow({ invite, revocable }: { invite: Invite; revocable: boolean }) {

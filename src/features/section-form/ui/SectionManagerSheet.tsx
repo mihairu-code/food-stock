@@ -1,12 +1,10 @@
 import { useState } from 'react'
-import { useDeleteSection } from '@/entities/section/api/sectionApi'
-import type { Section } from '@/shared/api/types'
-import { useHomeData } from '@/shared/api/useHomeData'
+import { useDeleteSection } from '@/entities/section'
+import { useHomeData, type Section } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import { rich } from '@/shared/i18n/rich'
 import { notify } from '@/shared/lib/toast'
-import { ConfirmSheet } from '@/shared/ui/sheet/ConfirmSheet'
-import { closeSheet } from '@/shared/ui/sheet/sheetStore'
+import { closeSheet, ConfirmSheet } from '@/shared/ui'
 import { SectionSheet } from './SectionSheet'
 
 /**
@@ -22,7 +20,7 @@ export function SectionManagerSheet({ section }: { section: Section }) {
   const inSection = products.filter((p) => p.section_id === section.id)
   const inShopping = inSection.filter((p) => p.to_buy).length
 
-  function remove() {
+  function deleteSectionNow() {
     deleteSection.mutate(section.id)
     notify('toast.sectionDeleted', { name: section.name })
     closeSheet()
@@ -32,7 +30,7 @@ export function SectionManagerSheet({ section }: { section: Section }) {
     return (
       <SectionSheet
         section={section}
-        onRequestDelete={() => (inSection.length === 0 ? remove() : setConfirming(true))}
+        onRequestDelete={() => (inSection.length === 0 ? deleteSectionNow() : setConfirming(true))}
       />
     )
   }
@@ -50,7 +48,7 @@ export function SectionManagerSheet({ section }: { section: Section }) {
       title={t('section.deleteTitle', { name: section.name })}
       description={rich(warning)}
       confirmLabel={t('section.delete')}
-      onConfirm={remove}
+      onConfirm={deleteSectionNow}
     />
   )
 }

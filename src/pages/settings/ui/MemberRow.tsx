@@ -1,16 +1,25 @@
 import { X } from 'lucide-react'
-import { memberIdentity, memberLabel } from '@/entities/member/lib/memberText'
-import { MemberAvatar } from '@/entities/member/ui/MemberAvatar'
-import type { Member } from '@/shared/api/types'
+import { MemberAvatar, memberIdentity, memberLabel, useRemoveMember } from '@/entities/member'
+import type { Member } from '@/shared/api'
 import { useT } from '@/shared/i18n'
-import { useSession } from '@/shared/session/session'
-import { SettingRow } from '@/shared/ui/SettingRow'
-import { openSheet } from '@/shared/ui/sheet/sheetStore'
+import { useSession } from '@/shared/session'
+import { openSheet, SettingRow } from '@/shared/ui'
 
 export function MemberRow({ member, removable }: { member: Member; removable: boolean }) {
   const t = useT()
-  const { user } = useSession()
+  const { user, household } = useSession()
+  const removeMember = useRemoveMember()
   const label = memberLabel(member, t)
+
+  function confirmRemoval() {
+    openSheet({
+      type: 'confirm',
+      title: t('confirm.removeMemberTitle'),
+      description: t('confirm.removeMemberText', { name: label, home: household.name }),
+      confirmLabel: t('common.delete'),
+      onConfirm: () => removeMember.mutate(member.user_id),
+    })
+  }
 
   return (
     <SettingRow
@@ -23,7 +32,7 @@ export function MemberRow({ member, removable }: { member: Member; removable: bo
             className="icon-btn"
             type="button"
             aria-label={t('settings.removeMemberAria', { name: label })}
-            onClick={() => openSheet({ type: 'remove-member', member })}
+            onClick={confirmRemoval}
           >
             <X size={18} />
           </button>

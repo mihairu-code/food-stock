@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import type { Household, Membership, Role, User } from '@/shared/api/types'
+import type { Household, Membership, Role, User } from '@/shared/api'
 
 export interface Session {
   user: User

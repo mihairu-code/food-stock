@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react'
-import { useT } from '@/shared/i18n'
 import { Sheet } from './Sheet'
+import { SheetActions } from './SheetActions'
 import { closeSheet } from './sheetStore'
 
-interface ConfirmSheetProps {
+export interface ConfirmSheetProps {
   title: string
   description: ReactNode
   confirmLabel: string
@@ -12,13 +12,9 @@ interface ConfirmSheetProps {
 
 /** Подтверждение необратимого действия. После подтверждения шторка закрывается сама. */
 export function ConfirmSheet({ title, description, confirmLabel, onConfirm }: ConfirmSheetProps) {
-  const t = useT()
   return (
     <Sheet title={title} description={description}>
-      <div className="sheet-actions">
-        <button className="btn subtle" type="button" onClick={closeSheet} autoFocus>
-          {t('common.cancel')}
-        </button>
+      <SheetActions focusClose>
         <button
           className="btn danger"
           type="button"
@@ -29,7 +25,7 @@ export function ConfirmSheet({ title, description, confirmLabel, onConfirm }: Co
         >
           {confirmLabel}
         </button>
-      </div>
+      </SheetActions>
     </Sheet>
   )
 }

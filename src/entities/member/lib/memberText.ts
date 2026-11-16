@@ -1,4 +1,4 @@
-import type { Member } from '@/shared/api/types'
+import type { Member } from '@/shared/api'
 import type { Translate } from '@/shared/i18n'
 import { localizeDevice } from '@/shared/lib/device'
 

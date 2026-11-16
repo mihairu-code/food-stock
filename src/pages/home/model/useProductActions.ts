@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
-import { useDeleteProduct, useSetProductState } from '@/entities/product/api/productApi'
-import { withAvailability, withToBuy } from '@/shared/api/homeDataRules'
-import type { Product } from '@/shared/api/types'
+import { useDeleteProduct, useSetProductState, withAvailability, withToBuy } from '@/entities/product'
+import type { Product } from '@/shared/api'
 import { notify } from '@/shared/lib/toast'
 
 export interface ProductActions {
@@ -9,7 +8,8 @@ export interface ProductActions {
   toggleStock: (product: Product) => void
   /** Плюс и минус: положить в покупки или убрать из них, наличие не трогая. */
   toggleList: (product: Product) => void
-  remove: (product: Product) => void
+  /** Удаление продукта: без подтверждения, оно и так видно по тосту. */
+  deleteProduct: (product: Product) => void
 }
 
 /**
@@ -18,7 +18,7 @@ export interface ProductActions {
  */
 export function useProductActions(): ProductActions {
   const { mutate: setState } = useSetProductState()
-  const { mutate: deleteProduct } = useDeleteProduct()
+  const { mutate: deleteProductById } = useDeleteProduct()
 
   return useMemo(
     () => ({
@@ -35,11 +35,11 @@ export function useProductActions(): ProductActions {
         setState({ id: product.id, state: withToBuy(product, toBuy) })
         notify(toBuy ? 'toast.addedToList' : 'toast.removedFromList', { name: product.name })
       },
-      remove(product) {
-        deleteProduct(product.id)
+      deleteProduct(product) {
+        deleteProductById(product.id)
         notify('toast.deleted', { name: product.name })
       },
     }),
-    [setState, deleteProduct],
+    [setState, deleteProductById],
   )
 }

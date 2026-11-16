@@ -1,28 +1,24 @@
 import { useState } from 'react'
-import { useCreateProduct } from '@/entities/product/api/productApi'
-import { StapleCheckbox } from '@/entities/product/ui/StapleCheckbox'
-import { SectionPicker } from '@/entities/section/ui/SectionPicker'
-import { useSortedSections } from '@/shared/api/useHomeData'
+import { StapleCheckbox, useCreateProduct } from '@/entities/product'
+import { SectionPicker, useSortedSections } from '@/entities/section'
 import { useT } from '@/shared/i18n'
 import { useSuggestedEmoji } from '@/shared/lib/emoji/useSuggestedEmoji'
 import { notify } from '@/shared/lib/toast'
-import { NameIconFields } from '@/shared/ui/NameIconFields'
-import { FormSheet } from '@/shared/ui/sheet/FormSheet'
-import { closeSheet } from '@/shared/ui/sheet/sheetStore'
+import { closeSheet, FormSheet, NameIconFields } from '@/shared/ui'
 
 /** Новый продукт; `sectionId` — раздел, из которого шторку открыли. */
-export function ProductSheet({ sectionId: initialSectionId }: { sectionId?: string }) {
+export function ProductSheet({ sectionId: openedFromSection }: { sectionId?: string }) {
   const t = useT()
   const sections = useSortedSections()
   const createProduct = useCreateProduct()
   const [name, setName] = useState('')
-  const [sectionId, setSectionId] = useState(initialSectionId ?? sections[0]?.id ?? '')
-  const [staple, setStaple] = useState(false)
   const { icon, setIcon, options } = useSuggestedEmoji(name)
+  const [sectionId, setSectionId] = useState(openedFromSection ?? sections[0]?.id ?? '')
+  const [staple, setStaple] = useState(false)
 
-  function submit() {
+  function saveProduct() {
     const trimmed = name.trim()
-    const section = sections.find((s) => s.id === sectionId)
+    const section = sections.find((candidate) => candidate.id === sectionId)
     if (!trimmed || !section) return
     createProduct.mutate({
       id: crypto.randomUUID(),
@@ -41,7 +37,7 @@ export function ProductSheet({ sectionId: initialSectionId }: { sectionId?: stri
       description={t('productSheet.description')}
       submitLabel={t('common.add')}
       disabled={!name.trim() || !sectionId}
-      onSubmit={submit}
+      onSubmit={saveProduct}
     >
       <NameIconFields
         id="product-name"

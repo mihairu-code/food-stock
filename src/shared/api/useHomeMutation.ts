@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { notify } from '@/shared/lib/toast'
-import { useHouseholdId } from '@/shared/session/session'
+import { useHouseholdId } from '@/shared/session'
 import { queryClient } from './queryClient'
 import { qk } from './queryKeys'
 import type { Product, Section, ShoppingItem } from './types'
@@ -73,4 +73,5 @@ export function useHomeMutation<V, R = unknown>(
       return queryClient.invalidateQueries({ queryKey: qk.home(hid) })
     },
   })
+
 }

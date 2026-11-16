@@ -1,7 +1,6 @@
 import { memo } from 'react'
-import type { ShoppingItem } from '@/shared/api/types'
+import type { ShoppingItem } from '@/shared/api'
 import { useT } from '@/shared/i18n'
-import { openSheet } from '@/shared/ui/sheet/sheetStore'
 import type { ShoppingActions } from '../model/useShoppingActions'
 import { ShoppingRow } from './ShoppingRow'
 
@@ -21,8 +20,8 @@ export const ManualRow = memo(function ManualRow({ item, actions, ghost }: Manua
       meta={t('shopping.manual')}
       ghost={ghost}
       icon={<span className="emoji" aria-hidden="true">{item.icon || '🛒'}</span>}
-      onBuy={() => openSheet({ type: 'purchase', item })}
-      onRemove={() => actions.removeItem(item)}
+      onBuy={() => actions.buyItem(item)}
+      onRemove={() => actions.deleteItem(item)}
     />
   )
 })

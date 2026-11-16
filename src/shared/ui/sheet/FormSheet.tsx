@@ -29,7 +29,11 @@ export function FormSheet({ title, description, submitLabel, disabled, onSubmit,
         }}
       >
         {children}
-        <SheetActions submitLabel={submitLabel} disabled={disabled} />
+        <SheetActions>
+          <button className="btn" type="submit" disabled={disabled}>
+            {submitLabel}
+          </button>
+        </SheetActions>
         {footer}
       </form>
     </Sheet>

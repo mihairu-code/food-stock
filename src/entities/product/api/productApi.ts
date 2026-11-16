@@ -1,21 +1,25 @@
-import type { NewProduct } from '@/shared/api/backend'
-import { backend } from '@/shared/api/currentBackend'
-import { placeProducts, withState, type ProductState } from '@/shared/api/homeDataRules'
-import { useHomeMutation } from '@/shared/api/useHomeMutation'
-import { useSession } from '@/shared/session/session'
+import {
+  backend,
+  placeProducts,
+  useHomeMutation,
+  withState,
+  type NewProduct,
+  type ProductState,
+} from '@/shared/api'
+import { useSession } from '@/shared/session'
 
 export function useCreateProduct() {
   const { household, user } = useSession()
-  const hid = household.id
+  const householdId = household.id
   return useHomeMutation(
-    (input: NewProduct) => backend.createProduct(hid, input),
+    (input: NewProduct) => backend.createProduct(householdId, input),
     (cache, input) => {
       const now = new Date().toISOString()
       cache.products((list) => [
         ...list,
         {
           ...input,
-          household_id: hid,
+          household_id: householdId,
           is_available: true,
           to_buy: false,
           created_at: now,
@@ -31,14 +35,16 @@ export function useSetProductState() {
   return useHomeMutation(
     ({ id, state }: { id: string; state: ProductState }) => backend.setProductState(id, state),
     (cache, { id, state }) =>
-      cache.products((list) => list.map((p) => (p.id === id ? withState(p, state, new Date().toISOString()) : p))),
+      cache.products((list) =>
+        list.map((product) => (product.id === id ? withState(product, state, new Date().toISOString()) : product)),
+      ),
   )
 }
 
 export function useDeleteProduct() {
   return useHomeMutation(
     (productId: string) => backend.deleteProduct(productId),
-    (cache, productId) => cache.products((list) => list.filter((p) => p.id !== productId)),
+    (cache, productId) => cache.products((list) => list.filter((product) => product.id !== productId)),
   )
 }
 
@@ -48,8 +54,7 @@ export function useDeleteProduct() {
  */
 export function useReorderProducts() {
   return useHomeMutation(
-    (v: { sectionId: string; productIds: string[] }) => backend.reorderProducts(v.sectionId, v.productIds),
-    (cache, { sectionId, productIds }) =>
-      cache.products((list) => placeProducts(list, sectionId, productIds)),
+    (order: { sectionId: string; productIds: string[] }) => backend.reorderProducts(order.sectionId, order.productIds),
+    (cache, { sectionId, productIds }) => cache.products((list) => placeProducts(list, sectionId, productIds)),
   )
 }

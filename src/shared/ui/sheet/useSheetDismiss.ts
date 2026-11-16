@@ -6,6 +6,11 @@ const SLOP = 6
 /** Насколько нужно стянуть шторку, чтобы она закрылась: доля высоты, но не больше этого. */
 const CLOSE_DISTANCE = 140
 const CLOSE_RATIO = 0.3
+/**
+ * Стянуть шторку можно, только начав жест в её верхней части: ниже лежат поля, плитки
+ * и кнопки, и движение пальца по ним не должно закрывать форму.
+ */
+const PULL_ZONE_RATIO = 0.35
 /** Быстрый смах вниз закрывает и с меньшего расстояния (пикселей в миллисекунду). */
 const FLING_SPEED = 0.5
 const CLOSE_MS = 180
@@ -31,7 +36,16 @@ export function useSheetDismiss(ref: RefObject<HTMLDialogElement | null>): void 
     if (!dialog) return
     const sheet = dialog
 
-    let start: { x: number; y: number; at: number; backdrop: boolean; field: boolean; sideways: boolean } | null = null
+    let start: {
+      x: number
+      y: number
+      at: number
+      backdrop: boolean
+      field: boolean
+      sideways: boolean
+      /** Палец лёг на верхнюю часть шторки — её можно стянуть вниз. */
+      inPullZone: boolean
+    } | null = null
     let pulling = false
     let offset = 0
     let closing = 0
@@ -42,6 +56,7 @@ export function useSheetDismiss(ref: RefObject<HTMLDialogElement | null>): void 
         return
       }
       const touch = event.touches[0]
+      const box = sheet.getBoundingClientRect()
       start = {
         x: touch.clientX,
         y: touch.clientY,
@@ -49,6 +64,7 @@ export function useSheetDismiss(ref: RefObject<HTMLDialogElement | null>): void 
         backdrop: event.target === sheet,
         field: isField(event.target),
         sideways: scrollsSideways(event.target),
+        inPullZone: touch.clientY - box.top <= box.height * PULL_ZONE_RATIO,
       }
       pulling = false
       offset = 0
@@ -70,7 +86,7 @@ export function useSheetDismiss(ref: RefObject<HTMLDialogElement | null>): void 
           start = null // ряд листают вбок — дальше этим жестом занимается браузер
           return
         }
-        const down = dy > 0 && dy > Math.abs(dx) && sheet.scrollTop <= 0
+        const down = start.inPullZone && dy > 0 && dy > Math.abs(dx) && sheet.scrollTop <= 0
         if (!down) {
           // Длинную шторку прокручивает браузер; короткой прокручивать нечего —
           // и жест не должен уйти на страницу под ней.

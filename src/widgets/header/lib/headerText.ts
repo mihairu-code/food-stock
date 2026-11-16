@@ -1,5 +1,5 @@
-import { memberInitial } from '@/entities/member/lib/memberText'
-import type { Member } from '@/shared/api/types'
+import { memberInitial } from '@/entities/member'
+import type { Member } from '@/shared/api'
 import type { MessageKey } from '@/shared/i18n'
 
 /** Заголовок экрана по адресу. */

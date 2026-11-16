@@ -1,8 +1,6 @@
-import { X } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useT } from '@/shared/i18n'
-import { SortableRow } from '@/shared/ui/SortableRow'
-import { SwipeRow } from '@/shared/ui/SwipeRow'
+import { ListRow } from '@/shared/ui'
 
 interface ShoppingRowProps {
   /** Идентификатор строки в списке покупок: продукта или ручной позиции. */
@@ -20,47 +18,25 @@ interface ShoppingRowProps {
 }
 
 /**
- * Общий вид строки покупок: иконка, название, «Купил» и удаление свайпом или крестиком.
- * Строку можно перетащить на другое место в списке.
+ * Общий вид строки покупок: та же строка, что на экране «Дом», только справа «Куплено»
+ * вместо плюса, а удаление убирает из списка.
  */
 export function ShoppingRow({ id, name, meta, icon, missing, ghost = false, onBuy, onRemove }: ShoppingRowProps) {
   const t = useT()
-
-  const row = (
-    <div className="row" data-missing={missing}>
-      {icon}
-      <div className="row-text">
-        <div className="row-name">{name}</div>
-        <div className="row-meta">{meta}</div>
-      </div>
-      <button className="btn small" type="button" aria-label={t('shopping.boughtAria', { name })} onClick={onBuy}>
-        {t('shopping.bought')}
-      </button>
-      <button
-        className="icon-btn row-delete"
-        type="button"
-        aria-label={t('product.removeFromList', { name })}
-        onClick={onRemove}
-      >
-        <X size={18} />
-      </button>
-    </div>
-  )
-
-  if (ghost) {
-    // Класс list — чтобы копия была той же высоты, что строки списка.
-    return (
-      <div className="drag-ghost list" inert>
-        {row}
-      </div>
-    )
-  }
-
   return (
-    <SortableRow id={id} kind="entry" label={name} description={t('dnd.product')}>
-      <SwipeRow onDelete={onRemove} label={t('shopping.remove')}>
-        {row}
-      </SwipeRow>
-    </SortableRow>
+    <ListRow
+      id={id}
+      kind="entry"
+      dragDescription={t('dnd.product')}
+      icon={icon}
+      name={name}
+      meta={meta}
+      missing={missing}
+      ghost={ghost}
+      toggle={{ label: t('shopping.boughtAria', { name }), icon: t('shopping.bought'), text: true, onClick: onBuy }}
+      removeLabel={t('product.removeFromList', { name })}
+      removeSwipeLabel={t('shopping.remove')}
+      onRemove={onRemove}
+    />
   )
 }

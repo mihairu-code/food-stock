@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Member } from '@/shared/api/types'
+import type { Member } from '@/shared/api'
 import { memberInitial } from '../lib/memberText'
 
 /**

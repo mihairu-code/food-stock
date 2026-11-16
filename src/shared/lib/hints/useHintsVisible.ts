@@ -1,4 +1,4 @@
-import { useSession } from '@/shared/session/session'
+import { useSession } from '@/shared/session'
 import { hintsVisible, useHintsSetting } from './hints'
 
 /** Видны ли сейчас подсказки: новому человеку — первые три дня, дальше — как выбрано в настройках. */

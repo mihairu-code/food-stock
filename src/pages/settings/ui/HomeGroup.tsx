@@ -1,10 +1,7 @@
-import { useHomeData } from '@/shared/api/useHomeData'
+import { useHomeData } from '@/shared/api'
 import { useT } from '@/shared/i18n'
-import { useSession } from '@/shared/session/session'
-import { SettingRow } from '@/shared/ui/SettingRow'
-import { SettingSelect } from '@/shared/ui/SettingSelect'
-import { SettingsGroup } from '@/shared/ui/SettingsGroup'
-import { openSheet } from '@/shared/ui/sheet/sheetStore'
+import { useSession } from '@/shared/session'
+import { openSheet, SettingRow, SettingSelect, SettingsGroup } from '@/shared/ui'
 
 /** Дом: название и аватарка (меняет владелец), разделы и переключатель, если домов несколько. */
 export function HomeGroup() {

@@ -1,4 +1,4 @@
-import type { MergeHome } from '@/shared/api/types'
+import type { MergeHome } from '@/shared/api'
 import type { Translate } from '@/shared/i18n'
 
 /** «3 раздела · 12 продуктов · 2 участника». */

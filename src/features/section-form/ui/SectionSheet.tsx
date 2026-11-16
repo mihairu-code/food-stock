@@ -1,12 +1,9 @@
 import { useState } from 'react'
-import { useCreateSection, useUpdateSection } from '@/entities/section/api/sectionApi'
-import type { Section } from '@/shared/api/types'
-import { useHomeData } from '@/shared/api/useHomeData'
+import { useCreateSection, useRenameSection } from '@/entities/section'
+import { useHomeData, type Section } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import { notify } from '@/shared/lib/toast'
-import { NameIconFields } from '@/shared/ui/NameIconFields'
-import { FormSheet } from '@/shared/ui/sheet/FormSheet'
-import { closeSheet } from '@/shared/ui/sheet/sheetStore'
+import { closeSheet, FormSheet, NameIconFields } from '@/shared/ui'
 
 /** Самые частые места в доме; остальные иконки — в панели. */
 const SECTION_EMOJIS = ['🧊', '🧺', '🍪', '🥫', '🧴']
@@ -21,15 +18,15 @@ export function SectionSheet({ section, onRequestDelete }: SectionSheetProps) {
   const t = useT()
   const { sections } = useHomeData()
   const createSection = useCreateSection()
-  const updateSection = useUpdateSection()
+  const renameSection = useRenameSection()
   const [name, setName] = useState(section?.name ?? '')
   const [icon, setIcon] = useState(section?.icon ?? '')
 
-  function submit() {
+  function saveSection() {
     const trimmed = name.trim()
     if (!trimmed) return
     if (section) {
-      updateSection.mutate({ id: section.id, patch: { name: trimmed, icon: icon || null } })
+      renameSection.mutate({ id: section.id, patch: { name: trimmed, icon: icon || null } })
     } else {
       const sort_order = sections.reduce((max, s) => Math.max(max, s.sort_order + 1), 0)
       createSection.mutate({ id: crypto.randomUUID(), name: trimmed, icon: icon || null, sort_order })
@@ -44,7 +41,7 @@ export function SectionSheet({ section, onRequestDelete }: SectionSheetProps) {
       description={section ? undefined : t('section.newDescription')}
       submitLabel={t(section ? 'common.save' : 'common.create')}
       disabled={!name.trim()}
-      onSubmit={submit}
+      onSubmit={saveSection}
       footer={
         section &&
         onRequestDelete && (

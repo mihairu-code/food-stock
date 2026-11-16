@@ -1,5 +1,4 @@
-import type { LucideIcon } from 'lucide-react'
-import { Lock } from 'lucide-react'
+import { Lock, type LucideIcon } from 'lucide-react'
 import { Mock } from './Mock'
 import { Target } from './Target'
 

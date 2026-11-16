@@ -1,6 +1,6 @@
 import { arrayMove } from '@dnd-kit/sortable'
-import { groupBySection } from '@/shared/api/homeDataRules'
-import type { Product, Section } from '@/shared/api/types'
+import { groupProductsBySection } from '@/entities/product'
+import type { Product, Section } from '@/shared/api'
 
 /** Что перетаскивают: продукт или целый раздел. */
 export type DragKind = 'product' | 'section'
@@ -13,7 +13,7 @@ export interface Board {
 
 /** Расположение, как оно сохранено: разделы уже в порядке показа. */
 export function buildBoard(sections: Section[], products: Product[]): Board {
-  const bySection = groupBySection(products)
+  const bySection = groupProductsBySection(products)
   return {
     sections: sections.map((section) => section.id),
     products: Object.fromEntries(

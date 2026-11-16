@@ -1,22 +1,20 @@
-import type { NewSection, SectionPatch } from '@/shared/api/backend'
-import { backend } from '@/shared/api/currentBackend'
-import { placeSections } from '@/shared/api/homeDataRules'
-import { useHomeMutation } from '@/shared/api/useHomeMutation'
-import { useHouseholdId } from '@/shared/session/session'
+import { backend, placeSections, useHomeMutation, type NewSection, type SectionPatch } from '@/shared/api'
+import { useHouseholdId } from '@/shared/session'
+
 
 export function useCreateSection() {
-  const hid = useHouseholdId()
+  const householdId = useHouseholdId()
   return useHomeMutation(
-    (input: NewSection) => backend.createSection(hid, input),
+    (input: NewSection) => backend.createSection(householdId, input),
     (cache, input) =>
       cache.sections((list) => [
         ...list,
-        { ...input, household_id: hid, created_at: new Date().toISOString() },
+        { ...input, household_id: householdId, created_at: new Date().toISOString() },
       ]),
   )
 }
 
-export function useUpdateSection() {
+export function useRenameSection() {
   return useHomeMutation(
     ({ id, patch }: { id: string; patch: SectionPatch }) => backend.updateSection(id, patch),
     (cache, { id, patch }) =>

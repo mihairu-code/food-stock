@@ -1,6 +1,6 @@
 import { memo } from 'react'
-import { StockIcon } from '@/entities/product/ui/StockIcon'
-import type { Product } from '@/shared/api/types'
+import { ProductStockIcon } from '@/entities/product'
+import type { Product } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import type { ShoppingActions } from '../model/useShoppingActions'
 import { ShoppingRow } from './ShoppingRow'
@@ -28,7 +28,7 @@ export const ShoppingProductRow = memo(function ShoppingProductRow({
       meta={sectionName ? `${sectionName} · ${stock}` : stock}
       missing={!product.is_available}
       ghost={ghost}
-      icon={<StockIcon icon={product.icon} />}
+      icon={<ProductStockIcon icon={product.icon} />}
       onBuy={() => actions.buyProduct(product)}
       onRemove={() => actions.dropProduct(product)}
     />

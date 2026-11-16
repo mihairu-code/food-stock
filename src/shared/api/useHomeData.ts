@@ -1,9 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
-import { useHouseholdId } from '@/shared/session/session'
-import { buildShoppingList, sortSections, type HomeData, type ShoppingEntry } from './homeDataRules'
+import { useHouseholdId } from '@/shared/session'
+import type { HomeData } from './homeDataRules'
 import { productsQuery, sectionsQuery, shoppingItemsQuery } from './homeQueries'
-import type { Section } from './types'
 
 const EMPTY: never[] = []
 
@@ -16,10 +14,10 @@ interface HomeDataState extends HomeData {
 
 /** Разделы, продукты и ручные покупки текущего дома. */
 export function useHomeData(): HomeDataState {
-  const hid = useHouseholdId()
-  const sections = useQuery(sectionsQuery(hid))
-  const products = useQuery(productsQuery(hid))
-  const shoppingItems = useQuery(shoppingItemsQuery(hid))
+  const householdId = useHouseholdId()
+  const sections = useQuery(sectionsQuery(householdId))
+  const products = useQuery(productsQuery(householdId))
+  const shoppingItems = useQuery(shoppingItemsQuery(householdId))
   return {
     sections: sections.data ?? EMPTY,
     products: products.data ?? EMPTY,
@@ -27,19 +25,4 @@ export function useHomeData(): HomeDataState {
     isLoading: sections.isPending || products.isPending || shoppingItems.isPending,
     isError: sections.isLoadingError || products.isLoadingError || shoppingItems.isLoadingError,
   }
-}
-
-/** Разделы дома в порядке показа. */
-export function useSortedSections(): Section[] {
-  const { sections } = useHomeData()
-  return useMemo(() => sortSections(sections), [sections])
-}
-
-/** Список покупок: продукты с отметкой «купить» и позиции, добавленные вручную. */
-export function useShoppingList(): ShoppingEntry[] {
-  const { sections, products, shoppingItems } = useHomeData()
-  return useMemo(
-    () => buildShoppingList({ sections, products, shoppingItems }),
-    [sections, products, shoppingItems],
-  )
 }

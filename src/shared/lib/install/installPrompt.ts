@@ -1,4 +1,4 @@
-import { createStore, useStore } from '@/shared/lib/store'
+import { createStore, useStore } from '../store'
 
 /** Событие Chrome и Edge: сайт можно установить одной кнопкой. В Safari и Firefox его нет. */
 interface InstallPromptEvent extends Event {

@@ -1,6 +1,6 @@
 import { House, Settings, ShoppingCart } from 'lucide-react'
 import { NavLink } from 'react-router'
-import { useShoppingList } from '@/shared/api/useHomeData'
+import { useShoppingList } from '@/entities/shopping-list'
 import { useT } from '@/shared/i18n'
 
 /**

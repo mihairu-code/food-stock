@@ -1,4 +1,4 @@
-import { createStore, useStore } from '@/shared/lib/store'
+import { createStore, useStore } from '../store'
 
 /** 'auto' — подсказки видит только новый человек, первые дни. */
 export type HintsSetting = 'auto' | 'on' | 'off'

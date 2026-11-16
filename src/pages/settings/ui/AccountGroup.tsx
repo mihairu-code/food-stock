@@ -1,12 +1,9 @@
-import { useMembers } from '@/entities/household/api/householdApi'
-import { savedName } from '@/entities/invite/lib/inviteToken'
-import { useGoogleAvailable, useGoogleSignIn } from '@/features/account/api/accountActions'
+import { useMembers } from '@/entities/member'
+import { useGoogleAvailable, useGoogleSignIn } from '@/features/account'
 import { useT, type MessageKey } from '@/shared/i18n'
-import { useSession } from '@/shared/session/session'
-import { SettingRow } from '@/shared/ui/SettingRow'
-import { SettingsGroup } from '@/shared/ui/SettingsGroup'
-import { Tip } from '@/shared/ui/Tip'
-import { openSheet } from '@/shared/ui/sheet/sheetStore'
+import { savedName } from '@/shared/lib/userName'
+import { useSession } from '@/shared/session'
+import { Hint, openSheet, SettingRow, SettingsGroup } from '@/shared/ui'
 
 /** Аккаунт: вход через Google, своё имя и вступление в другой дом по ссылке. */
 export function AccountGroup() {
@@ -45,7 +42,9 @@ export function AccountGroup() {
           onClick={() => openSheet({ type: 'join' })}
         />
       </SettingsGroup>
-      <Tip label={t(user.isAnonymous ? 'settings.anonLabel' : 'settings.accountLabel')}>{t(hint)}</Tip>
+      <Hint label={t(user.isAnonymous ? 'settings.anonLabel' : 'settings.accountLabel')} onlyWhenHintsOn>
+        {t(hint)}
+      </Hint>
     </>
   )
 }

@@ -2,16 +2,14 @@ import { closestCenter, DndContext, DragOverlay } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useMemo } from 'react'
 import { createPortal } from 'react-dom'
-import type { ShoppingEntry } from '@/shared/api/homeDataRules'
+import { shoppingEntryName, type ShoppingEntry } from '@/entities/shopping-list'
 import { useT } from '@/shared/i18n'
-import { dragAnnouncements } from '@/shared/lib/drag/dragAccessibility'
+import { dragAccessibility } from '@/shared/lib/drag/dragAccessibility'
 import { DROP_ANIMATION } from '@/shared/lib/drag/dragMotion'
 import { useShoppingActions } from '../model/useShoppingActions'
 import { useShoppingDrag } from '../model/useShoppingDrag'
 import { ManualRow } from './ManualRow'
 import { ShoppingProductRow } from './ShoppingProductRow'
-
-const nameOf = (entry: ShoppingEntry) => (entry.type === 'product' ? entry.product.name : entry.item.name)
 
 /** Список покупок: продукты дома и ручные позиции одним списком, который можно переставлять. */
 export function ShoppingList({ entries: saved }: { entries: ShoppingEntry[] }) {
@@ -20,13 +18,11 @@ export function ShoppingList({ entries: saved }: { entries: ShoppingEntry[] }) {
   const { entries, active, sensors, handlers } = useShoppingDrag(saved)
   const ids = useMemo(() => entries.map((entry) => entry.id), [entries])
   const accessibility = useMemo(
-    () => ({
-      screenReaderInstructions: { draggable: t('dnd.instructions') },
-      announcements: dragAnnouncements((id) => {
+    () =>
+      dragAccessibility(t, (id) => {
         const entry = saved.find((candidate) => candidate.id === id)
-        return entry ? nameOf(entry) : ''
+        return entry ? shoppingEntryName(entry) : ''
       }),
-    }),
     [t, saved],
   )
 
@@ -51,15 +47,21 @@ export function ShoppingList({ entries: saved }: { entries: ShoppingEntry[] }) {
 
       {createPortal(
         <DragOverlay dropAnimation={DROP_ANIMATION}>
-          {active?.type === 'product' && (
-            <ShoppingProductRow
-              product={active.product}
-              sectionName={active.section?.name ?? ''}
-              actions={actions}
-              ghost
-            />
+          {active && (
+            // Класс list — чтобы копия была той же высоты, что строки списка.
+            <div className="drag-ghost list" inert>
+              {active.type === 'product' ? (
+                <ShoppingProductRow
+                  product={active.product}
+                  sectionName={active.section?.name ?? ''}
+                  actions={actions}
+                  ghost
+                />
+              ) : (
+                <ManualRow item={active.item} actions={actions} ghost />
+              )}
+            </div>
           )}
-          {active?.type === 'manual' && <ManualRow item={active.item} actions={actions} ghost />}
         </DragOverlay>,
         document.body,
       )}

@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef } from 'react'
-import type { Section } from '@/shared/api/types'
+import type { Section } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 
 interface SectionPickerProps {

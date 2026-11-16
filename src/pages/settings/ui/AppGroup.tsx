@@ -2,9 +2,7 @@ import { LANG_NAMES, LANGS, setLangSetting, useLang, useT, type LangSetting } fr
 import { setTheme, useAppearance, type ThemeSetting } from '@/shared/lib/appearance'
 import { setHintsVisible } from '@/shared/lib/hints/hints'
 import { useHintsVisible } from '@/shared/lib/hints/useHintsVisible'
-import { SettingSelect } from '@/shared/ui/SettingSelect'
-import { SettingToggle } from '@/shared/ui/SettingToggle'
-import { SettingsGroup } from '@/shared/ui/SettingsGroup'
+import { SettingSelect, SettingsGroup, SettingToggle } from '@/shared/ui'
 import { AccentPicker } from './AccentPicker'
 
 /** Приложение: язык, оформление и подсказки. Выбор хранится на устройстве, а не в доме. */

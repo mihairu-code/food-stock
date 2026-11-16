@@ -1,6 +1,5 @@
 /** Ссылка-приглашение: https://приложение/#join=<32 hex>. Токен в якоре не уходит на сервер хостинга. */
 
-const NAME_KEY = 'home-stock:name'
 const PENDING_INVITE_KEY = 'home-stock:pending-invite'
 
 export function inviteLink(token: string): string {
@@ -32,13 +31,4 @@ export function clearInviteToken(): void {
   if (window.location.hash.includes('join=')) {
     window.history.replaceState(null, '', window.location.pathname + window.location.search)
   }
-}
-
-/** Имя пользователя помнится на устройстве, чтобы подставлять его в новые дома. */
-export function savedName(): string {
-  return localStorage.getItem(NAME_KEY) ?? ''
-}
-
-export function saveName(name: string): void {
-  localStorage.setItem(NAME_KEY, name)
 }

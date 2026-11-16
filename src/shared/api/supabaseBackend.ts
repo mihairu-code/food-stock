@@ -22,12 +22,12 @@ const REALTIME_TABLES = [
   'shopping_items',
 ] as const
 
-function unwrap<T>(result: { data: T | null; error: PostgrestError | null }): T {
+function dataOrThrow<T>(result: { data: T | null; error: PostgrestError | null }): T {
   if (result.error) throw new Error(result.error.message)
   return result.data as T
 }
 
-function check(result: { error: { message: string } | null }): void {
+function throwIfFailed(result: { error: { message: string } | null }): void {
   if (result.error) throw new Error(result.error.message)
 }
 
@@ -110,7 +110,7 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       return googleEnabled
     },
     signInWithGoogle: async () => {
-      check(
+      throwIfFailed(
         await supabase.auth.signInWithOAuth({
           provider: 'google',
           options: {
@@ -122,23 +122,23 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       )
     },
     signOut: async () => {
-      check(await supabase.auth.signOut({ scope: 'local' }))
+      throwIfFailed(await supabase.auth.signOut({ scope: 'local' }))
     },
 
-    createMergeTicket: async () => unwrap(await supabase.rpc('create_merge_ticket')) as string,
+    createMergeTicket: async () => dataOrThrow(await supabase.rpc('create_merge_ticket')) as string,
     previewMerge: async (ticket) =>
-      unwrap(await supabase.rpc('preview_merge', { p_token: ticket })) as MergePreview,
+      dataOrThrow(await supabase.rpc('preview_merge', { p_token: ticket })) as MergePreview,
     completeMerge: async (ticket, keep) =>
-      unwrap(await supabase.rpc('complete_merge', { p_token: ticket, p_keep: keep })) as string | null,
+      dataOrThrow(await supabase.rpc('complete_merge', { p_token: ticket, p_keep: keep })) as string | null,
     syncProfile: async (device, displayName) => {
-      check(await supabase.rpc('sync_profile', { p_device: device, p_display_name: displayName }))
+      throwIfFailed(await supabase.rpc('sync_profile', { p_device: device, p_display_name: displayName }))
     },
 
     listMemberships: async () => {
       const { data: auth } = await supabase.auth.getSession()
       const userId = auth.session?.user.id
       if (!userId) return []
-      const rows = unwrap(
+      const rows = dataOrThrow(
         await supabase
           .from('household_members')
           .select('role, created_at, household:households(id, name, icon, created_at)')
@@ -150,15 +150,15 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       )
     },
     createHousehold: async (name, displayName) =>
-      unwrap(
+      dataOrThrow(
         await supabase.rpc('create_household', { p_name: name, p_display_name: displayName }),
       ) as string,
     updateHousehold: async (householdId, patch) => {
-      check(await supabase.from('households').update(patch).eq('id', householdId))
+      throwIfFailed(await supabase.from('households').update(patch).eq('id', householdId))
     },
 
     listMembers: async (householdId) =>
-      unwrap(
+      dataOrThrow(
         await supabase
           .from('household_members')
           .select('household_id, user_id, role, display_name, device, account_email, avatar_url, created_at')
@@ -166,7 +166,7 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
           .order('created_at'),
       ) as Member[],
     setDisplayName: async (householdId, displayName) => {
-      check(
+      throwIfFailed(
         await supabase
           .from('household_members')
           .update({ display_name: displayName })
@@ -175,7 +175,7 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       )
     },
     removeMember: async (householdId, userId) => {
-      check(
+      throwIfFailed(
         await supabase
           .from('household_members')
           .delete()
@@ -185,7 +185,7 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
     },
 
     listInvites: async (householdId) =>
-      unwrap(
+      dataOrThrow(
         await supabase
           .from('household_invites')
           // Столбец token_hash клиенту недоступен, поэтому столбцы перечислены явно.
@@ -195,30 +195,30 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
           .order('created_at'),
       ) as Invite[],
     createInvite: async (householdId) =>
-      unwrap(await supabase.rpc('create_invite', { p_household_id: householdId })) as string,
+      dataOrThrow(await supabase.rpc('create_invite', { p_household_id: householdId })) as string,
     deleteInvite: async (inviteId) => {
-      check(await supabase.from('household_invites').delete().eq('id', inviteId))
+      throwIfFailed(await supabase.from('household_invites').delete().eq('id', inviteId))
     },
     joinHousehold: async (token, displayName) =>
-      unwrap(
+      dataOrThrow(
         await supabase.rpc('join_household', { p_token: token, p_display_name: displayName }),
       ) as string,
 
     listSections: async (householdId) =>
-      unwrap(
+      dataOrThrow(
         await supabase.from('sections').select('*').eq('household_id', householdId),
       ) as Section[],
     listProducts: async (householdId) =>
-      unwrap(
+      dataOrThrow(
         await supabase.from('products').select('*').eq('household_id', householdId),
       ) as Product[],
     listShoppingItems: async (householdId) =>
-      unwrap(
+      dataOrThrow(
         await supabase.from('shopping_items').select('*').eq('household_id', householdId),
       ) as ShoppingItem[],
 
     createSection: async (householdId, input) =>
-      unwrap(
+      dataOrThrow(
         await supabase
           .from('sections')
           .insert({ household_id: householdId, ...input })
@@ -226,17 +226,17 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
           .single(),
       ) as Section,
     updateSection: async (sectionId, patch) => {
-      check(await supabase.from('sections').update(patch).eq('id', sectionId))
+      throwIfFailed(await supabase.from('sections').update(patch).eq('id', sectionId))
     },
     deleteSection: async (sectionId) => {
-      check(await supabase.from('sections').delete().eq('id', sectionId))
+      throwIfFailed(await supabase.from('sections').delete().eq('id', sectionId))
     },
     reorderSections: async (sectionIds) => {
-      check(await supabase.rpc('reorder_sections', { p_section_ids: sectionIds }))
+      throwIfFailed(await supabase.rpc('reorder_sections', { p_section_ids: sectionIds }))
     },
 
     createProduct: async (householdId, input) =>
-      unwrap(
+      dataOrThrow(
         await supabase
           .from('products')
           .insert({ household_id: householdId, ...input })
@@ -244,7 +244,7 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
           .single(),
       ) as Product,
     setProductState: async (productId, state) => {
-      check(
+      throwIfFailed(
         await supabase
           .from('products')
           .update({ is_available: state.is_available, to_buy: state.to_buy })
@@ -252,16 +252,16 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       )
     },
     deleteProduct: async (productId) => {
-      check(await supabase.from('products').delete().eq('id', productId))
+      throwIfFailed(await supabase.from('products').delete().eq('id', productId))
     },
     reorderProducts: async (sectionId, productIds) => {
-      check(
+      throwIfFailed(
         await supabase.rpc('reorder_products', { p_section_id: sectionId, p_product_ids: productIds }),
       )
     },
 
     createShoppingItem: async (householdId, input) =>
-      unwrap(
+      dataOrThrow(
         await supabase
           .from('shopping_items')
           .insert({ household_id: householdId, ...input })
@@ -269,13 +269,13 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
           .single(),
       ) as ShoppingItem,
     deleteShoppingItem: async (itemId) => {
-      check(await supabase.from('shopping_items').delete().eq('id', itemId))
+      throwIfFailed(await supabase.from('shopping_items').delete().eq('id', itemId))
     },
     reorderShopping: async (ids) => {
-      check(await supabase.rpc('reorder_shopping', { p_ids: ids }))
+      throwIfFailed(await supabase.rpc('reorder_shopping', { p_ids: ids }))
     },
     purchaseShoppingItem: async (itemId, sectionId, makeStaple) => {
-      check(
+      throwIfFailed(
         await supabase.rpc('purchase_shopping_item', {
           p_item_id: itemId,
           p_section_id: sectionId,

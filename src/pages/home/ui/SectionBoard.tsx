@@ -2,9 +2,9 @@ import { DndContext, DragOverlay, MeasuringStrategy } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useMemo } from 'react'
 import { createPortal } from 'react-dom'
-import type { Product, Section } from '@/shared/api/types'
+import type { Product, Section } from '@/shared/api'
 import { useT } from '@/shared/i18n'
-import { dragAnnouncements } from '@/shared/lib/drag/dragAccessibility'
+import { dragAccessibility } from '@/shared/lib/drag/dragAccessibility'
 import { DROP_ANIMATION } from '@/shared/lib/drag/dragMotion'
 import { sectionOf } from '../model/board'
 import { boardCollision } from '../model/boardCollision'
@@ -13,7 +13,6 @@ import { useCollapsedSections } from '../model/useCollapsedSections'
 import { useProductActions } from '../model/useProductActions'
 import { ProductRow } from './ProductRow'
 import { SectionCard } from './SectionCard'
-import { SectionGhost } from './SectionGhost'
 
 /** Высота разделов меняется прямо во время жеста (раздел раздвигается, сворачивается) — их нужно перемерять. */
 const MEASURING = { droppable: { strategy: MeasuringStrategy.Always } }
@@ -28,15 +27,23 @@ export function SectionBoard({ sections, products }: { sections: Section[]; prod
   const sectionById = useMemo(() => new Map(sections.map((section) => [section.id, section])), [sections])
   const productById = useMemo(() => new Map(products.map((product) => [product.id, product])), [products])
   const accessibility = useMemo(
-    () => ({
-      screenReaderInstructions: { draggable: t('dnd.instructions') },
-      announcements: dragAnnouncements((id) => sectionById.get(id)?.name ?? productById.get(id)?.name ?? ''),
-    }),
+    () => dragAccessibility(t, (id) => sectionById.get(id)?.name ?? productById.get(id)?.name ?? ''),
     [t, sectionById, productById],
   )
 
-  const productsOf = (sectionId: string) =>
-    (board.products[sectionId] ?? []).flatMap((id) => productById.get(id) ?? [])
+  // Продукты каждого раздела в порядке доски. Пересчитываются только при изменении доски
+  // или данных: на каждый кадр перетаскивания и на каждый тост их собирать незачем.
+  const productsBySection = useMemo(
+    () =>
+      new Map(
+        board.sections.map((sectionId) => [
+          sectionId,
+          (board.products[sectionId] ?? []).flatMap((id) => productById.get(id) ?? []),
+        ]),
+      ),
+    [board, productById],
+  )
+  const productsOf = (sectionId: string) => productsBySection.get(sectionId) ?? []
 
   const draggedProduct = active?.kind === 'product' ? productById.get(active.id) : undefined
   const draggedSection = active?.kind === 'section' ? sectionById.get(active.id) : undefined
@@ -74,8 +81,21 @@ export function SectionBoard({ sections, products }: { sections: Section[]; prod
       {/* В body, а не внутри экрана: у экрана бывает transform, и «призрак» уехал бы из-под пальца. */}
       {createPortal(
         <DragOverlay dropAnimation={DROP_ANIMATION}>
-          {draggedProduct && <ProductRow product={draggedProduct} actions={actions} ghost />}
-          {draggedSection && <SectionGhost section={draggedSection} count={productsOf(draggedSection.id).length} />}
+          {draggedProduct && (
+            <div className="drag-ghost" inert>
+              <ProductRow product={draggedProduct} actions={actions} ghost />
+            </div>
+          )}
+          {draggedSection && (
+            // Раздел под пальцем: только шапка.
+            <div className="card drag-ghost section-ghost" inert>
+              <span className="section-title">
+                {draggedSection.icon && <span aria-hidden="true">{draggedSection.icon}</span>}
+                <span className="section-name">{draggedSection.name}</span>
+              </span>
+              <span className="count">{productsOf(draggedSection.id).length}</span>
+            </div>
+          )}
         </DragOverlay>,
         document.body,
       )}

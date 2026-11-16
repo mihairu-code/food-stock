@@ -1,5 +1,6 @@
-import type { Member, Section, ShoppingItem } from '@/shared/api/types'
+import type { Section, ShoppingItem } from '@/shared/api'
 import { createStore, useStore } from '@/shared/lib/store'
+import type { ConfirmSheetProps } from './ConfirmSheet'
 
 /** Какая шторка открыта и с какими данными. Одновременно открыта только одна. */
 export type SheetRequest =
@@ -12,15 +13,14 @@ export type SheetRequest =
   | { type: 'join' }
   | { type: 'my-name'; current: string }
   | { type: 'edit-home' }
-  | { type: 'remove-member'; member: Member }
-  | { type: 'sign-out' }
-  | { type: 'reset' }
+  /** Подтверждение необратимого действия: что именно сделать, решает тот, кто открыл шторку. */
+  | ({ type: 'confirm' } & ConfirmSheetProps)
 
-const active = createStore<SheetRequest | null>(null)
+const activeSheet = createStore<SheetRequest | null>(null)
 
 /** Открывает шторку. Вызывается из любого места: экран не хранит её состояние и не рисует её сам. */
-export const openSheet = (request: SheetRequest): void => active.set(request)
+export const openSheet = (request: SheetRequest): void => activeSheet.set(request)
 
-export const closeSheet = (): void => active.set(null)
+export const closeSheet = (): void => activeSheet.set(null)
 
-export const useActiveSheet = () => useStore(active)
+export const useActiveSheet = () => useStore(activeSheet)

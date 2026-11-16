@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { format, LANGS, matchLang, type Lang, type MessageKey } from '.'
 import { en } from './en'
+import { format, LANGS, matchLang, type Lang, type MessageKey } from './index'
 import { ja } from './ja'
 import { ru, type Messages, type Plural } from './ru'
 import { vi } from './vi'

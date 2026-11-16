@@ -29,7 +29,7 @@ interface LocalState extends HomeData {
 
 type KeyValueStore = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
 
-function seed(): LocalState {
+function createDemoState(): LocalState {
   const now = Date.now()
   const at = (offset: number) => new Date(now + offset).toISOString()
   const hid = crypto.randomUUID()
@@ -96,9 +96,10 @@ function seed(): LocalState {
 /**
  * Демо-режим без сервера: данные лежат в localStorage этого браузера.
  * Вкладки одного браузера синхронизируются через событие `storage`.
+ * Хранилище по умолчанию — из globalThis: модуль импортируют и тесты в Node, где нет window.
  */
-export function createLocalBackend(store: KeyValueStore = window.localStorage): Backend {
-  function read(): LocalState {
+export function createLocalBackend(store: KeyValueStore = globalThis.localStorage): Backend {
+  function readState(): LocalState {
     const raw = store.getItem(STORAGE_KEY)
     if (raw) {
       try {
@@ -113,17 +114,17 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
         // повреждённые данные — начинаем с демо-набора
       }
     }
-    const initial = seed()
+    const initial = createDemoState()
     store.setItem(STORAGE_KEY, JSON.stringify(initial))
     return initial
   }
 
-  function write(next: LocalState): void {
+  function writeState(next: LocalState): void {
     store.setItem(STORAGE_KEY, JSON.stringify(next))
   }
 
-  function update(change: (state: LocalState) => LocalState): void {
-    write(change(read()))
+  function updateState(change: (state: LocalState) => LocalState): void {
+    writeState(change(readState()))
   }
 
   const now = () => new Date().toISOString()
@@ -142,18 +143,19 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
     previewMerge: notSupported,
     completeMerge: notSupported,
     syncProfile: async () => {},
+    // Демо живёт только в этом браузере — удалять с сервера нечего.
 
-    listMemberships: async () => [{ household: read().household, role: 'owner' }],
+    listMemberships: async () => [{ household: readState().household, role: 'owner' }],
     createHousehold: async (name) => {
-      update((s) => ({ ...s, household: { ...s.household, name } }))
-      return read().household.id
+      updateState((s) => ({ ...s, household: { ...s.household, name } }))
+      return readState().household.id
     },
     updateHousehold: async (_householdId, patch) => {
-      update((s) => ({ ...s, household: { ...s.household, ...patch } }))
+      updateState((s) => ({ ...s, household: { ...s.household, ...patch } }))
     },
 
     listMembers: async () => {
-      const { household } = read()
+      const { household } = readState()
       return [
         {
           household_id: household.id,
@@ -174,9 +176,9 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
     deleteInvite: notSupported,
     joinHousehold: notSupported,
 
-    listSections: async () => read().sections,
-    listProducts: async () => read().products,
-    listShoppingItems: async () => read().shoppingItems,
+    listSections: async () => readState().sections,
+    listProducts: async () => readState().products,
+    listShoppingItems: async () => readState().shoppingItems,
 
     createSection: async (householdId, input) => {
       const section: Section = {
@@ -184,24 +186,24 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
         created_at: now(),
         ...input,
       }
-      update((s) => ({ ...s, sections: [...s.sections, section] }))
+      updateState((s) => ({ ...s, sections: [...s.sections, section] }))
       return section
     },
     updateSection: async (sectionId, patch) => {
-      update((s) => ({
+      updateState((s) => ({
         ...s,
         sections: s.sections.map((x) => (x.id === sectionId ? { ...x, ...patch } : x)),
       }))
     },
     deleteSection: async (sectionId) => {
-      update((s) => ({ ...s, ...removeSection(s, sectionId) }))
+      updateState((s) => ({ ...s, ...removeSection(s, sectionId) }))
     },
     reorderSections: async (sectionIds) => {
-      update((s) => ({ ...s, sections: placeSections(s.sections, sectionIds) }))
+      updateState((s) => ({ ...s, sections: placeSections(s.sections, sectionIds) }))
     },
 
     createProduct: async (householdId, input) => {
-      const state = read()
+      const state = readState()
       if (!state.sections.some((s) => s.id === input.section_id)) {
         throw new Error('Раздел не найден')
       }
@@ -214,19 +216,19 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
         created_by: LOCAL_USER.id,
         ...input,
       }
-      write({ ...state, products: [...state.products, product] })
+      writeState({ ...state, products: [...state.products, product] })
       return product
     },
     setProductState: async (productId, state) => {
-      update((s) => ({ ...s, ...setProductState(s, productId, state, now()) }))
+      updateState((s) => ({ ...s, ...setProductState(s, productId, state, now()) }))
     },
     deleteProduct: async (productId) => {
-      update((s) => ({ ...s, ...removeProduct(s, productId) }))
+      updateState((s) => ({ ...s, ...removeProduct(s, productId) }))
     },
     reorderProducts: async (sectionId, productIds) => {
-      const state = read()
+      const state = readState()
       if (!state.sections.some((s) => s.id === sectionId)) throw new Error('Раздел не найден')
-      write({ ...state, products: placeProducts(state.products, sectionId, productIds) })
+      writeState({ ...state, products: placeProducts(state.products, sectionId, productIds) })
     },
 
     createShoppingItem: async (householdId, input) => {
@@ -236,17 +238,17 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
         created_by: LOCAL_USER.id,
         ...input,
       }
-      update((s) => ({ ...s, shoppingItems: [...s.shoppingItems, item] }))
+      updateState((s) => ({ ...s, shoppingItems: [...s.shoppingItems, item] }))
       return item
     },
     deleteShoppingItem: async (itemId) => {
-      update((s) => ({ ...s, shoppingItems: s.shoppingItems.filter((i) => i.id !== itemId) }))
+      updateState((s) => ({ ...s, shoppingItems: s.shoppingItems.filter((i) => i.id !== itemId) }))
     },
     reorderShopping: async (ids) => {
-      update((s) => ({ ...s, ...placeShopping(s, ids) }))
+      updateState((s) => ({ ...s, ...placeShopping(s, ids) }))
     },
     purchaseShoppingItem: async (itemId, sectionId, makeStaple) => {
-      update((s) => ({
+      updateState((s) => ({
         ...s,
         ...purchaseManualItem(s, itemId, sectionId, makeStaple, {
           newId: crypto.randomUUID(),
@@ -267,7 +269,7 @@ export function createLocalBackend(store: KeyValueStore = window.localStorage): 
 
     resetLocalData: async () => {
       store.removeItem(STORAGE_KEY)
-      read()
+      readState()
     },
   }
 }

@@ -1,24 +1,21 @@
-import type { NewShoppingItem } from '@/shared/api/backend'
-import { backend } from '@/shared/api/currentBackend'
-import { placeShopping } from '@/shared/api/homeDataRules'
-import type { ShoppingItem } from '@/shared/api/types'
-import { useHomeMutation } from '@/shared/api/useHomeMutation'
-import { useSession } from '@/shared/session/session'
-
-/** Продукт, только что перенесённый из покупок, до ответа сервера живёт под временным идентификатором. */
-const PENDING_PREFIX = 'pending:'
-
-export const isPendingProduct = (productId: string): boolean => productId.startsWith(PENDING_PREFIX)
+import {
+  backend,
+  pendingProductId,
+  useHomeMutation,
+  type NewShoppingItem,
+  type ShoppingItem,
+} from '@/shared/api'
+import { useSession } from '@/shared/session'
 
 export function useCreateShoppingItem() {
   const { household, user } = useSession()
-  const hid = household.id
+  const householdId = household.id
   return useHomeMutation(
-    (input: NewShoppingItem) => backend.createShoppingItem(hid, input),
+    (input: NewShoppingItem) => backend.createShoppingItem(householdId, input),
     (cache, input) =>
       cache.shoppingItems((list) => [
         ...list,
-        { ...input, household_id: hid, created_at: new Date().toISOString(), created_by: user.id },
+        { ...input, household_id: householdId, created_at: new Date().toISOString(), created_by: user.id },
       ]),
   )
 }
@@ -26,23 +23,23 @@ export function useCreateShoppingItem() {
 export function useDeleteShoppingItem() {
   return useHomeMutation(
     (itemId: string) => backend.deleteShoppingItem(itemId),
-    (cache, itemId) => cache.shoppingItems((list) => list.filter((i) => i.id !== itemId)),
+    (cache, itemId) => cache.shoppingItems((list) => list.filter((item) => item.id !== itemId)),
   )
 }
 
+/** Ручная позиция куплена и становится продуктом раздела — атомарно, одним вызовом сервера. */
 export function usePurchaseShoppingItem() {
   const userId = useSession().user.id
   return useHomeMutation(
-    (v: { item: ShoppingItem; sectionId: string; makeStaple: boolean }) =>
-      backend.purchaseShoppingItem(v.item.id, v.sectionId, v.makeStaple),
+    (purchase: { item: ShoppingItem; sectionId: string; makeStaple: boolean }) =>
+      backend.purchaseShoppingItem(purchase.item.id, purchase.sectionId, purchase.makeStaple),
     (cache, { item, sectionId, makeStaple }) => {
       const now = new Date().toISOString()
-      cache.shoppingItems((list) => list.filter((i) => i.id !== item.id))
-      // Настоящий идентификатор продукта выдаст сервер.
+      cache.shoppingItems((list) => list.filter((candidate) => candidate.id !== item.id))
       cache.products((list) => [
         ...list,
         {
-          id: `${PENDING_PREFIX}${item.id}`,
+          id: pendingProductId(item.id),
           household_id: item.household_id,
           section_id: sectionId,
           name: item.name,
@@ -55,18 +52,6 @@ export function usePurchaseShoppingItem() {
           created_by: userId,
         },
       ])
-    },
-  )
-}
-
-/** Список покупок в новом порядке после перетаскивания: идентификаторы строк сверху вниз. */
-export function useReorderShopping() {
-  return useHomeMutation(
-    (ids: string[]) => backend.reorderShopping(ids),
-    (cache, ids) => {
-      // Места раскладываются по двум спискам: продукты дома и ручные позиции.
-      cache.products((products) => placeShopping({ products, shoppingItems: [] }, ids).products)
-      cache.shoppingItems((shoppingItems) => placeShopping({ products: [], shoppingItems }, ids).shoppingItems)
     },
   )
 }

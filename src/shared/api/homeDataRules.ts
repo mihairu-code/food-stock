@@ -1,84 +1,19 @@
 import type { Product, ProductKind, Section, ShoppingItem } from './types'
 
+/*
+ * Правила данных дома, которые повторяют поведение базы: их выполняет локальный
+ * демо-режим вместо Postgres, а оптимистичные правки — до ответа сервера. В Supabase
+ * то же самое делают внешние ключи с каскадом, триггеры и RPC.
+ */
+
 export interface HomeData {
   sections: Section[]
   products: Product[]
   shoppingItems: ShoppingItem[]
 }
 
-interface ShoppingEntryBase {
-  /** Идентификатор продукта или ручной позиции. */
-  id: string
-  key: string
-  addedAt: string
-  /** Место, если список покупок переставляли вручную. */
-  place: number | null
-}
-
-export type ShoppingEntry =
-  | (ShoppingEntryBase & { type: 'product'; product: Product; section: Section | null })
-  | (ShoppingEntryBase & { type: 'manual'; item: ShoppingItem })
-
 /** Две независимые отметки продукта: есть ли он дома и лежит ли в покупках. */
 export type ProductState = Pick<Product, 'is_available' | 'to_buy'>
-
-const byTime = (a: string, b: string) => Date.parse(a) - Date.parse(b)
-
-export function sortSections(sections: Section[]): Section[] {
-  return [...sections].sort(
-    (a, b) => a.sort_order - b.sort_order || byTime(a.created_at, b.created_at),
-  )
-}
-
-/** Продукты, которые переставляли, идут по своим местам; остальные — после них, по времени добавления. */
-const byPlace = (a: Product, b: Product) =>
-  (a.sort_order ?? Infinity) - (b.sort_order ?? Infinity) || byTime(a.created_at, b.created_at)
-
-/** Продукты по разделам за один проход, в порядке показа. */
-export function groupBySection(products: Product[]): Map<string, Product[]> {
-  const groups = new Map<string, Product[]>()
-  const ordered = [...products].sort(byPlace)
-  for (const product of ordered) {
-    const group = groups.get(product.section_id)
-    if (group) group.push(product)
-    else groups.set(product.section_id, [product])
-  }
-  return groups
-}
-
-/**
- * Список покупок — это продукты дома с отметкой `to_buy` плюс позиции, добавленные
- * вручную. Продукт не копируется в список, поэтому не может попасть в него дважды,
- * а удаление продукта или раздела убирает его и из покупок.
- *
- * Порядок: то, что переставляли вручную, — по своим местам; остальное — следом,
- * в порядке добавления в список.
- */
-export function buildShoppingList(data: HomeData): ShoppingEntry[] {
-  const sectionById = new Map(data.sections.map((s) => [s.id, s]))
-  const fromHome: ShoppingEntry[] = data.products
-    .filter((p) => p.to_buy)
-    .map((product) => ({
-      type: 'product',
-      id: product.id,
-      key: `product:${product.id}`,
-      addedAt: product.updated_at,
-      place: product.shopping_order ?? null,
-      product,
-      section: sectionById.get(product.section_id) ?? null,
-    }))
-  const manual: ShoppingEntry[] = data.shoppingItems.map((item) => ({
-    type: 'manual',
-    id: item.id,
-    key: `item:${item.id}`,
-    addedAt: item.created_at,
-    place: item.sort_order ?? null,
-    item,
-  }))
-  return [...fromHome, ...manual].sort(
-    (a, b) => (a.place ?? Infinity) - (b.place ?? Infinity) || byTime(a.addedAt, b.addedAt),
-  )
-}
 
 /**
  * Список покупок после перетаскивания: идентификаторы продуктов и ручных позиций
@@ -114,27 +49,6 @@ export function withState(product: Product, state: ProductState, now: string): P
     updated_at: now,
   }
 }
-
-/**
- * Наличие поменяли вручную. Закончившийся постоянный продукт сам попадает в покупки;
- * продукт, который снова дома, из покупок уходит. То же правило для прежних версий
- * приложения держит триггер products_sync_to_buy.
- */
-export function withAvailability(product: Product, available: boolean): ProductState {
-  if (available) return { is_available: true, to_buy: false }
-  return { is_available: false, to_buy: product.kind === 'staple' ? true : product.to_buy }
-}
-
-/** Продукт положили в покупки или убрали из них; наличие при этом не меняется. */
-export function withToBuy(product: Product, toBuy: boolean): ProductState {
-  return { is_available: product.is_available, to_buy: toBuy }
-}
-
-/** Продукт из списка покупок куплен: он дома, покупать больше не нужно. */
-export const PURCHASED: ProductState = { is_available: true, to_buy: false }
-
-/* Чистые переходы состояния. Их использует локальный режим; в Supabase то же
-   самое делают внешние ключи с каскадом и RPC purchase_shopping_item. */
 
 export function setProductState(
   data: HomeData,
