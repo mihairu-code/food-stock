@@ -1,0 +1,45 @@
+import { useMemo } from 'react'
+import { useDeleteProduct, useSetProductState, withAvailability, withToBuy } from '@/entities/product'
+import type { Product } from '@/shared/api'
+import { notify } from '@/shared/lib/toast'
+
+export interface ProductActions {
+  /** Нажатие на иконку: продукт закончился или снова дома. */
+  toggleStock: (product: Product) => void
+  /** Плюс и минус: положить в покупки или убрать из них, наличие не трогая. */
+  toggleList: (product: Product) => void
+  /** Удаление продукта: без подтверждения, оно и так видно по тосту. */
+  deleteProduct: (product: Product) => void
+}
+
+/**
+ * Действия над продуктом на главном экране. Объект не меняется между рендерами,
+ * поэтому memo-строки не перерисовываются, когда меняется чужой продукт.
+ */
+export function useProductActions(): ProductActions {
+  const { mutate: setState } = useSetProductState()
+  const { mutate: deleteProductById } = useDeleteProduct()
+
+  return useMemo(
+    () => ({
+      toggleStock(product) {
+        const available = !product.is_available
+        const state = withAvailability(product, available)
+        setState({ id: product.id, state })
+        notify(available ? 'toast.backHome' : state.to_buy ? 'toast.outToList' : 'toast.out', {
+          name: product.name,
+        })
+      },
+      toggleList(product) {
+        const toBuy = !product.to_buy
+        setState({ id: product.id, state: withToBuy(product, toBuy) })
+        notify(toBuy ? 'toast.addedToList' : 'toast.removedFromList', { name: product.name })
+      },
+      deleteProduct(product) {
+        deleteProductById(product.id)
+        notify('toast.deleted', { name: product.name })
+      },
+    }),
+    [setState, deleteProductById],
+  )
+}

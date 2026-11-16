@@ -1,0 +1,57 @@
+import {
+  backend,
+  pendingProductId,
+  useHomeMutation,
+  type NewShoppingItem,
+  type ShoppingItem,
+} from '@/shared/api'
+import { useSession } from '@/shared/session'
+
+export function useCreateShoppingItem() {
+  const { household, user } = useSession()
+  const householdId = household.id
+  return useHomeMutation(
+    (input: NewShoppingItem) => backend.createShoppingItem(householdId, input),
+    (cache, input) =>
+      cache.shoppingItems((list) => [
+        ...list,
+        { ...input, household_id: householdId, created_at: new Date().toISOString(), created_by: user.id },
+      ]),
+  )
+}
+
+export function useDeleteShoppingItem() {
+  return useHomeMutation(
+    (itemId: string) => backend.deleteShoppingItem(itemId),
+    (cache, itemId) => cache.shoppingItems((list) => list.filter((item) => item.id !== itemId)),
+  )
+}
+
+/** Ручная позиция куплена и становится продуктом раздела — атомарно, одним вызовом сервера. */
+export function usePurchaseShoppingItem() {
+  const userId = useSession().user.id
+  return useHomeMutation(
+    (purchase: { item: ShoppingItem; sectionId: string; makeStaple: boolean }) =>
+      backend.purchaseShoppingItem(purchase.item.id, purchase.sectionId, purchase.makeStaple),
+    (cache, { item, sectionId, makeStaple }) => {
+      const now = new Date().toISOString()
+      cache.shoppingItems((list) => list.filter((candidate) => candidate.id !== item.id))
+      cache.products((list) => [
+        ...list,
+        {
+          id: pendingProductId(item.id),
+          household_id: item.household_id,
+          section_id: sectionId,
+          name: item.name,
+          icon: item.icon,
+          kind: makeStaple ? 'staple' : 'one_off',
+          is_available: true,
+          to_buy: false,
+          created_at: now,
+          updated_at: now,
+          created_by: userId,
+        },
+      ])
+    },
+  )
+}
