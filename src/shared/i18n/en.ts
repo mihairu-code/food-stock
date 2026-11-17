@@ -44,7 +44,7 @@ export const en: Messages = {
   'home.addProductTo': 'Add an item to “{name}”',
   'home.hintLabel': 'How to mark',
   'home.hint':
-    'The dot on the icon shows whether the item is at home: tap the icon when it runs out. Plus puts the item on the shopping list, minus takes it off. To reorder an item or a section, press and hold it, then drag.',
+    'The dot on the icon shows whether the item is at home: tap the icon when it runs out. Plus puts the item on the shopping list, minus takes it off. Swipe a row left for Edit and Delete; pull it past the middle to delete right away. To reorder an item or a section, press and hold it, then drag.',
   'home.defaultName': 'Our home',
   'home.preparing': 'Setting up your home…',
 
@@ -103,7 +103,7 @@ export const en: Messages = {
   'shopping.stillHome': 'still at home',
   'shopping.hintLabel': 'Smart list',
   'shopping.hint':
-    'An item you bought is marked as at home again and stays in its section. Swipe a row left to remove it without buying.',
+    'An item you bought is marked as at home again and stays in its section. Swipe a row left to edit it or remove it without buying; pull it past the middle to remove it right away.',
   'shopping.addTitle': 'Add to the shopping list',
   'shopping.editTitle': 'Edit shopping item',
   'shopping.duplicate': 'This is already on the shopping list',
@@ -124,6 +124,7 @@ export const en: Messages = {
   'toast.addedToList': '“{name}” is on the shopping list',
   'toast.removedFromList': '“{name}” removed from the shopping list',
   'toast.deleted': 'Deleted: “{name}”',
+  'toast.undo': 'Undo',
   'toast.movedTo': '“{name}” is now in “{section}”',
 
   'dnd.instructions':

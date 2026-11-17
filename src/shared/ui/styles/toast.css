@@ -22,3 +22,25 @@
   font-size: var(--text-md);
 }
 
+/* Тост с кнопкой: текст слева, кнопка справа, и его можно нажать. */
+.toast[data-action='true'] {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-block: var(--space-1-5);
+  padding-right: var(--space-1-5);
+  text-align: left;
+  pointer-events: auto;
+}
+
+.toast-action {
+  flex: 0 0 auto;
+  min-height: 2.25rem;
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--paper) 16%, transparent);
+  color: var(--paper);
+  font-size: var(--text-md);
+  font-weight: 600;
+}

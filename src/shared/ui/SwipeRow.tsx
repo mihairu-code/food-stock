@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react'
 import { isDragActive } from '@/shared/lib/drag/dragState'
+import { haptic } from '@/shared/lib/haptics'
 import { openSwipeRow } from './openSwipeRow'
 
 export interface SwipeAction {
   /** Название действия: кнопка показывает только иконку, название читает скринридер. */
   label: string
   icon: ReactNode
-  /** danger — удаление: красная кнопка. Перед вызовом строка уезжает и схлопывается. */
+  /**
+   * danger — удаление: красная кнопка, которая растягивается, когда строку тянут дальше
+   * кнопок; длинный свайп вызывает её сам. Перед вызовом строка уезжает и схлопывается.
+   */
   tone: 'accent' | 'danger'
   onSelect: () => void
 }
@@ -25,7 +29,16 @@ const LOCK_DISTANCE = 10
 const HOLD_MS = 200
 /** Отпустили дальше этой доли ширины кнопок — они остаются открытыми. */
 const OPEN_RATIO = 0.4
-/** Тянуть дальше кнопок можно, но сверх их ширины — не больше чем на столько. */
+/**
+ * Длинный свайп: строку утянули дальше этой доли её ширины — отпущенная, она удаляется.
+ * Порог не ближе FULL_SWIPE_MARGIN за открытыми кнопками, чтобы на узком экране
+ * удаление не срабатывало там, где человек хотел только открыть кнопки.
+ */
+const FULL_SWIPE_RATIO = 0.55
+const FULL_SWIPE_MARGIN = 48
+/** Вернуться от порога удаления можно, отведя палец на столько назад: без дрожания на границе. */
+const DISARM_GAP = 24
+/** Без кнопки удаления тянуть дальше кнопок можно, но сверх их ширины — не больше чем на столько. */
 const RUBBER_LIMIT = 96
 /** Быстрый смах (пикселей в миллисекунду) и минимум его пути. */
 const FLING_SPEED = 0.45
@@ -33,10 +46,17 @@ const FLING_DISTANCE = 36
 /** Строка уезжает влево, затем её место схлопывается. Те же длительности — в стилях .swipe. */
 const SLIDE_MS = 170
 const COLLAPSE_MS = 170
+/**
+ * Возвращаясь на место, строка чуть проскакивает вправо и встаёт обратно. Отскок
+ * пропорционален пути: закрытие открытых кнопок даёт несколько пикселей, короткий
+ * неудавшийся свайп — почти ничего.
+ */
+const BOUNCE_MS = 380
+const BOUNCE_EASING = 'cubic-bezier(0.3, 1.45, 0.5, 1)'
 /** Если после удаления строка всё ещё на экране (запрос не удался), возвращаем ей вид. */
 const RESTORE_MS = 900
 
-type Motion = 'follow' | 'snap'
+type Motion = 'follow' | 'snap' | 'bounce'
 
 interface Gesture {
   x: number
@@ -46,6 +66,10 @@ interface Gesture {
   /** Сдвиг строки в начале жеста: 0 или ширина открытых кнопок. */
   startOffset: number
   offset: number
+  /** Ширина строки — до неё можно утянуть строку при длинном свайпе. */
+  rowWidth: number
+  /** Строка дальше порога удаления: отпущенная, она удалится. */
+  armed: boolean
   lastX: number
   lastAt: number
   speed: number
@@ -56,7 +80,8 @@ const resist = (over: number) => over / (1 + over / RUBBER_LIMIT)
 
 /**
  * Строка, у которой свайпом влево открываются кнопки действий (изменить, удалить).
- * Кнопки встают на место, куда сдвинулась строка; дальше строка поддаётся всё туже.
+ * Кнопки встают на место, куда сдвинулась строка. Если тянуть дальше, растягивается
+ * кнопка удаления, а за порогом она занимает всю полосу: отпущенная строка удаляется.
  * Жест — не единственный способ: вызывающий код даёт те же действия кнопками для мыши,
  * клавиатуры и скринридера.
  *
@@ -70,12 +95,13 @@ export function SwipeRow({ actions, disabled = false, children }: SwipeRowProps)
   const [revealed, setRevealed] = useState(false)
   const gesture = useRef<Gesture | null>(null)
   const openOffset = useRef(0)
-  /** Ширина открытых кнопок; меряется в начале жеста. */
+  /** Ширина открытых кнопок; меряется в начале жеста, пока кнопка удаления ещё не растянута. */
   const openWidth = useRef(0)
   const suppressClick = useRef(false)
   const timers = useRef<number[]>([])
   // Постоянный маркер этой строки — по нему узнаём, она ли сейчас открыта.
   const [owner] = useState(() => ({}))
+  const deleteAction = actions.find((action) => action.tone === 'danger')
 
   useEffect(() => {
     const pending = timers.current
@@ -102,11 +128,21 @@ export function SwipeRow({ actions, disabled = false, children }: SwipeRowProps)
     const row = content.current
     const buttons = tray.current
     if (!row || !buttons) return
-    // Пустая строка — переход из стилей.
-    row.style.transition = motion === 'follow' ? 'none' : ''
-    buttons.style.transition = motion === 'follow' ? 'none' : ''
+    // Пустая строка — переход из стилей; отскок у строки и кнопок один, иначе между ними мелькал бы зазор.
+    row.style.transition =
+      motion === 'follow' ? 'none' : motion === 'bounce' ? `transform ${BOUNCE_MS}ms ${BOUNCE_EASING}` : ''
+    buttons.style.transition =
+      motion === 'follow' ? 'none' : motion === 'bounce' ? `width ${BOUNCE_MS}ms ${BOUNCE_EASING}` : ''
     row.style.transform = offset ? `translateX(${-offset}px)` : ''
     buttons.style.width = `${offset}px`
+  }
+
+  /** За порогом удаления кнопка удаления занимает всю полосу, остальные уходят. */
+  function setArmed(armed: boolean) {
+    const element = root.current
+    if (!element) return
+    if (armed) element.dataset.armed = 'true'
+    else delete element.dataset.armed
   }
 
   /** Ширина кнопок в открытом состоянии — по их ширине из стилей, с полями и промежутками. */
@@ -130,10 +166,11 @@ export function SwipeRow({ actions, disabled = false, children }: SwipeRowProps)
   function snapClosed() {
     openSwipeRow.release(owner)
     openOffset.current = 0
-    moveRow(0, 'snap')
+    setArmed(false)
+    moveRow(0, 'bounce')
     scheduleTimer(() => {
       if (openOffset.current === 0) setRevealed(false)
-    }, SLIDE_MS)
+    }, BOUNCE_MS)
   }
 
   /** Возвращает строке обычный вид — если она пережила удаление. */
@@ -144,6 +181,7 @@ export function SwipeRow({ actions, disabled = false, children }: SwipeRowProps)
     element.style.height = ''
     element.style.opacity = ''
     openOffset.current = 0
+    setArmed(false)
     moveRow(0, 'follow')
     setRevealed(false)
   }
@@ -157,6 +195,7 @@ export function SwipeRow({ actions, disabled = false, children }: SwipeRowProps)
       scheduleTimer(restoreAfterFailedDelete, RESTORE_MS)
       return
     }
+    setArmed(true)
     moveRow(width, 'snap')
     scheduleTimer(() => {
       const element = root.current
@@ -189,6 +228,8 @@ export function SwipeRow({ actions, disabled = false, children }: SwipeRowProps)
       locked: false,
       startOffset: openOffset.current,
       offset: openOffset.current,
+      rowWidth: 0,
+      armed: false,
       lastX: event.clientX,
       lastAt: event.timeStamp,
       speed: 0,
@@ -217,6 +258,7 @@ export function SwipeRow({ actions, disabled = false, children }: SwipeRowProps)
         return
       }
       start.locked = true
+      start.rowWidth = root.current?.offsetWidth ?? 0
       openWidth.current = measureButtons()
       suppressClick.current = true
       try {
@@ -236,7 +278,19 @@ export function SwipeRow({ actions, disabled = false, children }: SwipeRowProps)
     }
     const pulled = Math.max(0, start.startOffset - dx)
     const limit = openWidth.current
-    start.offset = pulled > limit ? limit + resist(pulled - limit) : pulled
+    if (deleteAction) {
+      // Строка идёт за пальцем до самого края: дальше кнопок растягивается удаление.
+      start.offset = Math.min(pulled, start.rowWidth)
+      const fullSwipeAt = Math.max(start.rowWidth * FULL_SWIPE_RATIO, limit + FULL_SWIPE_MARGIN)
+      const armed = start.offset > (start.armed ? fullSwipeAt - DISARM_GAP : fullSwipeAt)
+      if (armed !== start.armed) {
+        start.armed = armed
+        setArmed(armed)
+        if (armed) haptic('arm')
+      }
+    } else {
+      start.offset = pulled > limit ? limit + resist(pulled - limit) : pulled
+    }
     moveRow(start.offset, 'follow')
   }
 
@@ -244,6 +298,8 @@ export function SwipeRow({ actions, disabled = false, children }: SwipeRowProps)
     const start = gesture.current
     gesture.current = null
     if (!start?.locked) return
+    if (!cancelled && start.armed && deleteAction) return slideAwayAndDelete(deleteAction.onSelect)
+    setArmed(false)
     const flungLeft = start.speed < -FLING_SPEED && start.offset - start.startOffset > FLING_DISTANCE
     const flungRight = start.speed > FLING_SPEED
     const open = !cancelled && !flungRight && (flungLeft || start.offset > openWidth.current * OPEN_RATIO)

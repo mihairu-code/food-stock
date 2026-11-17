@@ -22,6 +22,7 @@ export {
 } from './homeDataRules'
 export { invitesQuery, membersQuery, membershipsQuery, prefetchHome } from './homeQueries'
 export { isPendingProduct, pendingProductId } from './pendingProduct'
+export { removeWithUndo, type RemovalKind } from './pendingRemovals'
 export { queryClient } from './queryClient'
 export { qk } from './queryKeys'
 export { dropSnapshot, openSnapshot } from './snapshot'

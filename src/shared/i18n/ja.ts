@@ -44,7 +44,7 @@ export const ja: Messages = {
   'home.addProductTo': '「{name}」に追加',
   'home.hintLabel': '使い方',
   'home.hint':
-    'アイコンの点は、家にあるかどうかを表します。なくなったらアイコンをタップしてください。＋で買い物リストに入れ、−で外します。並べ替えるには、品物や置き場所を長押ししてドラッグします。',
+    'アイコンの点は、家にあるかどうかを表します。なくなったらアイコンをタップしてください。＋で買い物リストに入れ、−で外します。行を左にスワイプすると「編集」と「削除」が出ます。真ん中まで引くとすぐに削除されます。並べ替えるには、品物や置き場所を長押ししてドラッグします。',
   'home.defaultName': 'わが家',
   'home.preparing': '準備しています…',
 
@@ -97,7 +97,7 @@ export const ja: Messages = {
   'shopping.stillHome': 'まだ家にあります',
   'shopping.hintLabel': 'スマートリスト',
   'shopping.hint':
-    '購入したアイテムは「在庫あり」に戻り、元の置き場所に残ります。買わずに外すときは、行を左にスワイプしてください。',
+    '購入したアイテムは「在庫あり」に戻り、元の置き場所に残ります。行を左にスワイプすると、編集したり、買わずに外したりできます。真ん中まで引くとすぐに外れます。',
   'shopping.addTitle': '買い物リストに追加',
   'shopping.editTitle': '買い物アイテムを編集',
   'shopping.duplicate': 'これはすでに買い物リストにあります',
@@ -118,6 +118,7 @@ export const ja: Messages = {
   'toast.addedToList': '「{name}」を買い物リストに追加しました',
   'toast.removedFromList': '「{name}」を買い物リストから外しました',
   'toast.deleted': '「{name}」を削除しました',
+  'toast.undo': '元に戻す',
   'toast.movedTo': '「{name}」を「{section}」に移動しました',
 
   'dnd.instructions':

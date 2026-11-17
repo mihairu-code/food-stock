@@ -44,7 +44,7 @@ export const vi: Messages = {
   'home.addProductTo': 'Thêm món vào “{name}”',
   'home.hintLabel': 'Cách đánh dấu',
   'home.hint':
-    'Chấm trên biểu tượng cho biết món đó còn ở nhà hay không: chạm vào biểu tượng khi món đã hết. Dấu cộng đưa món vào danh sách mua, dấu trừ bỏ ra. Để sắp xếp lại một món hoặc khu vực, hãy nhấn giữ rồi kéo.',
+    'Chấm trên biểu tượng cho biết món đó còn ở nhà hay không: chạm vào biểu tượng khi món đã hết. Dấu cộng đưa món vào danh sách mua, dấu trừ bỏ ra. Vuốt dòng sang trái để thấy Sửa và Xóa; kéo quá nửa dòng để xóa ngay. Để sắp xếp lại một món hoặc khu vực, hãy nhấn giữ rồi kéo.',
   'home.defaultName': 'Nhà mình',
   'home.preparing': 'Đang chuẩn bị nhà của bạn…',
 
@@ -97,7 +97,7 @@ export const vi: Messages = {
   'shopping.stillHome': 'vẫn còn ở nhà',
   'shopping.hintLabel': 'Danh sách thông minh',
   'shopping.hint':
-    'Món đã mua được đánh dấu là còn ở nhà và vẫn nằm trong khu vực của nó. Vuốt dòng sang trái để bỏ ra mà không mua.',
+    'Món đã mua được đánh dấu là còn ở nhà và vẫn nằm trong khu vực của nó. Vuốt dòng sang trái để sửa hoặc bỏ ra mà không mua; kéo quá nửa dòng để bỏ ra ngay.',
   'shopping.addTitle': 'Thêm vào danh sách mua',
   'shopping.editTitle': 'Sửa món cần mua',
   'shopping.duplicate': 'Món này đã có trong danh sách mua',
@@ -118,6 +118,7 @@ export const vi: Messages = {
   'toast.addedToList': '“{name}” đã vào danh sách mua',
   'toast.removedFromList': 'Đã bỏ “{name}” khỏi danh sách mua',
   'toast.deleted': 'Đã xóa: “{name}”',
+  'toast.undo': 'Hoàn tác',
   'toast.movedTo': '“{name}” đã chuyển sang “{section}”',
 
   'dnd.instructions':

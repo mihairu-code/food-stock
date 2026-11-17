@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useDeleteProduct, useSetProductState, withAvailability, withToBuy } from '@/entities/product'
-import type { Product } from '@/shared/api'
+import { removeWithUndo, type Product } from '@/shared/api'
 import { notify } from '@/shared/lib/toast'
 import { openSheet } from '@/shared/ui'
 
@@ -11,7 +11,7 @@ export interface ProductActions {
   toggleList: (product: Product) => void
   /** Шторка правки: название, иконка, раздел, «держать дома всегда». */
   edit: (product: Product) => void
-  /** Удаление продукта: без подтверждения, оно и так видно по тосту. */
+  /** Удаление: продукт сразу пропадает, а тост несколько секунд предлагает его вернуть. */
   deleteProduct: (product: Product) => void
 }
 
@@ -21,7 +21,7 @@ export interface ProductActions {
  */
 export function useProductActions(): ProductActions {
   const { mutate: setState } = useSetProductState()
-  const { mutate: deleteProductById } = useDeleteProduct()
+  const { mutateAsync: deleteProductById } = useDeleteProduct()
 
   return useMemo(
     () => ({
@@ -42,8 +42,13 @@ export function useProductActions(): ProductActions {
         openSheet({ type: 'edit-product', product })
       },
       deleteProduct(product) {
-        deleteProductById(product.id)
-        notify('toast.deleted', { name: product.name })
+        removeWithUndo({
+          id: product.id,
+          kind: 'product',
+          commit: () => deleteProductById(product.id),
+          message: 'toast.deleted',
+          params: { name: product.name },
+        })
       },
     }),
     [setState, deleteProductById],
