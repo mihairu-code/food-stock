@@ -10,6 +10,8 @@ const PATTERNS = {
   move: 6,
   /** Строку отпустили. */
   drop: [8, 40, 10],
+  /** Строку утянули за порог удаления: отпустить — значит удалить. */
+  arm: 10,
 } satisfies Record<string, number | number[]>
 
 export type Haptic = keyof typeof PATTERNS
