@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { parseInviteToken, useJoinHousehold } from '@/entities/invite'
-import { useT, type MessageKey } from '@/shared/i18n'
+import { useT } from '@/shared/i18n'
 import { notify } from '@/shared/lib/toast'
+import { useFieldError } from '@/shared/lib/useFieldError'
 import { useSession } from '@/shared/session'
 import { closeSheet, FormSheet, TextField } from '@/shared/ui'
 
@@ -11,20 +12,20 @@ export function JoinHouseholdSheet() {
   const { selectHousehold } = useSession()
   const join = useJoinHousehold()
   const [text, setText] = useState('')
-  const [error, setError] = useState<MessageKey | null>(null)
+  const linkError = useFieldError()
 
   function changeText(next: string) {
     setText(next)
-    setError(null)
+    linkError.clear()
   }
 
   function joinByLink() {
     const token = parseInviteToken(text)
     if (!token) {
-      setError('join.notLink')
+      linkError.reject(t('join.notLink'))
       return
     }
-    setError(null)
+    linkError.clear()
     join.mutate(token, {
       // К этому моменту список домов уже перечитан.
       onSuccess: (householdId) => {
@@ -32,7 +33,7 @@ export function JoinHouseholdSheet() {
         closeSheet()
         notify('toast.joined')
       },
-      onError: () => setError('join.invalid'),
+      onError: () => linkError.reject(t('join.invalid')),
     })
   }
 
@@ -52,7 +53,8 @@ export function JoinHouseholdSheet() {
         autoFocus
         autoCapitalize="none"
         spellCheck={false}
-        error={error && t(error)}
+        error={linkError.error}
+        shakeCount={linkError.shakeCount}
       />
     </FormSheet>
   )

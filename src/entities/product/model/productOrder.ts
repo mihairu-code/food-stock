@@ -1,5 +1,6 @@
 import type { Product } from '@/shared/api'
 import { compareTimes } from '@/shared/lib/compareTimes'
+import { findNamed } from '@/shared/lib/sameName'
 
 /** Продукты, которые переставляли, идут по своим местам; остальные — после них, по времени добавления. */
 const byPlace = (a: Product, b: Product) =>
@@ -15,3 +16,7 @@ export function groupProductsBySection(products: Product[]): Map<string, Product
   }
   return groups
 }
+
+/** Продукт с таким же названием, если он уже есть в доме; сам редактируемый продукт не в счёт. */
+export const findProductNamed = (products: Product[], name: string, exceptId?: string): Product | undefined =>
+  findNamed(products, name, exceptId)

@@ -40,6 +40,18 @@ export interface NewProduct {
   kind: ProductKind
 }
 
+/** Что меняется в продукте при правке. Отметки «дома» и «в покупках» правят отдельно. */
+export interface ProductPatch {
+  name: string
+  icon: string | null
+  kind: ProductKind
+}
+
+export interface ShoppingItemPatch {
+  name: string
+  icon: string | null
+}
+
 export interface NewShoppingItem {
   id: string
   name: string
@@ -108,6 +120,8 @@ export interface Backend {
   createProduct(householdId: string, input: NewProduct): Promise<Product>
   /** Записывает обе отметки продукта сразу: наличие дома и «в покупках». */
   setProductState(productId: string, state: ProductState): Promise<void>
+  /** Название, иконка и вид продукта. Место в покупках при этом не меняется. */
+  updateProduct(productId: string, patch: ProductPatch): Promise<void>
   deleteProduct(productId: string): Promise<void>
   /**
    * Продукты раздела в новом порядке, сверху вниз. Продукт из другого раздела,
@@ -116,6 +130,7 @@ export interface Backend {
   reorderProducts(sectionId: string, productIds: string[]): Promise<void>
 
   createShoppingItem(householdId: string, input: NewShoppingItem): Promise<ShoppingItem>
+  updateShoppingItem(itemId: string, patch: ShoppingItemPatch): Promise<void>
   deleteShoppingItem(itemId: string): Promise<void>
   /** Список покупок в новом порядке: идентификаторы продуктов и ручных позиций вперемешку, сверху вниз. */
   reorderShopping(ids: string[]): Promise<void>

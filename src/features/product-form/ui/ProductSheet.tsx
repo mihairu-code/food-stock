@@ -1,41 +1,83 @@
 import { useState } from 'react'
-import { StapleCheckbox, useCreateProduct } from '@/entities/product'
+import {
+  findProductNamed,
+  groupProductsBySection,
+  StapleCheckbox,
+  useCreateProduct,
+  useEditProduct,
+  type ProductEdit,
+} from '@/entities/product'
 import { SectionPicker, useSortedSections } from '@/entities/section'
+import { useHomeData, type Product } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import { useSuggestedEmoji } from '@/shared/lib/emoji/useSuggestedEmoji'
 import { notify } from '@/shared/lib/toast'
+import { useFieldError } from '@/shared/lib/useFieldError'
 import { closeSheet, FormSheet, NameIconFields } from '@/shared/ui'
 
-/** Новый продукт; `sectionId` — раздел, из которого шторку открыли. */
-export function ProductSheet({ sectionId: openedFromSection }: { sectionId?: string }) {
+interface ProductSheetProps {
+  /** Продукт для правки; без него шторка добавляет новый. */
+  product?: Product
+  /** Раздел, из которого шторку открыли для добавления. */
+  sectionId?: string
+}
+
+/**
+ * Продукт дома: добавление нового и правка существующего — одна и та же форма.
+ * Продукт с таким же названием второй раз не заводится: поле встряхивается и
+ * подсказывает, в каком разделе он уже есть.
+ */
+export function ProductSheet({ product, sectionId: openedFromSection }: ProductSheetProps) {
   const t = useT()
   const sections = useSortedSections()
+  const { products } = useHomeData()
   const createProduct = useCreateProduct()
-  const [name, setName] = useState('')
-  const { icon, setIcon, options } = useSuggestedEmoji(name)
-  const [sectionId, setSectionId] = useState(openedFromSection ?? sections[0]?.id ?? '')
-  const [staple, setStaple] = useState(false)
+  const editProduct = useEditProduct()
+  const [name, setName] = useState(product?.name ?? '')
+  const { icon, setIcon, options } = useSuggestedEmoji(name, product?.icon ?? null)
+  const nameError = useFieldError()
+  const [sectionId, setSectionId] = useState(product?.section_id ?? openedFromSection ?? sections[0]?.id ?? '')
+  const [staple, setStaple] = useState(product ? product.kind === 'staple' : false)
+
+  function changeName(next: string) {
+    setName(next)
+    nameError.clear()
+  }
 
   function saveProduct() {
     const trimmed = name.trim()
     const section = sections.find((candidate) => candidate.id === sectionId)
     if (!trimmed || !section) return
-    createProduct.mutate({
-      id: crypto.randomUUID(),
-      section_id: section.id,
-      name: trimmed,
-      icon: icon || null,
-      kind: staple ? 'staple' : 'one_off',
-    })
-    notify('toast.addedTo', { name: section.name })
+
+    const twin = findProductNamed(products, trimmed, product?.id)
+    if (twin) {
+      const twinSection = sections.find((candidate) => candidate.id === twin.section_id)
+      nameError.reject(t('productSheet.duplicate', { section: twinSection?.name ?? '' }))
+      return
+    }
+
+    const patch = { name: trimmed, icon: icon || null, kind: staple ? ('staple' as const) : ('one_off' as const) }
+    if (!product) {
+      createProduct.mutate({ id: crypto.randomUUID(), section_id: section.id, ...patch })
+      notify('toast.addedTo', { name: section.name })
+    } else {
+      const edit: ProductEdit = { id: product.id, patch }
+      if (section.id !== product.section_id) {
+        // В новом разделе продукт встаёт последним.
+        const neighbours = groupProductsBySection(products).get(section.id) ?? []
+        edit.move = { sectionId: section.id, productIds: [...neighbours.map((p) => p.id), product.id] }
+      }
+      editProduct.mutate(edit)
+      notify('toast.changesSaved')
+    }
     closeSheet()
   }
 
   return (
     <FormSheet
-      title={t('productSheet.title')}
-      description={t('productSheet.description')}
-      submitLabel={t('common.add')}
+      title={t(product ? 'productSheet.editTitle' : 'productSheet.title')}
+      description={product ? undefined : t('productSheet.description')}
+      submitLabel={t(product ? 'common.save' : 'common.add')}
       disabled={!name.trim() || !sectionId}
       onSubmit={saveProduct}
     >
@@ -45,11 +87,13 @@ export function ProductSheet({ sectionId: openedFromSection }: { sectionId?: str
         placeholder={t('productSheet.placeholder')}
         maxLength={80}
         name={name}
-        onNameChange={setName}
+        onNameChange={changeName}
         icon={icon}
         onIconChange={setIcon}
         icons={options}
         iconHint={t('emoji.hint')}
+        nameError={nameError.error}
+        nameShakeCount={nameError.shakeCount}
       />
       <SectionPicker sections={sections} value={sectionId} onChange={setSectionId} />
       <StapleCheckbox checked={staple} onChange={setStaple} />

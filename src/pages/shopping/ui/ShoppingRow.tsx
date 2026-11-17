@@ -14,6 +14,7 @@ interface ShoppingRowProps {
   /** Копия строки под пальцем во время перетаскивания — выглядит точно как настоящая. */
   ghost?: boolean
   onBuy: () => void
+  onEdit: () => void
   onRemove: () => void
 }
 
@@ -21,7 +22,7 @@ interface ShoppingRowProps {
  * Общий вид строки покупок: та же строка, что на экране «Дом», только справа «Куплено»
  * вместо плюса, а удаление убирает из списка.
  */
-export function ShoppingRow({ id, name, meta, icon, missing, ghost = false, onBuy, onRemove }: ShoppingRowProps) {
+export function ShoppingRow({ id, name, meta, icon, missing, ghost = false, onBuy, onEdit, onRemove }: ShoppingRowProps) {
   const t = useT()
   return (
     <ListRow
@@ -34,6 +35,8 @@ export function ShoppingRow({ id, name, meta, icon, missing, ghost = false, onBu
       missing={missing}
       ghost={ghost}
       toggle={{ label: t('shopping.boughtAria', { name }), icon: t('shopping.bought'), text: true, onClick: onBuy }}
+      editLabel={t('product.edit', { name })}
+      onEdit={onEdit}
       removeLabel={t('product.removeFromList', { name })}
       removeSwipeLabel={t('shopping.remove')}
       onRemove={onRemove}

@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { setLangSetting } from '@/shared/i18n'
-import { groupProductsBySection, PURCHASED, withAvailability, withToBuy } from '@/entities/product'
+import { findProductNamed, groupProductsBySection, PURCHASED, withAvailability, withToBuy } from '@/entities/product'
 import { sortSections } from '@/entities/section'
-import { buildShoppingList } from '@/entities/shopping-list'
+import { buildShoppingList, findShoppingEntryNamed, shoppingEntryName } from '@/entities/shopping-list'
 import type { Backend, Product } from '@/shared/api'
 import { createLocalBackend } from '@/shared/api/localBackend'
 
@@ -269,6 +269,72 @@ describe('домашние запасы: основные потоки', () => {
     await new Promise((resolve) => setTimeout(resolve, 5)) // время добавления в список — с точностью до миллисекунды
     await setToBuy(milk.id, true)
     expect(await names()).toEqual(['Батарейки', 'Сыр', 'Молоко'])
+  })
+
+  it('правка продукта: название, иконка и вид меняются, отметки и место в покупках — нет', async () => {
+    const fridge = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Холодильник', icon: null, sort_order: 0 })
+    const add = (name: string) =>
+      backend.createProduct(hid, { id: crypto.randomUUID(), section_id: fridge.id, name, icon: null, kind: 'staple' })
+    const milk = await add('Молоко')
+    const cheese = await add('Сыр')
+    await setAvailable(milk.id, false)
+    await new Promise((resolve) => setTimeout(resolve, 5))
+    await setAvailable(cheese.id, false)
+    const shoppingNames = async () => (await snapshot()).shopping.map(shoppingEntryName)
+    expect(await shoppingNames()).toEqual(['Молоко', 'Сыр'])
+
+    const beforeEdit = await product(milk.id)
+    await backend.updateProduct(milk.id, { name: 'Молоко 3,2%', icon: '🥛', kind: 'one_off' })
+    const edited = await product(milk.id)
+    expect(edited).toMatchObject({ name: 'Молоко 3,2%', icon: '🥛', kind: 'one_off', is_available: false, to_buy: true })
+    expect(edited.updated_at).toBe(beforeEdit.updated_at)
+    // Переименованный продукт не уезжает в конец списка покупок.
+    expect(await shoppingNames()).toEqual(['Молоко 3,2%', 'Сыр'])
+  })
+
+  it('правка продукта с переездом: в новом разделе он встаёт последним', async () => {
+    const fridge = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Холодильник', icon: null, sort_order: 0 })
+    const cupboard = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Шкаф', icon: null, sort_order: 1 })
+    const add = (sectionId: string, name: string) =>
+      backend.createProduct(hid, { id: crypto.randomUUID(), section_id: sectionId, name, icon: null, kind: 'staple' })
+    const milk = await add(fridge.id, 'Молоко')
+    const rice = await add(cupboard.id, 'Рис')
+    const tea = await add(cupboard.id, 'Чай')
+
+    await backend.updateProduct(milk.id, { name: 'Молоко', icon: null, kind: 'staple' })
+    await backend.reorderProducts(cupboard.id, [rice.id, tea.id, milk.id])
+    const bySection = groupProductsBySection((await snapshot()).products)
+    expect(bySection.get(cupboard.id)?.map((p) => p.name)).toEqual(['Рис', 'Чай', 'Молоко'])
+    expect(bySection.get(fridge.id)).toBeUndefined()
+  })
+
+  it('ручная позиция переименовывается и остаётся на своём месте в списке', async () => {
+    const bread = await backend.createShoppingItem(hid, { id: crypto.randomUUID(), name: 'Хлеб', icon: null })
+    await new Promise((resolve) => setTimeout(resolve, 5))
+    await backend.createShoppingItem(hid, { id: crypto.randomUUID(), name: 'Соль', icon: null })
+    await backend.updateShoppingItem(bread.id, { name: 'Хлеб бородинский', icon: '🍞' })
+    const state = await snapshot()
+    expect(state.shopping.map(shoppingEntryName)).toEqual(['Хлеб бородинский', 'Соль'])
+    expect(state.shoppingItems.find((item) => item.id === bread.id)?.icon).toBe('🍞')
+  })
+
+  it('дубли названий находятся без учёта регистра и лишних пробелов, а сама запись — не дубль', async () => {
+    const fridge = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Холодильник', icon: null, sort_order: 0 })
+    const milk = await backend.createProduct(hid, {
+      id: crypto.randomUUID(),
+      section_id: fridge.id,
+      name: 'Молоко',
+      icon: null,
+      kind: 'staple',
+    })
+    await backend.createShoppingItem(hid, { id: crypto.randomUUID(), name: 'Хлеб', icon: null })
+    const state = await snapshot()
+
+    expect(findProductNamed(state.products, '  молоко ')?.id).toBe(milk.id)
+    expect(findProductNamed(state.products, 'Молоко', milk.id)).toBeUndefined()
+    expect(findProductNamed(state.products, 'Молоко топлёное')).toBeUndefined()
+    expect(findShoppingEntryNamed(state.shopping, 'ХЛЕБ')).toBeDefined()
+    expect(findShoppingEntryNamed(state.shopping, 'Молоко')).toBeUndefined() // продукт дома, но не в покупках
   })
 
   it('у дома меняются название и аватарка', async () => {

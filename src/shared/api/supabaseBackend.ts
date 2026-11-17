@@ -251,6 +251,14 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
           .eq('id', productId),
       )
     },
+    updateProduct: async (productId, patch) => {
+      throwIfFailed(
+        await supabase
+          .from('products')
+          .update({ name: patch.name, icon: patch.icon, kind: patch.kind })
+          .eq('id', productId),
+      )
+    },
     deleteProduct: async (productId) => {
       throwIfFailed(await supabase.from('products').delete().eq('id', productId))
     },
@@ -268,6 +276,11 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
           .select()
           .single(),
       ) as ShoppingItem,
+    updateShoppingItem: async (itemId, patch) => {
+      throwIfFailed(
+        await supabase.from('shopping_items').update({ name: patch.name, icon: patch.icon }).eq('id', itemId),
+      )
+    },
     deleteShoppingItem: async (itemId) => {
       throwIfFailed(await supabase.from('shopping_items').delete().eq('id', itemId))
     },

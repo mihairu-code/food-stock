@@ -1,5 +1,6 @@
-import { X } from 'lucide-react'
+import { Pencil, Trash2, X } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useT } from '@/shared/i18n'
 import { SortableRow } from './SortableRow'
 import { SwipeRow } from './SwipeRow'
 
@@ -27,7 +28,10 @@ interface ListRowProps {
   main?: { label: string; onClick: () => void }
   /** Кнопка справа: плюс/минус на «Доме», «Куплено» в покупках (text — подпись вместо иконки). */
   toggle: { label: string; icon: ReactNode; on?: boolean; text?: boolean; onClick: () => void }
-  /** Подпись крестика для скринридера и подложки свайпа. */
+  /** Подпись карандаша для скринридера: «Изменить „Молоко“». */
+  editLabel: string
+  onEdit: () => void
+  /** Подпись крестика для скринридера и кнопки удаления в свайпе. */
   removeLabel: string
   removeSwipeLabel: string
   onRemove: () => void
@@ -35,8 +39,9 @@ interface ListRowProps {
 
 /**
  * Строка списка продуктов — одна и на «Доме», и в покупках: иконка, название с подписью
- * и кнопка справа. Свайп влево удаляет; мышью и с клавиатуры — крестик, который
- * появляется при наведении. Строку можно перетащить на другое место.
+ * и кнопка справа. Свайп влево открывает «Изменить» и удаление; мышью и с клавиатуры
+ * те же действия — карандаш и крестик, которые появляются при наведении. Строку можно
+ * перетащить на другое место.
  */
 export function ListRow({
   id,
@@ -51,10 +56,13 @@ export function ListRow({
   ghost = false,
   main,
   toggle,
+  editLabel,
+  onEdit,
   removeLabel,
   removeSwipeLabel,
   onRemove,
 }: ListRowProps) {
+  const t = useT()
   const text = (
     <span className="row-text">
       <span className="row-name">{name}</span>
@@ -85,6 +93,9 @@ export function ListRow({
       >
         {toggle.icon}
       </button>
+      <button className="icon-btn row-hover-action" type="button" disabled={disabled} aria-label={editLabel} onClick={onEdit}>
+        <Pencil size={16} />
+      </button>
       <button
         className="icon-btn row-hover-action"
         type="button"
@@ -101,7 +112,13 @@ export function ListRow({
 
   return (
     <SortableRow id={id} kind={kind} label={name} description={dragDescription} disabled={disabled} droppable={droppable}>
-      <SwipeRow onDelete={onRemove} label={removeSwipeLabel} disabled={disabled}>
+      <SwipeRow
+        disabled={disabled}
+        actions={[
+          { label: t('common.edit'), icon: <Pencil size={20} />, tone: 'accent', onSelect: onEdit },
+          { label: removeSwipeLabel, icon: <Trash2 size={20} />, tone: 'danger', onSelect: onRemove },
+        ]}
+      >
         {row}
       </SwipeRow>
     </SortableRow>

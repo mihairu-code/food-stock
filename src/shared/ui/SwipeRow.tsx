@@ -1,13 +1,19 @@
-import { Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react'
-import { useT } from '@/shared/i18n'
 import { isDragActive } from '@/shared/lib/drag/dragState'
+import { openSwipeRow } from './openSwipeRow'
+
+export interface SwipeAction {
+  /** Название действия: подпись под иконкой. */
+  label: string
+  icon: ReactNode
+  /** danger — удаление: красная кнопка. Перед вызовом строка уезжает и схлопывается. */
+  tone: 'accent' | 'danger'
+  onSelect: () => void
+}
 
 interface SwipeRowProps {
-  /** Вызывается после свайпа влево дальше порога — когда строка уже уехала и схлопнулась. */
-  onDelete: () => void
-  /** Подпись под строкой во время жеста; по умолчанию «Удалить». */
-  label?: string
+  /** Кнопки, которые открываются под строкой при свайпе влево, слева направо. */
+  actions: SwipeAction[]
   /** Жест отключён: строка ещё сохраняется. Во время перетаскивания он выключается сам. */
   disabled?: boolean
   children: ReactNode
@@ -15,87 +21,144 @@ interface SwipeRowProps {
 
 /** Сдвиг, после которого жест считается свайпом, а не прокруткой или нажатием. */
 const LOCK_DISTANCE = 10
-/** Доля ширины строки, после которой отпускание удаляет её. */
-const DELETE_RATIO = 0.28
-/** Быстрый смах удаляет и с меньшего расстояния: скорость (пикселей в миллисекунду) и минимум пути. */
-const FLING_SPEED = 0.45
-const FLING_DISTANCE = 36
 /** Палец, который столько пролежал на месте, не свайпает: строку удерживают, чтобы перетащить. */
 const HOLD_MS = 200
+/** Отпустили дальше этой доли ширины кнопок — они остаются открытыми. */
+const OPEN_RATIO = 0.4
+/** Тянуть дальше кнопок можно, но сверх их ширины — не больше чем на столько. */
+const RUBBER_LIMIT = 96
+/** Быстрый смах (пикселей в миллисекунду) и минимум его пути. */
+const FLING_SPEED = 0.45
+const FLING_DISTANCE = 36
 /** Строка уезжает влево, затем её место схлопывается. Те же длительности — в стилях .swipe. */
 const SLIDE_MS = 170
 const COLLAPSE_MS = 170
-/** Если после удаления строка всё ещё на экране (запрос не удалил её), возвращаем её вид. */
+/** Если после удаления строка всё ещё на экране (запрос не удался), возвращаем ей вид. */
 const RESTORE_MS = 900
+
+type Motion = 'follow' | 'snap'
 
 interface Gesture {
   x: number
   y: number
   at: number
   locked: boolean
+  /** Сдвиг строки в начале жеста: 0 или ширина открытых кнопок. */
+  startOffset: number
   offset: number
-  /** Последняя точка и скорость в ней — чтобы распознать быстрый смах. */
   lastX: number
   lastAt: number
   speed: number
 }
 
+/** Сопротивление сверх ширины кнопок: чем дальше тянут, тем меньше строка поддаётся. */
+const resist = (over: number) => over / (1 + over / RUBBER_LIMIT)
+
 /**
- * Строка, которую удаляют свайпом влево. Жест — не единственный способ:
- * вызывающий код обязан дать и кнопку удаления для клавиатуры и скринридера.
+ * Строка, у которой свайпом влево открываются кнопки действий (изменить, удалить).
+ * Кнопки встают на место, куда сдвинулась строка; дальше строка поддаётся всё туже.
+ * Жест — не единственный способ: вызывающий код даёт те же действия кнопками для мыши,
+ * клавиатуры и скринридера.
  *
  * Пока палец ведёт строку, она двигается напрямую, минуя перерисовку React, —
- * так она не отстаёт от пальца. Удаление плавное: строка уезжает, её место
- * схлопывается, и только потом она исчезает из списка.
+ * так она не отстаёт от пальца.
  */
-export function SwipeRow({ onDelete, label, disabled = false, children }: SwipeRowProps) {
-  const t = useT()
+export function SwipeRow({ actions, disabled = false, children }: SwipeRowProps) {
   const root = useRef<HTMLDivElement>(null)
   const content = useRef<HTMLDivElement>(null)
-  // Красная подложка видна, только пока строка сдвинута.
+  const tray = useRef<HTMLDivElement>(null)
   const [revealed, setRevealed] = useState(false)
   const gesture = useRef<Gesture | null>(null)
+  const openOffset = useRef(0)
+  /** Ширина открытых кнопок; меряется в начале жеста. */
+  const openWidth = useRef(0)
   const suppressClick = useRef(false)
   const timers = useRef<number[]>([])
+  // Постоянный маркер этой строки — по нему узнаём, она ли сейчас открыта.
+  const [owner] = useState(() => ({}))
 
   useEffect(() => {
     const pending = timers.current
-    return () => pending.forEach((timer) => window.clearTimeout(timer))
-  }, [])
+    return () => {
+      pending.forEach((timer) => window.clearTimeout(timer))
+      openSwipeRow.release(owner)
+    }
+  }, [owner])
 
-  const later = (run: () => void, ms: number) => timers.current.push(window.setTimeout(run, ms))
+  // Пока кнопки открыты, касание в любом другом месте их закрывает.
+  useEffect(() => {
+    if (!revealed) return
+    const closeOnOutsidePress = (event: globalThis.PointerEvent) => {
+      if (!root.current?.contains(event.target as Node)) openSwipeRow.closeIfOpen(owner)
+    }
+    document.addEventListener('pointerdown', closeOnOutsidePress, true)
+    return () => document.removeEventListener('pointerdown', closeOnOutsidePress, true)
+  }, [revealed, owner])
 
-  function slide(offset: number, animated: boolean) {
-    const element = content.current
-    if (!element) return
-    element.style.transition = animated ? '' : 'none'
-    element.style.transform = offset ? `translateX(${offset}px)` : ''
+  const scheduleTimer = (run: () => void, ms: number) => timers.current.push(window.setTimeout(run, ms))
+
+  /** Сдвигает строку и растягивает под ней кнопки на ту же ширину. */
+  function moveRow(offset: number, motion: Motion) {
+    const row = content.current
+    const buttons = tray.current
+    if (!row || !buttons) return
+    // Пустая строка — переход из стилей.
+    row.style.transition = motion === 'follow' ? 'none' : ''
+    buttons.style.transition = motion === 'follow' ? 'none' : ''
+    row.style.transform = offset ? `translateX(${-offset}px)` : ''
+    buttons.style.width = `${offset}px`
   }
 
-  function settle() {
-    slide(0, true)
-    later(() => setRevealed(false), SLIDE_MS)
+  /** Ширина кнопок в открытом состоянии — по их ширине из стилей, с полями и промежутками. */
+  function measureButtons(): number {
+    const buttons = tray.current
+    if (!buttons) return 0
+    const style = getComputedStyle(buttons)
+    const count = buttons.children.length
+    const spacing =
+      parseFloat(style.paddingLeft) + parseFloat(style.paddingRight) + parseFloat(style.columnGap || '0') * (count - 1)
+    return [...buttons.children].reduce((sum, button) => sum + parseFloat(getComputedStyle(button).flexBasis), spacing)
+  }
+
+  function snapOpen() {
+    openSwipeRow.claim(owner, snapClosed)
+    openOffset.current = openWidth.current
+    moveRow(openOffset.current, 'snap')
+    setRevealed(true)
+  }
+
+  function snapClosed() {
+    openSwipeRow.release(owner)
+    openOffset.current = 0
+    moveRow(0, 'snap')
+    scheduleTimer(() => {
+      if (openOffset.current === 0) setRevealed(false)
+    }, SLIDE_MS)
   }
 
   /** Возвращает строке обычный вид — если она пережила удаление. */
-  function restore() {
+  function restoreAfterFailedDelete() {
     const element = root.current
     if (!element) return
     element.style.transition = ''
     element.style.height = ''
     element.style.opacity = ''
-    slide(0, false)
+    openOffset.current = 0
+    moveRow(0, 'follow')
     setRevealed(false)
   }
 
-  function remove(width: number) {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  /** Строка уезжает влево целиком, её место схлопывается, и только потом она удаляется. */
+  function slideAwayAndDelete(onDelete: () => void) {
+    openSwipeRow.release(owner)
+    const width = root.current?.offsetWidth ?? 0
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || width === 0) {
       onDelete()
-      later(restore, RESTORE_MS)
+      scheduleTimer(restoreAfterFailedDelete, RESTORE_MS)
       return
     }
-    slide(-width, true)
-    later(() => {
+    moveRow(width, 'snap')
+    scheduleTimer(() => {
       const element = root.current
       if (!element) return
       // Высота фиксируется числом, иначе переходу не от чего считать.
@@ -104,11 +167,17 @@ export function SwipeRow({ onDelete, label, disabled = false, children }: SwipeR
       element.style.transition = `height ${COLLAPSE_MS}ms ease, opacity ${COLLAPSE_MS}ms ease`
       element.style.height = '0px'
       element.style.opacity = '0'
-      later(() => {
+      scheduleTimer(() => {
         onDelete()
-        later(restore, RESTORE_MS)
+        scheduleTimer(restoreAfterFailedDelete, RESTORE_MS)
       }, COLLAPSE_MS)
     }, SLIDE_MS)
+  }
+
+  function runAction(action: SwipeAction) {
+    if (action.tone === 'danger') return slideAwayAndDelete(action.onSelect)
+    snapClosed()
+    action.onSelect()
   }
 
   function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
@@ -118,7 +187,8 @@ export function SwipeRow({ onDelete, label, disabled = false, children }: SwipeR
       y: event.clientY,
       at: event.timeStamp,
       locked: false,
-      offset: 0,
+      startOffset: openOffset.current,
+      offset: openOffset.current,
       lastX: event.clientX,
       lastAt: event.timeStamp,
       speed: 0,
@@ -132,7 +202,7 @@ export function SwipeRow({ onDelete, label, disabled = false, children }: SwipeR
     if (disabled || isDragActive()) {
       // Жест перехватили (строку начали перетаскивать) — возвращаем её на место.
       gesture.current = null
-      if (start.locked) settle()
+      if (start.locked) snapClosed()
       return
     }
     const dx = event.clientX - start.x
@@ -140,11 +210,14 @@ export function SwipeRow({ onDelete, label, disabled = false, children }: SwipeR
     if (!start.locked) {
       if (Math.abs(dx) < LOCK_DISTANCE && Math.abs(dy) < LOCK_DISTANCE) return
       const held = event.pointerType !== 'mouse' && event.timeStamp - start.at > HOLD_MS
-      if (Math.abs(dy) >= Math.abs(dx) || dx > 0 || held) {
-        gesture.current = null // прокрутка, свайп вправо или удержание — не наш жест
+      // Закрытую строку двигают только влево, открытую — в обе стороны.
+      const wrongWay = start.startOffset === 0 && dx > 0
+      if (Math.abs(dy) >= Math.abs(dx) || wrongWay || held) {
+        gesture.current = null // прокрутка, свайп не в ту сторону или удержание — не наш жест
         return
       }
       start.locked = true
+      openWidth.current = measureButtons()
       suppressClick.current = true
       try {
         event.currentTarget.setPointerCapture(event.pointerId)
@@ -161,40 +234,53 @@ export function SwipeRow({ onDelete, label, disabled = false, children }: SwipeR
       start.lastX = event.clientX
       start.lastAt = event.timeStamp
     }
-    start.offset = Math.min(0, dx)
-    slide(start.offset, false)
+    const pulled = Math.max(0, start.startOffset - dx)
+    const limit = openWidth.current
+    start.offset = pulled > limit ? limit + resist(pulled - limit) : pulled
+    moveRow(start.offset, 'follow')
   }
 
-  function finish(cancelled: boolean) {
+  function finishGesture(cancelled: boolean) {
     const start = gesture.current
     gesture.current = null
     if (!start?.locked) return
-    const width = root.current?.offsetWidth ?? 0
-    const distance = -start.offset
-    const far = distance > width * DELETE_RATIO
-    const flung = start.speed < -FLING_SPEED && distance > FLING_DISTANCE
-    if (!cancelled && width > 0 && (far || flung)) remove(width)
-    else settle()
+    const flungLeft = start.speed < -FLING_SPEED && start.offset - start.startOffset > FLING_DISTANCE
+    const flungRight = start.speed > FLING_SPEED
+    const open = !cancelled && !flungRight && (flungLeft || start.offset > openWidth.current * OPEN_RATIO)
+    if (open) snapOpen()
+    else snapClosed()
   }
 
   return (
     <div className="swipe" ref={root} data-active={revealed}>
-      <div className="swipe-under" aria-hidden="true">
-        <Trash2 size={18} />
-        {label ?? t('common.delete')}
+      <div className="swipe-actions" ref={tray} inert={!revealed}>
+        {actions.map((action) => (
+          <button
+            key={action.label}
+            className="swipe-action"
+            type="button"
+            data-tone={action.tone}
+            onClick={() => runAction(action)}
+          >
+            {action.icon}
+            <span>{action.label}</span>
+          </button>
+        ))}
       </div>
       <div
         className="swipe-content"
         ref={content}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
-        onPointerUp={() => finish(false)}
-        onPointerCancel={() => finish(true)}
+        onPointerUp={() => finishGesture(false)}
+        onPointerCancel={() => finishGesture(true)}
         onClickCapture={(event) => {
-          if (suppressClick.current) {
+          // Нажатие на открытую строку только закрывает кнопки, а не срабатывает.
+          if (suppressClick.current || openOffset.current > 0) {
             suppressClick.current = false
             event.preventDefault()
             event.stopPropagation()
+            if (openOffset.current > 0) snapClosed()
           }
         }}
       >

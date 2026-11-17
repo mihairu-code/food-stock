@@ -29,12 +29,16 @@ export function SheetHost() {
   switch (sheet?.type) {
     case 'add-product':
       return <ProductSheet sectionId={sheet.sectionId} />
+    case 'edit-product':
+      return <ProductSheet product={sheet.product} />
     case 'add-section':
       return <SectionSheet />
     case 'manage-section':
       return <SectionManagerSheet section={sheet.section} />
     case 'add-item':
       return <ShoppingItemSheet />
+    case 'edit-item':
+      return <ShoppingItemSheet item={sheet.item} />
     case 'purchase':
       return <PurchaseSheet item={sheet.item} />
     case 'invite-link':

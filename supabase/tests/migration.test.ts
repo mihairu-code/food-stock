@@ -893,6 +893,32 @@ describe('порядок вручную: перетаскивание проду
     expect(after.updated_at.getTime()).toBeGreaterThan(before.updated_at.getTime())
   })
 
+  it('правка названия, иконки и вида не трогает updated_at, а значит и место в покупках', async () => {
+    const updatedAt = async () =>
+      (await as(DAVE, () => rows<{ updated_at: Date }>(`select updated_at from public.products where id = $1`, [ids['Сыр']])))[0]
+        .updated_at
+    const before = await updatedAt()
+    await db.exec(`select pg_sleep(0.01)`)
+    await as(DAVE, () =>
+      db.query(`update public.products set name = 'Сыр твёрдый', icon = '🧀', kind = 'one_off' where id = $1`, [ids['Сыр']]),
+    )
+    const [edited] = await as(DAVE, () => rows(`select name, icon, kind from public.products where id = $1`, [ids['Сыр']]))
+    expect(edited).toEqual({ name: 'Сыр твёрдый', icon: '🧀', kind: 'one_off' })
+    expect((await updatedAt()).getTime()).toBe(before.getTime())
+    await as(DAVE, () => db.query(`update public.products set name = 'Сыр', kind = 'staple' where id = $1`, [ids['Сыр']]))
+  })
+
+  it('ручную позицию переименовывает участник дома, посторонний — нет', async () => {
+    const [item] = await as(DAVE, () =>
+      rows<{ id: string }>(`insert into public.shopping_items (household_id, name) values ($1, 'Хлеб') returning id`, [home]),
+    )
+    expect(await as(DAVE, () => affected(`update public.shopping_items set name = 'Хлеб ржаной', icon = '🍞' where id = $1`, [item.id]))).toBe(1)
+    expect(await as(ERIN, () => affected(`update public.shopping_items set name = 'Взлом' where id = $1`, [item.id]))).toBe(0)
+    const [saved] = await as(DAVE, () => rows(`select name, icon from public.shopping_items where id = $1`, [item.id]))
+    expect(saved).toEqual({ name: 'Хлеб ржаной', icon: '🍞' })
+    await as(DAVE, () => db.query(`delete from public.shopping_items where id = $1`, [item.id]))
+  })
+
   it('посторонний не переставит чужие продукты и не утащит их к себе', async () => {
     await as(ERIN, () =>
       db.query(`select public.reorder_products($1, $2)`, [fridge, [ids['Масло'], ids['Молоко'], ids['Яйца']]]),
@@ -1042,4 +1068,5 @@ describe('обновление существующей базы', () => {
     ])
     await old.close()
   })
+
 })
