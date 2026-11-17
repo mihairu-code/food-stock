@@ -26,8 +26,8 @@ interface ListRowProps {
   ghost?: boolean
   /** Нажатие на иконку с названием. Без него иконка и название — просто текст. */
   main?: { label: string; onClick: () => void }
-  /** Кнопка справа: плюс/минус на «Доме», «Куплено» в покупках (text — подпись вместо иконки). */
-  toggle: { label: string; icon: ReactNode; on?: boolean; text?: boolean; onClick: () => void }
+  /** Кнопка справа: плюс/минус на «Доме», галочка в покупках. */
+  toggle: { label: string; icon: ReactNode; on?: boolean; onClick: () => void }
   /** Подпись карандаша для скринридера: «Изменить „Молоко“». */
   editLabel: string
   onEdit: () => void
@@ -40,8 +40,8 @@ interface ListRowProps {
 /**
  * Строка списка продуктов — одна и на «Доме», и в покупках: иконка, название с подписью
  * и кнопка справа. Свайп влево открывает «Изменить» и удаление; мышью и с клавиатуры
- * те же действия — карандаш и крестик, которые появляются при наведении. Строку можно
- * перетащить на другое место.
+ * те же действия — карандаш и крестик слева от кнопки, чтобы она не уезжала из-под
+ * курсора. Строку можно перетащить на другое место.
  */
 export function ListRow({
   id,
@@ -83,16 +83,6 @@ export function ListRow({
           {text}
         </>
       )}
-      <button
-        className={toggle.text ? 'btn small' : 'list-toggle'}
-        type="button"
-        disabled={disabled}
-        data-on={toggle.on}
-        aria-label={toggle.label}
-        onClick={toggle.onClick}
-      >
-        {toggle.icon}
-      </button>
       <button className="icon-btn row-hover-action" type="button" disabled={disabled} aria-label={editLabel} onClick={onEdit}>
         <Pencil size={16} />
       </button>
@@ -104,6 +94,16 @@ export function ListRow({
         onClick={onRemove}
       >
         <X size={18} />
+      </button>
+      <button
+        className="list-toggle"
+        type="button"
+        disabled={disabled}
+        data-on={toggle.on}
+        aria-label={toggle.label}
+        onClick={toggle.onClick}
+      >
+        {toggle.icon}
       </button>
     </div>
   )

@@ -96,7 +96,6 @@ export const en: Messages = {
   'shopping.emptyTitle': 'The list is empty',
   'shopping.emptyText':
     'Tap “+” next to an item on the Home tab, or add something here. Items you always keep at home land here by themselves when they run out.',
-  'shopping.bought': 'Bought',
   'shopping.boughtAria': 'Bought: {name}',
   'shopping.remove': 'Remove',
   'shopping.manual': 'Added by hand',

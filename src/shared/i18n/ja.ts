@@ -90,7 +90,6 @@ export const ja: Messages = {
   'shopping.emptyTitle': 'リストは空です',
   'shopping.emptyText':
     '「ホーム」タブでアイテムの「＋」をタップするか、ここで追加してください。常備品は、なくなると自動でここに入ります。',
-  'shopping.bought': '購入済み',
   'shopping.boughtAria': '購入済み：{name}',
   'shopping.remove': '外す',
   'shopping.manual': '手動で追加',

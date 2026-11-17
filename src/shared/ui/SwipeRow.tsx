@@ -3,7 +3,7 @@ import { isDragActive } from '@/shared/lib/drag/dragState'
 import { openSwipeRow } from './openSwipeRow'
 
 export interface SwipeAction {
-  /** Название действия: подпись под иконкой. */
+  /** Название действия: кнопка показывает только иконку, название читает скринридер. */
   label: string
   icon: ReactNode
   /** danger — удаление: красная кнопка. Перед вызовом строка уезжает и схлопывается. */
@@ -260,10 +260,10 @@ export function SwipeRow({ actions, disabled = false, children }: SwipeRowProps)
             className="swipe-action"
             type="button"
             data-tone={action.tone}
+            aria-label={action.label}
             onClick={() => runAction(action)}
           >
             {action.icon}
-            <span>{action.label}</span>
           </button>
         ))}
       </div>

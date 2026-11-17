@@ -137,7 +137,6 @@ export const ru = {
   'shopping.emptyTitle': 'Список пуст',
   'shopping.emptyText':
     'Нажмите «+» у продукта на вкладке «Дом» или добавьте позицию здесь. Постоянные продукты попадают сюда сами, когда заканчиваются.',
-  'shopping.bought': 'Куплено',
   'shopping.boughtAria': 'Куплено: {name}',
   'shopping.remove': 'Убрать',
   'shopping.manual': 'Добавлено вручную',

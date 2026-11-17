@@ -90,7 +90,6 @@ export const vi: Messages = {
   'shopping.emptyTitle': 'Danh sách trống',
   'shopping.emptyText':
     'Chạm “+” ở món trong thẻ “Nhà” hoặc thêm món tại đây. Những món luôn có sẵn sẽ tự vào đây khi hết.',
-  'shopping.bought': 'Đã mua',
   'shopping.boughtAria': 'Đã mua: {name}',
   'shopping.remove': 'Bỏ ra',
   'shopping.manual': 'Thêm thủ công',

@@ -24,22 +24,18 @@
   transition: width 0.17s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* Иконка и подпись под ней. */
+/* Только иконка: название кнопки читает скринридер. */
 .swipe-action {
   display: flex;
   min-width: 0;
   flex: 0 0 var(--swipe-action-width);
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-1);
   padding: 0;
   overflow: hidden;
   border: 0;
   border-radius: 0;
   color: #fff;
-  font-size: var(--text-2xs);
-  font-weight: 600;
 }
 
 .swipe-action svg {
