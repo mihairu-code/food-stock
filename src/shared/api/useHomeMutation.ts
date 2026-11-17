@@ -1,6 +1,8 @@
 import { useMutation } from '@tanstack/react-query'
+import { useCallback } from 'react'
 import { notify } from '@/shared/lib/toast'
 import { useHouseholdId } from '@/shared/session'
+import { commitPendingRemovals } from './pendingRemovals'
 import { queryClient } from './queryClient'
 import { qk } from './queryKeys'
 import type { Product, Section, ShoppingItem } from './types'
@@ -37,7 +39,7 @@ export function useHomeMutation<V, R = unknown>(
 ) {
   const hid = useHouseholdId()
 
-  return useMutation({
+  const mutation = useMutation({
     mutationKey: homeMutationKey(hid),
     scope: { id: `home:${hid}` },
     mutationFn,
@@ -74,4 +76,22 @@ export function useHomeMutation<V, R = unknown>(
     },
   })
 
+  // Отложенные удаления уходят раньше любой новой правки: правка посчитана по экрану, где
+  // удалённого уже нет, и в очереди на сервер она должна стоять после удаления.
+  const { mutate: send, mutateAsync: sendAsync } = mutation
+  const mutate = useCallback<typeof send>(
+    (...args) => {
+      commitPendingRemovals()
+      send(...args)
+    },
+    [send],
+  )
+  const mutateAsync = useCallback<typeof sendAsync>(
+    (...args) => {
+      commitPendingRemovals()
+      return sendAsync(...args)
+    },
+    [sendAsync],
+  )
+  return { ...mutation, mutate, mutateAsync }
 }

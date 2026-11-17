@@ -124,6 +124,7 @@ export const en: Messages = {
   'toast.addedToList': '“{name}” is on the shopping list',
   'toast.removedFromList': '“{name}” removed from the shopping list',
   'toast.deleted': 'Deleted: “{name}”',
+  'toast.undo': 'Undo',
   'toast.movedTo': '“{name}” is now in “{section}”',
 
   'dnd.instructions':

@@ -166,6 +166,7 @@ export const ru = {
   'toast.addedToList': '«{name}» — в списке покупок',
   'toast.removedFromList': '«{name}» убрано из покупок',
   'toast.deleted': 'Удалено: «{name}»',
+  'toast.undo': 'Вернуть',
   'toast.movedTo': '«{name}» теперь в «{section}»',
 
   'dnd.instructions':

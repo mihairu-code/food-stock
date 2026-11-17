@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { PURCHASED, useSetProductState, withToBuy } from '@/entities/product'
 import { useDeleteShoppingItem } from '@/entities/shopping-item'
-import type { Product, ShoppingItem } from '@/shared/api'
+import { removeWithUndo, type Product, type ShoppingItem } from '@/shared/api'
 import { notify } from '@/shared/lib/toast'
 import { openSheet } from '@/shared/ui'
 
@@ -10,7 +10,10 @@ export interface ShoppingActions {
   buyProduct: (product: Product) => void
   /** Ручная позиция куплена: шторка спрашивает, в какой раздел её положить. */
   buyItem: (item: ShoppingItem) => void
-  /** Убрать из покупок, не покупая: сам продукт и его наличие остаются как были. */
+  /**
+   * Убрать из покупок, не покупая: сам продукт и его наличие остаются как были.
+   * Как и удаление ручной позиции, это можно вернуть из тоста.
+   */
   dropProduct: (product: Product) => void
   /** Продукт дома правится той же шторкой, что и на главном экране. */
   editProduct: (product: Product) => void
@@ -20,8 +23,8 @@ export interface ShoppingActions {
 
 /** Действия над строками списка покупок; объект стабилен — для memo-строк. */
 export function useShoppingActions(): ShoppingActions {
-  const { mutate: setState } = useSetProductState()
-  const { mutate: deleteItemById } = useDeleteShoppingItem()
+  const { mutate: setState, mutateAsync: setStateAsync } = useSetProductState()
+  const { mutateAsync: deleteItemById } = useDeleteShoppingItem()
 
   return useMemo<ShoppingActions>(
     () => ({
@@ -33,8 +36,13 @@ export function useShoppingActions(): ShoppingActions {
         openSheet({ type: 'purchase', item })
       },
       dropProduct(product) {
-        setState({ id: product.id, state: withToBuy(product, false) })
-        notify('toast.removedFromList', { name: product.name })
+        removeWithUndo({
+          id: product.id,
+          kind: 'from-list',
+          commit: () => setStateAsync({ id: product.id, state: withToBuy(product, false) }),
+          message: 'toast.removedFromList',
+          params: { name: product.name },
+        })
       },
       editProduct(product) {
         openSheet({ type: 'edit-product', product })
@@ -43,10 +51,15 @@ export function useShoppingActions(): ShoppingActions {
         openSheet({ type: 'edit-item', item })
       },
       deleteItem(item) {
-        deleteItemById(item.id)
-        notify('toast.removedFromList', { name: item.name })
+        removeWithUndo({
+          id: item.id,
+          kind: 'shopping-item',
+          commit: () => deleteItemById(item.id),
+          message: 'toast.removedFromList',
+          params: { name: item.name },
+        })
       },
     }),
-    [setState, deleteItemById],
+    [setState, setStateAsync, deleteItemById],
   )
 }
