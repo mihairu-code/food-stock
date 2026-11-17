@@ -1,4 +1,4 @@
-import { X } from 'lucide-react'
+import { Pencil, X } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { SortableRow } from './SortableRow'
 import { SwipeRow } from './SwipeRow'
@@ -27,6 +27,9 @@ interface ListRowProps {
   main?: { label: string; onClick: () => void }
   /** Кнопка справа: плюс/минус на «Доме», «Куплено» в покупках (text — подпись вместо иконки). */
   toggle: { label: string; icon: ReactNode; on?: boolean; text?: boolean; onClick: () => void }
+  /** Подпись карандаша для скринридера: «Изменить „Молоко“». */
+  editLabel: string
+  onEdit: () => void
   /** Подпись крестика для скринридера и подложки свайпа. */
   removeLabel: string
   removeSwipeLabel: string
@@ -35,8 +38,8 @@ interface ListRowProps {
 
 /**
  * Строка списка продуктов — одна и на «Доме», и в покупках: иконка, название с подписью
- * и кнопка справа. Свайп влево удаляет; мышью и с клавиатуры — крестик, который
- * появляется при наведении. Строку можно перетащить на другое место.
+ * и кнопка справа. Свайп влево удаляет; мышью и с клавиатуры — карандаш и крестик,
+ * которые появляются при наведении. Строку можно перетащить на другое место.
  */
 export function ListRow({
   id,
@@ -51,6 +54,8 @@ export function ListRow({
   ghost = false,
   main,
   toggle,
+  editLabel,
+  onEdit,
   removeLabel,
   removeSwipeLabel,
   onRemove,
@@ -84,6 +89,9 @@ export function ListRow({
         onClick={toggle.onClick}
       >
         {toggle.icon}
+      </button>
+      <button className="icon-btn row-hover-action" type="button" disabled={disabled} aria-label={editLabel} onClick={onEdit}>
+        <Pencil size={16} />
       </button>
       <button
         className="icon-btn row-hover-action"

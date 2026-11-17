@@ -5,7 +5,9 @@ export type {
   NewProduct,
   NewSection,
   NewShoppingItem,
+  ProductPatch,
   SectionPatch,
+  ShoppingItemPatch,
 } from './backend'
 export { backend } from './currentBackend'
 export {

@@ -1,13 +1,15 @@
-import type { Section, ShoppingItem } from '@/shared/api'
+import type { Product, Section, ShoppingItem } from '@/shared/api'
 import { createStore, useStore } from '@/shared/lib/store'
 import type { ConfirmSheetProps } from './ConfirmSheet'
 
 /** Какая шторка открыта и с какими данными. Одновременно открыта только одна. */
 export type SheetRequest =
   | { type: 'add-product'; sectionId?: string }
+  | { type: 'edit-product'; product: Product }
   | { type: 'add-section' }
   | { type: 'manage-section'; section: Section }
   | { type: 'add-item' }
+  | { type: 'edit-item'; item: ShoppingItem }
   | { type: 'purchase'; item: ShoppingItem }
   | { type: 'invite-link'; link: string }
   | { type: 'join' }

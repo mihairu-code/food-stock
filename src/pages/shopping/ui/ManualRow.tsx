@@ -21,6 +21,7 @@ export const ManualRow = memo(function ManualRow({ item, actions, ghost }: Manua
       ghost={ghost}
       icon={<span className="emoji" aria-hidden="true">{item.icon || '🛒'}</span>}
       onBuy={() => actions.buyItem(item)}
+      onEdit={() => actions.editItem(item)}
       onRemove={() => actions.deleteItem(item)}
     />
   )

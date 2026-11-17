@@ -12,6 +12,9 @@ export interface ShoppingActions {
   buyItem: (item: ShoppingItem) => void
   /** Убрать из покупок, не покупая: сам продукт и его наличие остаются как были. */
   dropProduct: (product: Product) => void
+  /** Продукт дома правится той же шторкой, что и на главном экране. */
+  editProduct: (product: Product) => void
+  editItem: (item: ShoppingItem) => void
   deleteItem: (item: ShoppingItem) => void
 }
 
@@ -32,6 +35,12 @@ export function useShoppingActions(): ShoppingActions {
       dropProduct(product) {
         setState({ id: product.id, state: withToBuy(product, false) })
         notify('toast.removedFromList', { name: product.name })
+      },
+      editProduct(product) {
+        openSheet({ type: 'edit-product', product })
+      },
+      editItem(item) {
+        openSheet({ type: 'edit-item', item })
       },
       deleteItem(item) {
         deleteItemById(item.id)

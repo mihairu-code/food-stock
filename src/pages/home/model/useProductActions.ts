@@ -2,12 +2,15 @@ import { useMemo } from 'react'
 import { useDeleteProduct, useSetProductState, withAvailability, withToBuy } from '@/entities/product'
 import type { Product } from '@/shared/api'
 import { notify } from '@/shared/lib/toast'
+import { openSheet } from '@/shared/ui'
 
 export interface ProductActions {
   /** Нажатие на иконку: продукт закончился или снова дома. */
   toggleStock: (product: Product) => void
   /** Плюс и минус: положить в покупки или убрать из них, наличие не трогая. */
   toggleList: (product: Product) => void
+  /** Шторка правки: название, иконка, раздел, «держать дома всегда». */
+  edit: (product: Product) => void
   /** Удаление продукта: без подтверждения, оно и так видно по тосту. */
   deleteProduct: (product: Product) => void
 }
@@ -34,6 +37,9 @@ export function useProductActions(): ProductActions {
         const toBuy = !product.to_buy
         setState({ id: product.id, state: withToBuy(product, toBuy) })
         notify(toBuy ? 'toast.addedToList' : 'toast.removedFromList', { name: product.name })
+      },
+      edit(product) {
+        openSheet({ type: 'edit-product', product })
       },
       deleteProduct(product) {
         deleteProductById(product.id)

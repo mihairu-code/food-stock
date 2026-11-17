@@ -219,6 +219,13 @@ export function createLocalBackend(store: KeyValueStore = globalThis.localStorag
       writeState({ ...state, products: [...state.products, product] })
       return product
     },
+    updateProduct: async (productId, patch) => {
+      // Как и триггер в базе: правка названия не двигает продукт в покупках, updated_at прежний.
+      updateState((s) => ({
+        ...s,
+        products: s.products.map((p) => (p.id === productId ? { ...p, ...patch } : p)),
+      }))
+    },
     setProductState: async (productId, state) => {
       updateState((s) => ({ ...s, ...setProductState(s, productId, state, now()) }))
     },
@@ -240,6 +247,12 @@ export function createLocalBackend(store: KeyValueStore = globalThis.localStorag
       }
       updateState((s) => ({ ...s, shoppingItems: [...s.shoppingItems, item] }))
       return item
+    },
+    updateShoppingItem: async (itemId, patch) => {
+      updateState((s) => ({
+        ...s,
+        shoppingItems: s.shoppingItems.map((i) => (i.id === itemId ? { ...i, ...patch } : i)),
+      }))
     },
     deleteShoppingItem: async (itemId) => {
       updateState((s) => ({ ...s, shoppingItems: s.shoppingItems.filter((i) => i.id !== itemId) }))

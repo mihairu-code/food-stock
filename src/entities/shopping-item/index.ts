@@ -1,1 +1,6 @@
-export { useCreateShoppingItem, useDeleteShoppingItem, usePurchaseShoppingItem } from './api/shoppingItemApi'
+export {
+  useCreateShoppingItem,
+  useDeleteShoppingItem,
+  useEditShoppingItem,
+  usePurchaseShoppingItem,
+} from './api/shoppingItemApi'

@@ -58,6 +58,8 @@ export const ProductRow = memo(function ProductRow({ product, actions, droppable
         on: toBuy,
         onClick: () => actions.toggleList(product),
       }}
+      editLabel={t('product.edit', { name })}
+      onEdit={() => actions.edit(product)}
       removeLabel={t('product.delete', { name })}
       removeSwipeLabel={t('common.delete')}
       onRemove={() => actions.deleteProduct(product)}

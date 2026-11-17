@@ -30,6 +30,7 @@ export const ShoppingProductRow = memo(function ShoppingProductRow({
       ghost={ghost}
       icon={<ProductStockIcon icon={product.icon} />}
       onBuy={() => actions.buyProduct(product)}
+      onEdit={() => actions.editProduct(product)}
       onRemove={() => actions.dropProduct(product)}
     />
   )

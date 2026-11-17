@@ -10,9 +10,10 @@ const SUGGESTIONS = 5
  * сам, подставляется уверенное совпадение из словаря; ручной выбор (в том числе
  * «без иконки») всегда главнее.
  */
-export function useSuggestedEmoji(name: string) {
-  // null — пользователь иконку не трогал; '' — намеренно убрал.
-  const [manual, setManual] = useState<string | null>(null)
+export function useSuggestedEmoji(name: string, savedIcon: string | null = null) {
+  // null — пользователь иконку не трогал; '' — намеренно убрал. У сохранённой записи
+  // её иконка уже выбрана — подсказка по названию её не заменяет.
+  const [manual, setManual] = useState<string | null>(savedIcon)
   const { lang } = useLang()
   const deferredName = useDeferredValue(name)
   const { options, best } = useMemo(() => suggestEmojis(deferredName, { lang, limit: SUGGESTIONS }), [deferredName, lang])

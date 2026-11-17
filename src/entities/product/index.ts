@@ -1,8 +1,10 @@
 export {
   useCreateProduct,
   useDeleteProduct,
+  useEditProduct,
   useReorderProducts,
   useSetProductState,
+  type ProductEdit,
 } from './api/productApi'
 export { groupProductsBySection } from './model/productOrder'
 export { PURCHASED, withAvailability, withToBuy } from './model/stockRules'

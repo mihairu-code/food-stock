@@ -4,6 +4,7 @@ import {
   useHomeMutation,
   withState,
   type NewProduct,
+  type ProductPatch,
   type ProductState,
 } from '@/shared/api'
 import { useSession } from '@/shared/session'
@@ -28,6 +29,34 @@ export function useCreateProduct() {
         },
       ])
     },
+  )
+}
+
+export interface ProductEdit {
+  id: string
+  patch: ProductPatch
+  /**
+   * Продукт переезжает в другой раздел: его продукты в новом порядке, этот — последним.
+   * Без переезда — не передаётся.
+   */
+  move?: { sectionId: string; productIds: string[] }
+}
+
+/**
+ * Название, иконка и вид продукта, а при переезде — и раздел. Отметки «дома» и
+ * «в покупках» правка не трогает, поэтому место в покупках у продукта сохраняется.
+ */
+export function useEditProduct() {
+  return useHomeMutation(
+    async ({ id, patch, move }: ProductEdit) => {
+      await backend.updateProduct(id, patch)
+      if (move) await backend.reorderProducts(move.sectionId, move.productIds)
+    },
+    (cache, { id, patch, move }) =>
+      cache.products((list) => {
+        const edited = list.map((product) => (product.id === id ? { ...product, ...patch } : product))
+        return move ? placeProducts(edited, move.sectionId, move.productIds) : edited
+      }),
   )
 }
 

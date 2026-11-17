@@ -4,6 +4,7 @@ import {
   useHomeMutation,
   type NewShoppingItem,
   type ShoppingItem,
+  type ShoppingItemPatch,
 } from '@/shared/api'
 import { useSession } from '@/shared/session'
 
@@ -17,6 +18,15 @@ export function useCreateShoppingItem() {
         ...list,
         { ...input, household_id: householdId, created_at: new Date().toISOString(), created_by: user.id },
       ]),
+  )
+}
+
+/** Название и иконка ручной позиции; место в списке не меняется. */
+export function useEditShoppingItem() {
+  return useHomeMutation(
+    ({ id, patch }: { id: string; patch: ShoppingItemPatch }) => backend.updateShoppingItem(id, patch),
+    (cache, { id, patch }) =>
+      cache.shoppingItems((list) => list.map((item) => (item.id === id ? { ...item, ...patch } : item))),
   )
 }
 

@@ -1,30 +1,40 @@
 import { useState } from 'react'
-import { useCreateShoppingItem } from '@/entities/shopping-item'
+import { useCreateShoppingItem, useEditShoppingItem } from '@/entities/shopping-item'
+import type { ShoppingItem } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import { useSuggestedEmoji } from '@/shared/lib/emoji/useSuggestedEmoji'
 import { notify } from '@/shared/lib/toast'
 import { closeSheet, FormSheet, NameIconFields } from '@/shared/ui'
 
-/** Позиция покупок, добавленная вручную, — то, чего в разделах дома нет. */
-export function ShoppingItemSheet() {
+/**
+ * Позиция покупок, добавленная вручную, — то, чего в разделах дома нет. Добавление
+ * и правка — одна форма.
+ */
+export function ShoppingItemSheet({ item }: { item?: ShoppingItem }) {
   const t = useT()
   const createItem = useCreateShoppingItem()
-  const [name, setName] = useState('')
-  const { icon, setIcon, options } = useSuggestedEmoji(name)
+  const editItem = useEditShoppingItem()
+  const [name, setName] = useState(item?.name ?? '')
+  const { icon, setIcon, options } = useSuggestedEmoji(name, item?.icon ?? null)
 
   function saveShoppingItem() {
     const trimmed = name.trim()
     if (!trimmed) return
-    createItem.mutate({ id: crypto.randomUUID(), name: trimmed, icon: icon || null })
-    notify('toast.addedItem')
+    if (item) {
+      editItem.mutate({ id: item.id, patch: { name: trimmed, icon: icon || null } })
+      notify('toast.changesSaved')
+    } else {
+      createItem.mutate({ id: crypto.randomUUID(), name: trimmed, icon: icon || null })
+      notify('toast.addedItem')
+    }
     closeSheet()
   }
 
   return (
     <FormSheet
-      title={t('shopping.addTitle')}
-      description={t('shopping.addDescription')}
-      submitLabel={t('common.add')}
+      title={t(item ? 'shopping.editTitle' : 'shopping.addTitle')}
+      description={item ? undefined : t('shopping.addDescription')}
+      submitLabel={t(item ? 'common.save' : 'common.add')}
       disabled={!name.trim()}
       onSubmit={saveShoppingItem}
     >
