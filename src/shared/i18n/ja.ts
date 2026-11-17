@@ -64,6 +64,7 @@ export const ja: Messages = {
 
   'productSheet.title': 'アイテムを追加',
   'productSheet.editTitle': 'アイテムを編集',
+  'productSheet.duplicate': 'このアイテムはすでに「{section}」にあります',
   'productSheet.description': '家にあるものを登録します',
   'productSheet.name': '名前',
   'productSheet.placeholder': '例：ヨーグルト',
@@ -100,6 +101,7 @@ export const ja: Messages = {
     '購入したアイテムは「在庫あり」に戻り、元の置き場所に残ります。買わずに外すときは、行を左にスワイプしてください。',
   'shopping.addTitle': '買い物リストに追加',
   'shopping.editTitle': '買い物アイテムを編集',
+  'shopping.duplicate': 'これはすでに買い物リストにあります',
   'shopping.addDescription': '置き場所は、買ったあとで選びます',
   'shopping.whatToBuy': '買うもの',
   'shopping.placeholder': '例：パン',

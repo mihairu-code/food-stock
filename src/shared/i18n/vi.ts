@@ -64,6 +64,7 @@ export const vi: Messages = {
 
   'productSheet.title': 'Thêm món',
   'productSheet.editTitle': 'Sửa món',
+  'productSheet.duplicate': 'Món này đã có trong “{section}”',
   'productSheet.description': 'Ghi lại thứ đang có trong nhà',
   'productSheet.name': 'Tên món',
   'productSheet.placeholder': 'Ví dụ: sữa chua',
@@ -100,6 +101,7 @@ export const vi: Messages = {
     'Món đã mua được đánh dấu là còn ở nhà và vẫn nằm trong khu vực của nó. Vuốt dòng sang trái để bỏ ra mà không mua.',
   'shopping.addTitle': 'Thêm vào danh sách mua',
   'shopping.editTitle': 'Sửa món cần mua',
+  'shopping.duplicate': 'Món này đã có trong danh sách mua',
   'shopping.addDescription': 'Bạn sẽ chọn khu vực sau, khi đã mua',
   'shopping.whatToBuy': 'Cần mua gì',
   'shopping.placeholder': 'Ví dụ: bánh mì',

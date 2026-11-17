@@ -1,27 +1,58 @@
-/* SwipeRow: строка, которую удаляют свайпом влево. */
+/* SwipeRow: строка, у которой свайпом открываются кнопки. */
 
 .swipe {
+  /* Ширина одной кнопки. */
+  --swipe-action-width: 3.75rem;
   position: relative;
   overflow: hidden;
 }
 
-.swipe:not([data-active='true']) .swipe-under {
+.swipe:not([data-active='true']) .swipe-actions {
   visibility: hidden;
 }
 
-/* Красная подложка с подписью — видна, пока строку тянут влево. */
-.swipe-under {
+/* Кнопки под строкой: ширину задаёт SwipeRow — ровно на сколько сдвинута строка. */
+.swipe-actions {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
+  width: 0;
+  overflow: hidden;
+  background: var(--paper);
+  transition: width 0.17s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Иконка и подпись под ней. */
+.swipe-action {
+  display: flex;
+  min-width: 0;
+  flex: 0 0 var(--swipe-action-width);
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  gap: 0.4375rem;
-  padding-right: 1.125rem;
-  background: var(--red);
+  justify-content: center;
+  gap: var(--space-1);
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
   color: #fff;
-  font-size: var(--text-sm);
+  font-size: var(--text-2xs);
   font-weight: 600;
+}
+
+.swipe-action svg {
+  flex: 0 0 auto;
+}
+
+.swipe-action[data-tone='accent'] {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.swipe-action[data-tone='danger'] {
+  background: var(--red);
 }
 
 /* Длительность та же, что SLIDE_MS в SwipeRow.tsx. Пока строку ведёт палец,

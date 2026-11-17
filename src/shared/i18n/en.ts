@@ -64,6 +64,7 @@ export const en: Messages = {
 
   'productSheet.title': 'Add an item',
   'productSheet.editTitle': 'Edit item',
+  'productSheet.duplicate': 'This item is already in “{section}”',
   'productSheet.description': 'Add something you have at home',
   'productSheet.name': 'Item name',
   'productSheet.placeholder': 'For example, yogurt',
@@ -106,6 +107,7 @@ export const en: Messages = {
     'An item you bought is marked as at home again and stays in its section. Swipe a row left to remove it without buying.',
   'shopping.addTitle': 'Add to the shopping list',
   'shopping.editTitle': 'Edit shopping item',
+  'shopping.duplicate': 'This is already on the shopping list',
   'shopping.addDescription': 'You’ll pick a section later, once it’s bought',
   'shopping.whatToBuy': 'What to buy',
   'shopping.placeholder': 'For example, bread',

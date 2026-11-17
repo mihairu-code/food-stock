@@ -15,6 +15,9 @@ interface NameIconFieldsProps {
   icons: string[]
   iconHint?: string
   enterKeyHint?: InputHTMLAttributes<HTMLInputElement>['enterKeyHint']
+  /** Ошибка в названии (например, такое уже есть) и счётчик встряски поля — см. TextField. */
+  nameError?: string | null
+  nameShakeCount?: number
 }
 
 /**
@@ -34,6 +37,8 @@ export function NameIconFields(props: NameIconFieldsProps) {
         maxLength={props.maxLength}
         enterKeyHint={props.enterKeyHint ?? 'done'}
         autoFocus
+        error={props.nameError}
+        shakeCount={props.nameShakeCount}
       />
       <EmojiField value={props.icon} onChange={props.onIconChange} options={props.icons} hint={props.iconHint} />
     </>

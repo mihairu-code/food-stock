@@ -1,5 +1,6 @@
 import type { HomeData, Product, Section, ShoppingItem } from '@/shared/api'
 import { compareTimes } from '@/shared/lib/compareTimes'
+import { sameName } from '@/shared/lib/sameName'
 
 interface ShoppingEntryBase {
   /** Идентификатор продукта или ручной позиции. */
@@ -51,3 +52,8 @@ export function buildShoppingList(data: HomeData): ShoppingEntry[] {
 /** Название строки списка — продукта или ручной позиции. */
 export const shoppingEntryName = (entry: ShoppingEntry): string =>
   entry.type === 'product' ? entry.product.name : entry.item.name
+
+/** Строка списка с таким же названием, если она там уже есть; сама редактируемая строка не в счёт. */
+export function findShoppingEntryNamed(entries: ShoppingEntry[], name: string, exceptId?: string): ShoppingEntry | undefined {
+  return entries.find((entry) => entry.id !== exceptId && sameName(shoppingEntryName(entry), name))
+}

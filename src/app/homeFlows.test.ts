@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { setLangSetting } from '@/shared/i18n'
-import { groupProductsBySection, PURCHASED, withAvailability, withToBuy } from '@/entities/product'
+import { findProductNamed, groupProductsBySection, PURCHASED, withAvailability, withToBuy } from '@/entities/product'
 import { sortSections } from '@/entities/section'
-import { buildShoppingList, shoppingEntryName } from '@/entities/shopping-list'
+import { buildShoppingList, findShoppingEntryNamed, shoppingEntryName } from '@/entities/shopping-list'
 import type { Backend, Product } from '@/shared/api'
 import { createLocalBackend } from '@/shared/api/localBackend'
 
@@ -316,6 +316,25 @@ describe('домашние запасы: основные потоки', () => {
     const state = await snapshot()
     expect(state.shopping.map(shoppingEntryName)).toEqual(['Хлеб бородинский', 'Соль'])
     expect(state.shoppingItems.find((item) => item.id === bread.id)?.icon).toBe('🍞')
+  })
+
+  it('дубли названий находятся без учёта регистра и лишних пробелов, а сама запись — не дубль', async () => {
+    const fridge = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Холодильник', icon: null, sort_order: 0 })
+    const milk = await backend.createProduct(hid, {
+      id: crypto.randomUUID(),
+      section_id: fridge.id,
+      name: 'Молоко',
+      icon: null,
+      kind: 'staple',
+    })
+    await backend.createShoppingItem(hid, { id: crypto.randomUUID(), name: 'Хлеб', icon: null })
+    const state = await snapshot()
+
+    expect(findProductNamed(state.products, '  молоко ')?.id).toBe(milk.id)
+    expect(findProductNamed(state.products, 'Молоко', milk.id)).toBeUndefined()
+    expect(findProductNamed(state.products, 'Молоко топлёное')).toBeUndefined()
+    expect(findShoppingEntryNamed(state.shopping, 'ХЛЕБ')).toBeDefined()
+    expect(findShoppingEntryNamed(state.shopping, 'Молоко')).toBeUndefined() // продукт дома, но не в покупках
   })
 
   it('у дома меняются название и аватарка', async () => {

@@ -96,6 +96,7 @@ export const ru = {
 
   'productSheet.title': 'Добавить продукт',
   'productSheet.editTitle': 'Изменить продукт',
+  'productSheet.duplicate': 'Такой продукт уже есть в разделе «{section}»',
   'productSheet.description': 'Внесите то, что есть дома',
   'productSheet.name': 'Название продукта',
   'productSheet.placeholder': 'Например, йогурт',
@@ -147,6 +148,7 @@ export const ru = {
     'Купленный продукт снова отмечается как «есть дома» и остаётся в своём разделе. Смахните строку влево, чтобы убрать её, не покупая.',
   'shopping.addTitle': 'Добавить в покупки',
   'shopping.editTitle': 'Изменить покупку',
+  'shopping.duplicate': 'Это уже есть в списке покупок',
   'shopping.addDescription': 'Раздел выберете потом, когда купите',
   'shopping.whatToBuy': 'Что купить',
   'shopping.placeholder': 'Например, хлеб',
