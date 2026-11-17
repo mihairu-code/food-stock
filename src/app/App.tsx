@@ -1,9 +1,7 @@
 import { QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
-import { HomePage } from '@/pages/home'
 import { SectionsPage } from '@/pages/sections'
 import { SettingsPage } from '@/pages/settings'
-import { ShoppingPage } from '@/pages/shopping'
 import { queryClient } from '@/shared/api'
 import { ToastRegion } from '@/shared/ui'
 import { AppLayout } from './layout/AppLayout'
@@ -21,8 +19,9 @@ export default function App() {
               <BrowserRouter>
                 <Routes>
                   <Route element={<AppLayout />}>
-                    <Route index element={<HomePage />} />
-                    <Route path="shopping" element={<ShoppingPage />} />
+                    {/* «Дом» и «Покупки» рисует сам каркас: они остаются в памяти (AppLayout). */}
+                    <Route index element={null} />
+                    <Route path="shopping" element={null} />
                     <Route path="settings" element={<SettingsPage />} />
                     <Route path="settings/sections" element={<SectionsPage />} />
                     <Route path="*" element={<Navigate to="/" replace />} />

@@ -52,6 +52,21 @@ export interface ShoppingItemPatch {
   icon: string | null
 }
 
+/** Таблицы с данными дома, строки которых приходят в событиях целиком. */
+export type HomeTable = 'sections' | 'products' | 'shopping_items'
+
+/**
+ * Изменение, сделанное не в этой вкладке: другим участником или на другом устройстве.
+ * Строки разделов, продуктов и ручных покупок приходят целиком — кэш правится без
+ * запроса к серверу. Об остальном известно только, в какой таблице оно случилось.
+ */
+export type DataChange =
+  | { kind: 'upsert'; table: HomeTable; row: Section | Product | ShoppingItem }
+  | { kind: 'delete'; table: HomeTable; id: string }
+  | { kind: 'table'; table: 'households' | 'household_members' | 'household_invites' }
+  /** Неизвестно, что изменилось (соединение восстановилось, правка в другой вкладке демо-режима). */
+  | { kind: 'everything' }
+
 export interface NewShoppingItem {
   id: string
   name: string
@@ -138,7 +153,7 @@ export interface Backend {
   purchaseShoppingItem(itemId: string, sectionId: string, makeStaple: boolean): Promise<void>
 
   /** Сообщает об изменениях, сделанных не в этой вкладке (другой участник или устройство). */
-  subscribe(onChange: () => void): () => void
+  subscribe(onChange: (change: DataChange) => void): () => void
 
   /** Только локальный режим: вернуть демо-данные к исходным. */
   resetLocalData?(): Promise<void>

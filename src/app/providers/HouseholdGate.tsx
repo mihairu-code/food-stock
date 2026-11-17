@@ -8,7 +8,7 @@ import { SessionContext, type Session } from '@/shared/session'
 import { Notice, StatusNote } from '@/shared/ui'
 import { useHomeBootstrap } from './useHomeBootstrap'
 import { useProfileSync } from './useProfileSync'
-import { useRealtimeRefresh } from './useRealtimeRefresh'
+import { useRealtimeSync } from './useRealtimeSync'
 
 /** Определяет текущий дом пользователя и держит данные свежими через Realtime. */
 export function HouseholdGate({ user, children }: { user: User; children: ReactNode }) {
@@ -28,7 +28,7 @@ export function HouseholdGate({ user, children }: { user: User; children: ReactN
     if (householdId) prefetchHome(householdId)
   }, [])
 
-  useRealtimeRefresh()
+  useRealtimeSync()
   useProfileSync(user, memberships.data, displayName)
   const bootstrap = useHomeBootstrap({
     // Время 0 — данные из снимка прошлого запуска; решать по ним, что дома нет, нельзя.

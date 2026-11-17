@@ -1,5 +1,5 @@
 import { createClient, type PostgrestError, type User as AuthUser } from '@supabase/supabase-js'
-import type { Backend } from './backend'
+import type { Backend, DataChange, HomeTable } from './backend'
 import type {
   Household,
   Invite,
@@ -13,14 +13,23 @@ import type {
   User,
 } from './types'
 
-const REALTIME_TABLES = [
-  'households',
-  'household_members',
-  'household_invites',
-  'sections',
-  'products',
-  'shopping_items',
-] as const
+const HOME_TABLES: readonly HomeTable[] = ['sections', 'products', 'shopping_items']
+const OTHER_TABLES = ['households', 'household_members', 'household_invites'] as const
+
+/** Событие Realtime по строке таблицы дома — в изменение, которое можно наложить на кэш. */
+function homeChange(
+  table: HomeTable,
+  payload: { eventType: string; new: Record<string, unknown>; old: Record<string, unknown> },
+): DataChange {
+  if (payload.eventType === 'DELETE') {
+    const id = payload.old.id
+    return typeof id === 'string' ? { kind: 'delete', table, id } : { kind: 'everything' }
+  }
+  const row = payload.new
+  return typeof row.id === 'string' && typeof row.household_id === 'string'
+    ? { kind: 'upsert', table, row: row as unknown as Section & Product & ShoppingItem }
+    : { kind: 'everything' }
+}
 
 function dataOrThrow<T>(result: { data: T | null; error: PostgrestError | null }): T {
   if (result.error) throw new Error(result.error.message)
@@ -299,14 +308,25 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
 
     subscribe: (onChange) => {
       // Без фильтра по дому: INSERT/UPDATE и так ограничены RLS, а DELETE-события
-      // Postgres Changes фильтровать не умеет. Любое событие — повод перечитать данные.
+      // Postgres Changes фильтровать не умеет — приходит только идентификатор строки.
       let channel = supabase.channel(`home-stock-${crypto.randomUUID()}`)
-      for (const table of REALTIME_TABLES) {
-        channel = channel.on('postgres_changes', { event: '*', schema: 'public', table }, () =>
-          onChange(),
+      for (const table of HOME_TABLES) {
+        channel = channel.on('postgres_changes', { event: '*', schema: 'public', table }, (payload) =>
+          onChange(homeChange(table, payload)),
         )
       }
-      channel.subscribe()
+      for (const table of OTHER_TABLES) {
+        channel = channel.on('postgres_changes', { event: '*', schema: 'public', table }, () =>
+          onChange({ kind: 'table', table }),
+        )
+      }
+      // Пока соединения не было, события терялись: после переподключения перечитываем дом.
+      let connectedBefore = false
+      channel.subscribe((status) => {
+        if (status !== 'SUBSCRIBED') return
+        if (connectedBefore) onChange({ kind: 'everything' })
+        connectedBefore = true
+      })
       return () => {
         void supabase.removeChannel(channel)
       }

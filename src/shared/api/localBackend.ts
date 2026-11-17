@@ -274,7 +274,8 @@ export function createLocalBackend(store: KeyValueStore = globalThis.localStorag
     subscribe: (onChange) => {
       if (typeof window === 'undefined') return () => {}
       const listener = (event: StorageEvent) => {
-        if (event.key === STORAGE_KEY) onChange()
+        // Событие говорит только, что данные другой вкладки поменялись, — перечитываем дом.
+        if (event.key === STORAGE_KEY) onChange({ kind: 'everything' })
       }
       window.addEventListener('storage', listener)
       return () => window.removeEventListener('storage', listener)

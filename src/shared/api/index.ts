@@ -1,6 +1,8 @@
 /* Данные приложения: контракт хранилища, его реализации, кэш запросов и типы записей. */
 export type {
   Backend,
+  DataChange,
+  HomeTable,
   HouseholdPatch,
   NewProduct,
   NewSection,
