@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.9.0 — 2026-11-17
+
+- Edit products and manual items (migration `0009`: renaming keeps the place in the list).
+- Swipe opens Edit and Delete; one open row at a time; pencil and cross on desktop hover.
+- Duplicate name warning with a shaking field.
+- Feature-Sliced Design structure with a boundaries test.
+- Styles split by layer, rem scale and design tokens.
+- Realtime rows patched into the cache; Home and Shopping stay mounted, each keeps its scroll.
+- Security headers and CSP on Vercel; desktop checkbox fix.
+
 ## 0.8.0 — 2026-11-15
 
 - Install guide on the welcome screen: steps for iPhone/iPad, Android, Chrome/Edge on

@@ -68,21 +68,24 @@ loading. The rules are in [decision 0004](docs/en/decisions/0004-safe-updates.md
 
 ```
 src/
-  domain/     types and pure logic (shopping list, state transitions)
-  data/       storage boundary: the Backend interface and two implementations
-  app/        gates: who's signed in, which home is open; welcome and install guide
-  data/hooks/ queries and mutations (optimistic edits, one-off actions)
-  screens/    Home, Shopping, Settings — one component per file
-  sheets/     bottom sheets; all rendered by SheetHost, opened with openSheet()
-  components/ small shared pieces
-  hooks/      shared hooks
-  lib/        small standalone helpers (theme and accent, keyboard, drag state,
-              invite links, emoji suggestions, install detection)
-  i18n/       dictionaries: ru.ts is the reference, en/ja/vi have the same keys
+  app/        startup, routes, providers (auth, merge, household gates), layout, SheetHost
+  pages/      home, shopping, settings, sections, welcome (with the install guide), merge choice
+  widgets/    header, tab bar
+  features/   forms in sheets: product, shopping item, purchase, section, home, name,
+              join, invite; account actions
+  entities/   product, section, shopping item, shopping list, member, invite, home:
+              queries and mutations, rules, small UI
+  shared/     api (storage contract, local and Supabase backends, cache), i18n,
+              lib (small standalone modules), ui (shared elements, sheets)
 supabase/
   migrations/ schema, RLS policies, RPC
   tests/      migrations + RLS checked on PGlite
 ```
+
+Layers follow Feature-Sliced Design: a layer imports only the layers below it, slices of
+one layer don't know each other, from outside a slice is reached only through its
+`index.ts` ([decision 0011](docs/en/decisions/0011-feature-sliced-design.md)). A test
+checks it.
 
 More in [docs/en](docs/en): the [product brief](docs/en/product-brief.md),
 [decisions](docs/en/decisions), [release notes](docs/en/releases), a

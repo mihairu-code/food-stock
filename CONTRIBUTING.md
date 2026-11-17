@@ -16,21 +16,27 @@ in the app opened from the Home Screen — see [iPhone notes](docs/en/ios-notes.
 
 ## Code
 
-- **One file — one component.** Helpers and hooks go to their own files next to it or
-  to `lib/`.
-- **Imports from the root via `@/`**; relative ones only for a neighbouring file.
+- **Layers (FSD).** A layer imports only lower layers, slices of one layer don't know
+  each other, from outside a slice is reached through its `index.ts`.
+  `src/app/fsdBoundaries.test.ts` fails on a violation.
+- **One file — one component.** Hooks and functions go to `model/` or `lib/`.
+- **Imports from the root via `@/`** and through a slice's public API
+  (`@/entities/product`); inside a slice — relative.
 - **Reuse, don't re-layout.** A form in a sheet is `FormSheet`; name with icon is
   `NameIconFields`; section choice is `SectionPicker`; a settings row is `SettingRow` /
   `SettingSelect` / `SettingToggle`; a draggable row is `SortableRow`; swipe to delete
   is `SwipeRow`. The same element should look the same everywhere.
 - **Sheets** are rendered only by `SheetHost`. A screen calls `openSheet({ type: … })`.
-  A new sheet: a component in `sheets/`, a variant in `SheetRequest` (`sheetStore.ts`),
-  a line in `SheetHost.tsx`.
+  A new sheet: a component in `features/…`, a variant in `SheetRequest`
+  (`shared/ui/sheet/sheetStore.ts`), a line in `app/sheets/SheetHost.tsx`.
 - **Toast** — `notify('key', params)`; it's a function, not a hook.
-- **Mutations** live in `data/hooks` together with the error toast and cache refetch.
-  A component only calls `mutate`. Home data is edited through `useHomeMutation`
-  (optimistic, strictly in order).
-- **A new storage method** goes into `backend.ts`, both implementations and the tests.
+- **Mutations** live in `entities/*/api` together with the error toast and cache
+  refetch. A component only calls `mutate`. Home data is edited through
+  `useHomeMutation` (optimistic, strictly in order).
+- **A new storage method** goes into `shared/api/backend.ts`, both implementations and
+  the tests (`src/app/homeFlows.test.ts`).
+- **Styles** — a file next to its layer, imported in `app/styles/index.css`. Sizes in
+  `rem` from the scales in `tokens.css`; `px` only for borders, shadows and outlines.
 - **Texts** — a key in `ru.ts` and the same keys in the other three dictionaries,
   otherwise `i18n.test.ts` fails.
 - **Colors** — only through variables (`--accent`, `--paper`, `--ink`…); theme and
@@ -48,7 +54,7 @@ For a while the old version keeps running on phones against the same database.
   language, theme, accent, hints).
 - **No `React.lazy` and no dynamic `import()`** — see
   [decision 0004](docs/en/decisions/0004-safe-updates.md).
-- **Changing the shape of home data** — bump `VERSION` in `data/snapshot.ts`.
+- **Changing the shape of home data** — bump `VERSION` in `shared/api/snapshot.ts`.
 - **Data access only through RLS.** A new table without a policy is a hole.
 
 ## Docs

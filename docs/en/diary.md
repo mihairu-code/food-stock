@@ -460,3 +460,70 @@ into: the keyboard, the screen shift, focus, what a web app just doesn't get. In
 I won't remember why the sheet is computed exactly this way and not simpler. Plus
 `CONTRIBUTING` with the code rules and what must not break while the old version lives
 on phones.
+
+## Nov 15, night
+
+Before bed — security. RLS on every table and hashed invite tokens were there from the
+start, but there were no headers on Vercel at all. Added a CSP: scripts only our own,
+data only to Supabase, images also from googleusercontent (member photos), no framing.
+The inline theme script is allowed by its hash — plus a test that computes the hash
+from `index.html` and checks it against `vercel.json`. Otherwise I'll change the script,
+forget the hash, and after a deploy the theme flashes again and I won't even know why.
+
+Along the way I found a nasty bug on desktop: clicking the "Always keep at home"
+checkbox square toggled the state, but the browser put the old look back. The product
+got saved as a staple with an empty box. Gave the toggling back to the browser; the label
+only guards focus now.
+
+## Nov 16, Mon
+
+Moving day. A hundred-plus files in folders by type: `components`, `screens`, `sheets`,
+`data/hooks`, `lib`. The "keep at home" checkbox knows about products but sits next to a
+settings row button; `lib` has started pulling data. Nothing limits who imports whom.
+
+Went with Feature-Sliced Design ([0011](decisions/0011-feature-sliced-design.md)): the
+rules are well known, clear, and can be checked by a test. Moved in three
+steps so everything builds after each: first `shared` and `entities` — only file moves
+and import paths, then `features`, `widgets` and `pages`, and only then `app`, an
+`index.ts` per slice and everything I wanted to rename.
+
+In that last step I went through every file: split `domain/logic.ts` by owner, merged
+similar things (`Tip` → `Hint` with a flag, `Splash` → `StatusNote`, three confirmation
+sheets → one, Home and Shopping rows → a shared `ListRow`), renamed `submit` to
+`saveProduct` and so on. And the `fsdBoundaries` test: it walks `src` and fails on an
+import that goes up, into a sibling slice or around `index.ts`.
+
+In the evening — styles. Cut the 1900-line `index.css` by layer
+([0012](decisions/0012-css-by-layer-rem.md)), moved sizes to `rem` on scales. To not
+break the look I dumped `getComputedStyle` of every element before and after and
+compared them with a script — the difference is only 1–2 px rounding. Along the way the
+"out" dot became solid red instead of a ring: a ring on a small icon read poorly.
+
+## Nov 17, Tue
+
+Editing, finally. A typo in a name meant "delete and add again", losing the place in the
+shopping list along the way. Editing is the same sheet as adding, just with the fields
+filled in. A database nuance: a trigger moved the product's `updated_at` on any edit,
+and the shopping list is ordered by `updated_at` — a renamed product flew to the end.
+Narrowed the trigger (`0009`): only the "at home" and "to buy" flags now.
+
+How do you get to editing on a phone? First I wanted a tap on the row, but a tap on the
+icon already toggles stock. Did it like Mail: a swipe left opens Edit and Delete, only
+one row can be open. On desktop — a pencil and a cross on hover.
+
+Right there, protection from duplicates: two "Milk"s in one home is confusing. The field
+turns red, shakes and says which section already has it.
+
+After lunch — what annoyed me on the phone: switching tabs flickered, and Home jumped to
+the top every time. Several causes: the screen was recreated, an opacity animation
+played, Home with dnd-kit doesn't build instantly. Went through the options
+([0013](decisions/0013-realtime-into-cache-kept-tabs.md)), View Transitions in Safari are
+uneven with a fixed header. Kept Home and Shopping mounted, hide the inactive one with
+`hidden`, remember the scroll at the moment of navigation. Without the animation it
+actually feels nicer.
+
+And realtime: every change by someone else refetched the whole home with five requests.
+Now the row from the event goes straight into the cache. The trickiest part is the echo
+of my own edits: the event about my edit can arrive after the next one and bring back
+the old state. Such events within a two-second window aren't applied — just one table is
+refetched.
