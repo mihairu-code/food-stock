@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.10.0 — 2026-11-18
+
+- Delete with undo: delayed request, "Undo" in the toast; also for removing from the list
+  and for buying a home product.
+- Long swipe deletes; growing delete button, bounce, rounded swipe buttons, no dividers.
+- Desktop hover actions moved left of the main button; icon-only buttons.
+- Pull a sheet down from a text field; sheet focus rules; section tiles don't shift.
+- Sheet above the keyboard fixed for the Home Screen app (viewport offset subtracted once).
+- Last visit tracking (migration `0010`) and daily cleanup of inactive anonymous users
+  (migration `0011`, `pg_cron`).
+
 ## 0.9.0 — 2026-11-17
 
 - Edit products and manual items (migration `0009`: renaming keeps the place in the list).

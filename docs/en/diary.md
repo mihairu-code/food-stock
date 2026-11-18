@@ -527,3 +527,55 @@ Now the row from the event goes straight into the cache. The trickiest part is t
 of my own edits: the event about my edit can arrive after the next one and bring back
 the old state. Such events within a two-second window aren't applied — just one table is
 refetched.
+
+## Nov 17, evening
+
+After the release I sat down at a computer to check the hover buttons and found a nasty
+one: the cross appeared to the right of "+" — exactly where it had been. You move the
+mouse down the column of pluses, click — and the product is gone. Moved the pencil and
+the cross to the left of the main button, removed the labels under the swipe buttons,
+and "Bought" became a check button.
+
+And since deleting by accident got easier, deleting has to be reversible
+([0014](decisions/0014-delete-with-undo.md)). I didn't want a confirmation for every
+delete — you get used to it fast and tap "Yes" without looking. A server-side trash is a
+new column, a filter in every query, cleanup. Went simpler: the record disappears from
+the screen right away, and the request goes out when the toast with "Undo" closes. Until
+then the server has nothing to restore. The subtle part is when to send: on the next edit
+(it was computed against a screen without the deleted record) and when the app goes to
+the background, otherwise the phone unloads it together with the unsent delete.
+
+With undo in place, the long swipe became safe: past the middle the delete button grows
+to the whole strip, let go — deleted. Tuned the threshold on a narrow screen so that
+"just open the buttons" doesn't turn into a delete: no closer than 48 px beyond them.
+Rounded the buttons, and the lines between products looked rough next to them — removed.
+
+## Nov 18, Wed
+
+Morning — sheets. You couldn't pull a sheet down by its field: any touch on a field went
+to the browser. Now a clear move down goes to the sheet, sideways and holding stay with
+the field. Focus too: on open the sheet put a focus ring on the first section tile, and it
+just hung there. Now the sheet focuses itself unless something asks explicitly with
+`data-autofocus`.
+
+Then the keyboard in the Home Screen app again: sometimes the sheet still went under it.
+Pulled out a temporary panel with the numbers (enabled by a build variable — a URL
+parameter won't do, the Home Screen app has its own storage), deployed a test build in
+demo mode and recorded the screen. On the recording: visible 458, shift 274, a full-screen
+probe 873 tall with its bottom at 599. So in the app iPhone reports the coordinates of
+fixed elements already minus the shift, and I subtracted it a second time. The screen
+height is the probe's height, not its bottom. Plus a fallback self-check: once the sheet
+settles, compare its bottom with the visible bottom and add the miss to the lift. The
+numbers from the recording went into tests, the panel went away.
+
+After lunch — cleanup in the database ([0015](decisions/0015-forget-inactive-anonymous.md)).
+An anonymous user lives on one device: delete the app — and their home sits in the
+database forever. First the visit mark: once a day per device, on launch and when coming
+back to the app. An important point — users from before the migration can't get "today":
+an anonymous user who hadn't visited for 300 days would get an extra year. I take an
+estimate from sessions and tokens. Then the cleanup itself via `pg_cron`: anonymous users
+who haven't visited for over a year; from a shared home only they leave, and the oldest
+member becomes the owner. Google accounts are left alone.
+
+In the evening — "Undo" for buying a home product too: in a store it's easy to tap the
+wrong row.
