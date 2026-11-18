@@ -1168,3 +1168,111 @@ describe('отметка визита', () => {
     await expect(as(HENRY, () => rows(`select * from private.user_activity`))).rejects.toThrow()
   })
 })
+
+describe('удаление анонимных пользователей, которые не заходили больше года', () => {
+  const id = (n: number) => `00000000-0000-0000-0000-0000000009${String(n).padStart(2, '0')}`
+  /** Один в своём доме, не заходил два года. */
+  const LONER = id(1)
+  /** Владелец общего дома, не заходил два года; второй участник активен. */
+  const OLD_OWNER = id(2)
+  const ACTIVE_MEMBER = id(3)
+  /** Аккаунт Google, не заходил два года. */
+  const GOOGLE = id(4)
+  /** Старая версия приложения: визит не отмечает, но сессия продлевалась вчера. */
+  const OLD_APP = id(5)
+  /** Не заходил 11 месяцев. */
+  const ALMOST = id(6)
+  /** Второй участник дома, в котором уже никого активного. */
+  const LONER_GUEST = id(7)
+
+  let lonerHome: string
+  let sharedHome: string
+  let sharedProduct: string
+
+  async function addUser(userId: string, seenAgo: string, anonymous = true) {
+    await db.query(
+      `insert into auth.users (id, email, is_anonymous, created_at, last_sign_in_at)
+       values ($1, $2, $3, now() - interval '3 years', now() - interval '3 years')`,
+      [userId, anonymous ? null : `${userId.slice(-4)}@gmail.com`, anonymous],
+    )
+    await db.query(`insert into private.user_activity (user_id, last_seen_at) values ($1, now() - $2::interval)`, [
+      userId,
+      seenAgo,
+    ])
+  }
+
+  const exists = async (table: string, column: string, value: string) =>
+    (await rows(`select 1 from ${table} where ${column} = $1`, [value])).length > 0
+
+  beforeAll(async () => {
+    await addUser(LONER, '2 years')
+    await addUser(LONER_GUEST, '2 years')
+    await addUser(OLD_OWNER, '2 years')
+    await addUser(ACTIVE_MEMBER, '1 day')
+    await addUser(GOOGLE, '2 years', false)
+    await addUser(OLD_APP, '2 years')
+    await addUser(ALMOST, '11 months')
+    await db.query(
+      `insert into auth.sessions (user_id, created_at, updated_at, refreshed_at)
+       values ($1, now() - interval '2 years', now() - interval '2 years', (now() - interval '1 day') at time zone 'UTC')`,
+      [OLD_APP],
+    )
+
+    lonerHome = await createHousehold({ id: LONER }, 'Заброшенный дом')
+    await createSection({ id: LONER }, lonerHome, 'Холодильник')
+    await db.query(`insert into public.household_members (household_id, user_id, role) values ($1, $2, 'member')`, [
+      lonerHome,
+      LONER_GUEST,
+    ])
+
+    sharedHome = await createHousehold({ id: OLD_OWNER }, 'Общий дом')
+    const fridge = await createSection({ id: OLD_OWNER }, sharedHome, 'Холодильник')
+    await db.query(
+      `insert into public.household_members (household_id, user_id, role, created_at) values ($1, $2, 'member', now())`,
+      [sharedHome, ACTIVE_MEMBER],
+    )
+    const [product] = await rows<{ id: string }>(
+      `insert into public.products (household_id, section_id, name, kind, created_by)
+       values ($1, $2, 'Молоко', 'staple', $3) returning id`,
+      [sharedHome, fridge, OLD_OWNER],
+    )
+    sharedProduct = product.id
+
+    for (const userId of [GOOGLE, OLD_APP, ALMOST]) await createHousehold({ id: userId }, 'Дом')
+  })
+
+  it('удаляются только заброшенные анонимные: число удалённых — в ответе', async () => {
+    const [{ removed }] = await rows<{ removed: number }>(`select private.forget_inactive_anonymous() as removed`)
+    expect(removed).toBe(3)
+
+    for (const gone of [LONER, LONER_GUEST, OLD_OWNER]) expect(await exists('auth.users', 'id', gone)).toBe(false)
+    for (const kept of [ACTIVE_MEMBER, GOOGLE, OLD_APP, ALMOST]) expect(await exists('auth.users', 'id', kept)).toBe(true)
+  })
+
+  it('опустевший дом удаляется вместе с разделами', async () => {
+    expect(await exists('public.households', 'id', lonerHome)).toBe(false)
+    expect(await exists('public.sections', 'household_id', lonerHome)).toBe(false)
+  })
+
+  it('из общего дома уходит только он: владельцем становится оставшийся, продукты на месте', async () => {
+    expect(await exists('public.households', 'id', sharedHome)).toBe(true)
+    const members = await rows(`select user_id, role from public.household_members where household_id = $1`, [
+      sharedHome,
+    ])
+    expect(members).toEqual([{ user_id: ACTIVE_MEMBER, role: 'owner' }])
+    const [milk] = await rows(`select name, created_by from public.products where id = $1`, [sharedProduct])
+    expect(milk).toEqual({ name: 'Молоко', created_by: null })
+  })
+
+  it('отметки визитов удалённых уходят вместе с ними', async () => {
+    expect(await exists('private.user_activity', 'user_id', LONER)).toBe(false)
+  })
+
+  it('удалить тех, кто заходил меньше года назад, нельзя даже вручную', async () => {
+    await expect(rows(`select private.forget_inactive_anonymous(interval '30 days')`)).rejects.toThrow()
+  })
+
+  it('пользователь приложения вызвать удаление не может', async () => {
+    await expect(as({ id: ACTIVE_MEMBER }, () => rows(`select private.forget_inactive_anonymous()`))).rejects.toThrow()
+  })
+})
