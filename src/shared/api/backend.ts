@@ -104,6 +104,8 @@ export interface Backend {
 
   /** Записывает устройство, фото аккаунта и (если своё не задано) имя во все дома пользователя. */
   syncProfile(device: string, displayName: string): Promise<void>
+  /** Отмечает, что пользователь открыл приложение: по этой дате удаляются заброшенные анонимные. */
+  markVisit(): Promise<void>
 
   listMemberships(): Promise<Membership[]>
   createHousehold(name: string, displayName: string): Promise<string>

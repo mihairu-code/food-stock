@@ -142,6 +142,9 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
     syncProfile: async (device, displayName) => {
       throwIfFailed(await supabase.rpc('sync_profile', { p_device: device, p_display_name: displayName }))
     },
+    markVisit: async () => {
+      throwIfFailed(await supabase.rpc('mark_visit'))
+    },
 
     listMemberships: async () => {
       const { data: auth } = await supabase.auth.getSession()

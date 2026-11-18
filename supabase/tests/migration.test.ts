@@ -12,7 +12,28 @@ import { beforeAll, describe, expect, it } from 'vitest'
  */
 const SUPABASE_STUB = `
   create schema auth;
-  create table auth.users (id uuid primary key, email text, is_anonymous boolean not null default true);
+  create table auth.users (
+    id uuid primary key,
+    email text,
+    is_anonymous boolean not null default true,
+    created_at timestamptz default now(),
+    last_sign_in_at timestamptz
+  );
+  -- Сессии входа и токены обновления — по ним оценивается последний визит (0010).
+  -- Типы как в Supabase: refreshed_at без часового пояса, user_id токена — строка.
+  create table auth.sessions (
+    id uuid primary key default gen_random_uuid(),
+    user_id uuid not null references auth.users (id) on delete cascade,
+    created_at timestamptz default now(),
+    updated_at timestamptz default now(),
+    refreshed_at timestamp
+  );
+  create table auth.refresh_tokens (
+    id bigserial primary key,
+    user_id varchar(255),
+    created_at timestamptz default now(),
+    updated_at timestamptz default now()
+  );
   create role anon nologin;
   create role authenticated nologin;
   grant usage on schema public, auth to anon, authenticated;
@@ -1069,4 +1090,81 @@ describe('обновление существующей базы', () => {
     await old.close()
   })
 
+  it('0010: последний визит прежних пользователей — по их сессиям, а не «сегодня»', async () => {
+    const old = new PGlite()
+    await old.exec(SUPABASE_STUB)
+    const migrations = new URL('../migrations/', import.meta.url)
+    const files = readdirSync(migrations).sort()
+    const apply = async (file: string) => old.exec(readFileSync(new URL(file, migrations), 'utf8'))
+    for (const file of files.filter((name) => name < '0010')) await apply(file)
+
+    const [quiet, active, tokenOnly, bare] = ['01', '02', '03', '04'].map(
+      (n) => `00000000-0000-0000-0000-0000000010${n}`,
+    )
+    await old.exec(`
+      insert into auth.users (id, created_at, last_sign_in_at) values
+        ('${quiet}', '2025-01-01T00:00:00Z', '2025-01-01T00:00:00Z'),
+        ('${active}', '2025-01-01T00:00:00Z', '2025-01-01T00:00:00Z'),
+        ('${tokenOnly}', '2025-01-01T00:00:00Z', null),
+        ('${bare}', '2025-03-01T00:00:00Z', null);
+      -- Не заходил 300 дней: сессия последний раз продлевалась тогда же.
+      insert into auth.sessions (user_id, created_at, updated_at, refreshed_at)
+        values ('${quiet}', '2025-01-01T00:00:00Z', '2025-01-20T00:00:00Z', '2025-01-20 00:00:00');
+      -- Открывает приложение каждый день: сессия продлевалась недавно (время в UTC без пояса).
+      insert into auth.sessions (user_id, created_at, updated_at, refreshed_at)
+        values ('${active}', '2025-01-01T00:00:00Z', '2025-01-01T00:00:00Z', '2026-11-15 08:00:00');
+      insert into auth.refresh_tokens (user_id, created_at, updated_at)
+        values ('${tokenOnly}', '2025-01-01T00:00:00Z', '2025-06-01T00:00:00Z');
+    `)
+
+    await apply('0010_user_activity.sql')
+
+    const { rows: seen } = await old.query<{ user_id: string; last_seen_at: Date }>(
+      `select user_id, last_seen_at from private.user_activity order by user_id`,
+    )
+    expect(seen.map((row) => [row.user_id, row.last_seen_at.toISOString()])).toEqual([
+      [quiet, '2025-01-20T00:00:00.000Z'],
+      [active, '2026-11-15T08:00:00.000Z'],
+      [tokenOnly, '2025-06-01T00:00:00.000Z'],
+      [bare, '2025-03-01T00:00:00.000Z'],
+    ])
+    await old.close()
+  })
+})
+
+describe('отметка визита', () => {
+  const HENRY = { id: '00000000-0000-0000-0000-000000000080' }
+  const seenAt = async () =>
+    (await rows<{ at: Date }>(`select last_seen_at as at from private.user_activity where user_id = $1`, [HENRY.id]))[0]
+      ?.at
+
+  beforeAll(async () => {
+    await db.query(`insert into auth.users (id) values ($1)`, [HENRY.id])
+  })
+
+  it('визит записывается от имени самого пользователя', async () => {
+    await db.query(`delete from private.user_activity where user_id = $1`, [HENRY.id])
+    await as(HENRY, () => rows(`select public.mark_visit()`))
+    expect(await seenAt()).toBeInstanceOf(Date)
+  })
+
+  it('чаще часа запись не переписывается, а через час — обновляется', async () => {
+    await db.query(`update private.user_activity set last_seen_at = now() - interval '10 minutes' where user_id = $1`, [
+      HENRY.id,
+    ])
+    const recent = await seenAt()
+    await as(HENRY, () => rows(`select public.mark_visit()`))
+    expect(await seenAt()).toEqual(recent)
+
+    await db.query(`update private.user_activity set last_seen_at = now() - interval '3 days' where user_id = $1`, [
+      HENRY.id,
+    ])
+    await as(HENRY, () => rows(`select public.mark_visit()`))
+    expect(Date.now() - (await seenAt())!.getTime()).toBeLessThan(60_000)
+  })
+
+  it('без входа отметить визит нельзя, а таблицу визитов не прочитать никому снаружи', async () => {
+    await expect(as(null, () => rows(`select public.mark_visit()`))).rejects.toThrow()
+    await expect(as(HENRY, () => rows(`select * from private.user_activity`))).rejects.toThrow()
+  })
 })
