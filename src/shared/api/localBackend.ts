@@ -144,6 +144,7 @@ export function createLocalBackend(store: KeyValueStore = globalThis.localStorag
     completeMerge: notSupported,
     syncProfile: async () => {},
     // Демо живёт только в этом браузере — удалять с сервера нечего.
+    markVisit: async () => {},
 
     listMemberships: async () => [{ household: readState().household, role: 'owner' }],
     createHousehold: async (name) => {

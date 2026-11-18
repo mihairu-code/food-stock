@@ -345,6 +345,12 @@ describe('домашние запасы: основные потоки', () => {
     expect((await backend.listMemberships())[0].household.icon).toBeNull()
   })
 
+  it('отметка визита в демо ничего не меняет: удалять с сервера нечего', async () => {
+    const before = await snapshot()
+    await expect(backend.markVisit()).resolves.toBeUndefined()
+    expect(await snapshot()).toEqual(before)
+  })
+
   it('демо-набор соответствует макету: молоко закончилось, в покупках три позиции', async () => {
     await backend.resetLocalData?.()
     hid = (await backend.listMemberships())[0].household.id

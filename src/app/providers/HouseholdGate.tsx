@@ -8,6 +8,7 @@ import { SessionContext, type Session } from '@/shared/session'
 import { Notice, StatusNote } from '@/shared/ui'
 import { useHomeBootstrap } from './useHomeBootstrap'
 import { useProfileSync } from './useProfileSync'
+import { useVisitMark } from './useVisitMark'
 import { useRealtimeSync } from './useRealtimeSync'
 
 /** Определяет текущий дом пользователя и держит данные свежими через Realtime. */
@@ -30,6 +31,7 @@ export function HouseholdGate({ user, children }: { user: User; children: ReactN
 
   useRealtimeSync()
   useProfileSync(user, memberships.data, displayName)
+  useVisitMark(user.id)
   const bootstrap = useHomeBootstrap({
     // Время 0 — данные из снимка прошлого запуска; решать по ним, что дома нет, нельзя.
     ready: memberships.isSuccess && memberships.dataUpdatedAt > 0,
