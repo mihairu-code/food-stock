@@ -4,10 +4,10 @@ import { ACTION_TOAST_MS, dismissToastAction, toast, type ToastAction } from '@/
 import type { HomeData } from './homeDataRules'
 
 /**
- * Что убирается: продукт целиком, продукт только из покупок (дома он остаётся)
- * или ручная позиция покупок.
+ * Что убирается: продукт целиком, продукт только из покупок (дома он остаётся),
+ * купленный продукт (уходит из покупок и снова дома) или ручная позиция покупок.
  */
-export type RemovalKind = 'product' | 'from-list' | 'shopping-item'
+export type RemovalKind = 'product' | 'from-list' | 'bought' | 'shopping-item'
 
 /** Запись, скрытая с экрана до отправки запроса. */
 export interface HiddenRecord {
@@ -122,6 +122,7 @@ export function withoutPendingRemovals(data: HomeData, hidden: ReadonlyMap<strin
       .map((product) => {
         const kind = hidden.get(product.id)
         if (kind === 'from-list') return { ...product, to_buy: false }
+        if (kind === 'bought') return { ...product, is_available: true, to_buy: false }
         return product
       }),
     shoppingItems: data.shoppingItems.filter((item) => hidden.get(item.id) !== 'shopping-item'),

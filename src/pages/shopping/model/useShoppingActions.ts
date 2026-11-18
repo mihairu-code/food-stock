@@ -2,11 +2,13 @@ import { useMemo } from 'react'
 import { PURCHASED, useSetProductState, withToBuy } from '@/entities/product'
 import { useDeleteShoppingItem } from '@/entities/shopping-item'
 import { removeWithUndo, type Product, type ShoppingItem } from '@/shared/api'
-import { notify } from '@/shared/lib/toast'
 import { openSheet } from '@/shared/ui'
 
 export interface ShoppingActions {
-  /** Продукт дома куплен: он снова есть и уходит из списка. */
+  /**
+   * Продукт дома куплен: он снова есть и уходит из списка. Покупку можно вернуть
+   * из тоста — продукт встанет на прежнее место в списке.
+   */
   buyProduct: (product: Product) => void
   /** Ручная позиция куплена: шторка спрашивает, в какой раздел её положить. */
   buyItem: (item: ShoppingItem) => void
@@ -23,14 +25,19 @@ export interface ShoppingActions {
 
 /** Действия над строками списка покупок; объект стабилен — для memo-строк. */
 export function useShoppingActions(): ShoppingActions {
-  const { mutate: setState, mutateAsync: setStateAsync } = useSetProductState()
+  const { mutateAsync: setStateAsync } = useSetProductState()
   const { mutateAsync: deleteItemById } = useDeleteShoppingItem()
 
   return useMemo<ShoppingActions>(
     () => ({
       buyProduct(product) {
-        setState({ id: product.id, state: PURCHASED })
-        notify('toast.backHome', { name: product.name })
+        removeWithUndo({
+          id: product.id,
+          kind: 'bought',
+          commit: () => setStateAsync({ id: product.id, state: PURCHASED }),
+          message: 'toast.backHome',
+          params: { name: product.name },
+        })
       },
       buyItem(item) {
         openSheet({ type: 'purchase', item })
@@ -60,6 +67,6 @@ export function useShoppingActions(): ShoppingActions {
         })
       },
     }),
-    [setState, setStateAsync, deleteItemById],
+    [setStateAsync, deleteItemById],
   )
 }

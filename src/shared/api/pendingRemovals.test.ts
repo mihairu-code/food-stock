@@ -94,7 +94,7 @@ describe('удаление с возможностью вернуть', () => {
 describe('данные дома без отложенных удалений', () => {
   const data: HomeData = {
     sections: [],
-    products: [product('milk', true), product('eggs', true), product('cheese')],
+    products: [product('milk', true), product('eggs', true), product('cheese'), { ...product('rice', true), is_available: false }],
     shoppingItems: [item('bread'), item('tea')],
   }
 
@@ -108,12 +108,15 @@ describe('данные дома без отложенных удалений', (
       new Map([
         ['milk', 'product'],
         ['eggs', 'from-list'],
+        ['rice', 'bought'],
         ['bread', 'shopping-item'],
       ] as const),
     )
     expect(visible.products.map((p) => [p.id, p.to_buy, p.is_available])).toEqual([
       ['eggs', false, true],
       ['cheese', false, true],
+      // Купленный уходит из покупок и снова дома.
+      ['rice', false, true],
     ])
     expect(visible.shoppingItems.map((i) => i.id)).toEqual(['tea'])
     // Нетронутый продукт — тот же объект: memo-строка не перерисуется.
