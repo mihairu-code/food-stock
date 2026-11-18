@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { sheetPlacement } from './keyboard'
+import { nextCorrection, sheetPlacement } from './keyboard'
 
 /*
  * Где стоит шторка при разных состояниях экрана. Числа — с iPhone 14 Pro Max:
@@ -41,6 +41,16 @@ describe('положение шторки над клавиатурой', () => 
     expect(after.inset - before.inset).toBe(90)
   })
 
+  it('запись владельца (приложение на экране «Домой»): экран 873, видно 458, сдвиг 274 — подъём 141', () => {
+    // Раньше вместо высоты экрана подставлялся низ мерки — 599, уже за вычетом сдвига,
+    // и подъём выходил нулевым: шторка уходила под клавиатуру ровно на 141.
+    expect(sheetPlacement({ layout: 873, height: 458, offsetTop: 273.7 })).toEqual({
+      inset: 141,
+      visible: 458,
+      keyboard: true,
+    })
+  })
+
   it('экран сдвинут сильнее, чем нужно, — шторка не уходит ниже края', () => {
     expect(sheetPlacement({ layout: 932, height: 456, offsetTop: 500 }).inset).toBe(0)
   })
@@ -51,5 +61,29 @@ describe('положение шторки над клавиатурой', () => 
       visible: 850,
       keyboard: false,
     })
+  })
+})
+
+describe('поправка, если шторка всё же встала ниже клавиатуры', () => {
+  it('шторка ниже на 120 — её поднимают ещё на 120', () => {
+    expect(nextCorrection(0, 120, true)).toBe(120)
+  })
+
+  it('после поправки шторка на месте — поправка сохраняется', () => {
+    expect(nextCorrection(120, 0.5, true)).toBe(120)
+  })
+
+  it('перестарались — поправка уменьшается', () => {
+    expect(nextCorrection(120, -30, true)).toBe(90)
+  })
+
+  it('шторка не двигается от поправки — поправка не растёт без конца', () => {
+    let correction = 0
+    for (let i = 0; i < 10; i++) correction = nextCorrection(correction, 118, true)
+    expect(correction).toBe(200)
+  })
+
+  it('клавиатура закрылась — поправка сбрасывается', () => {
+    expect(nextCorrection(120, 0, false)).toBe(0)
   })
 })
