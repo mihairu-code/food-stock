@@ -3,6 +3,13 @@ import { closeSheet } from './sheetStore'
 
 /** Сдвиг, после которого жест считается начатым. */
 const SLOP = 6
+/**
+ * На поле ввода — больше: лёгкое дрожание пальца при нажатии на поле не должно
+ * превращаться в жест шторки.
+ */
+const FIELD_SLOP = 12
+/** Палец, который столько пролежал на поле, двигает курсор или выделение, а не шторку. */
+const FIELD_HOLD_MS = 300
 /** Насколько нужно стянуть шторку, чтобы она закрылась: доля высоты, но не больше этого. */
 const CLOSE_DISTANCE = 140
 const CLOSE_RATIO = 0.3
@@ -72,8 +79,6 @@ export function useSheetDismiss(ref: RefObject<HTMLDialogElement | null>): void 
 
     function onMove(event: TouchEvent) {
       if (!start) return
-      // Курсор и выделение в поле ввода — дело браузера.
-      if (start.field) return
       // Затемнение: страница под шторкой не прокручивается.
       if (start.backdrop) return void event.preventDefault()
 
@@ -81,7 +86,14 @@ export function useSheetDismiss(ref: RefObject<HTMLDialogElement | null>): void 
       const dx = touch.clientX - start.x
       const dy = touch.clientY - start.y
       if (!pulling) {
-        if (Math.abs(dx) < SLOP && Math.abs(dy) < SLOP) return
+        const slop = start.field ? FIELD_SLOP : SLOP
+        if (Math.abs(dx) < slop && Math.abs(dy) < slop) return
+        if (start.field && (event.timeStamp - start.at > FIELD_HOLD_MS || Math.abs(dx) >= Math.abs(dy))) {
+          // Курсор, выделение и прокрутка текста вбок — дело браузера. С поля шторку тянут
+          // только сразу и вниз; движение вверх ниже не даст уйти странице под шторкой.
+          start = null
+          return
+        }
         if (start.sideways && Math.abs(dx) > Math.abs(dy)) {
           start = null // ряд листают вбок — дальше этим жестом занимается браузер
           return

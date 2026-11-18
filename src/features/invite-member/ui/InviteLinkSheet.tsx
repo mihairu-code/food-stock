@@ -34,7 +34,7 @@ export function InviteLinkSheet({ link }: { link: string }) {
       />
       <p className="sheet-description">{t('invite.pwaNote')}</p>
       <SheetActions closeLabel={t('common.done')}>
-        <button className="btn" type="button" autoFocus onClick={() => void (canShare ? shareLink() : copyLink())}>
+        <button className="btn" type="button" data-autofocus onClick={() => void (canShare ? shareLink() : copyLink())}>
           {t(canShare ? 'invite.share' : 'invite.copy')}
         </button>
       </SheetActions>

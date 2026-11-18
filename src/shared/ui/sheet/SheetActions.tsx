@@ -16,7 +16,9 @@ export function SheetActions({ children, closeLabel, focusClose = false }: Sheet
   const t = useT()
   return (
     <div className="sheet-actions">
-      <button className="btn subtle" type="button" onClick={closeSheet} autoFocus={focusClose}>
+      {/* autoFocus у элементов шторки не работает: она ещё скрыта, когда React ставит фокус.
+          Фокус по просьбе ставит сама шторка после открытия (см. Sheet). */}
+      <button className="btn subtle" type="button" onClick={closeSheet} data-autofocus={focusClose || undefined}>
         {closeLabel ?? t('common.cancel')}
       </button>
       {children}

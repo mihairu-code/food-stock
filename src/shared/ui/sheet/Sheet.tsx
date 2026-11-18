@@ -2,6 +2,11 @@ import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { closeSheet } from './sheetStore'
 import { useSheetDismiss } from './useSheetDismiss'
 
+/** Поле, в котором печатают: фокус в нём открывает клавиатуру. */
+const entersText = (element: Element | null) =>
+  element instanceof HTMLTextAreaElement ||
+  (element instanceof HTMLInputElement && !['checkbox', 'radio', 'button', 'submit'].includes(element.type))
+
 interface SheetProps {
   title: string
   description?: ReactNode
@@ -21,13 +26,23 @@ export function Sheet({ title, description, children }: SheetProps) {
 
   useEffect(() => {
     const dialog = ref.current
-    if (dialog && !dialog.open) dialog.showModal()
+    if (!dialog || dialog.open) return
+    dialog.showModal()
+    // Открываясь, шторка сама ставит фокус на первый элемент. Поле ввода так и должно
+    // получить фокус — вызвать клавиатуру. А кнопка или плитка раздела осталась бы с рамкой
+    // фокуса: нажатия по соседним плиткам фокус не забирают (чтобы не пряталась клавиатура),
+    // и рамка висела бы на первой плитке, какую ни выбери. Тогда фокус получает сама шторка,
+    // если только какой-то элемент не попросил его явно (data-autofocus).
+    const requested = dialog.querySelector<HTMLElement>('[data-autofocus]')
+    if (requested) requested.focus()
+    else if (!entersText(document.activeElement)) dialog.focus()
   }, [])
 
   return (
     <dialog
       ref={ref}
       className="sheet"
+      tabIndex={-1}
       aria-labelledby={titleId}
       onClose={closeSheet}
       onCancel={(event) => {
