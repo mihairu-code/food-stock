@@ -43,6 +43,42 @@ in the app opened from the Home Screen — see [iPhone notes](docs/en/ios-notes.
   accent are the `data-theme` and `data-accent` attributes on `<html>`.
 - Comments explain "why", not "what". No `console.log`.
 
+## Code style
+
+There's no formatter — the style holds on the conventions below. Write new code the way
+the neighbouring code in the same layer is written.
+
+- **Look:** 2 spaces, no semicolons, single quotes, a trailing comma in multiline lists,
+  parentheses around an arrow function's parameter.
+- **Named exports only.** The single exception is `App` for `main.tsx`. A list row in
+  `memo` is `export const ProductRow = memo(function ProductRow(…) {…})` — with the name
+  inside, so it shows in React DevTools.
+- **Props:** more than three or with explanations — an `interface …Props` right above the
+  component with `/** … */` on fields; two or three obvious ones — inline type in the
+  parameters. An optional flag gets its default in the destructuring.
+- **Types:** `import type` (with `verbatimModuleSyntax`), no `enum` or `namespace` —
+  string unions and `as const`. Database record fields stay `snake_case` as in the
+  tables; everything else is `camelCase`.
+- **Module constants** — `UPPER_SNAKE_CASE` at the top of the file, with a comment on
+  where the number comes from.
+- **File names:** a component — `PascalCase.tsx` after the component; a hook — `useX.ts`;
+  other modules — `camelCase.ts` by meaning; styles — `camelCase.css` next to them; a
+  test — `name.test.ts` next to the module. An entity's `api/` is one file,
+  `<entity>Api.ts`, with all its queries and mutations.
+- **Slice folders:** `ui/` components, `model/` rules and state hooks, `api/` queries and
+  mutations, `lib/` small helpers. `index.ts` exports only what's needed outside.
+- **State in markup — a `data-*` attribute**, not a class: `data-open`, `data-missing`.
+  A modifier class only for a permanent look: `btn subtle`.
+- **Buttons:** every one has `type="button"`; an icon-only button has an `aria-label`
+  from the dictionary; icons are `lucide-react`, decorative ones `aria-hidden`.
+- **`useEffect` only to talk to the outside world:** DOM, subscriptions, timers, storage.
+  A derived value is computed during render.
+- **`localStorage`:** a key constant like `'home-stock:some-name'` at the top of the
+  module; reads and writes in `try` — private mode throws.
+- **Colors** only through variables, a color that's the same in both themes too
+  (`--white`). A raw color is fine only in shadows and in `::backdrop` (older iOS doesn't
+  see page variables there).
+
 ## What must not break
 
 For a while the old version keeps running on phones against the same database.

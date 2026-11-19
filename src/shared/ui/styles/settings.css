@@ -21,7 +21,7 @@
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 50%;
-  background: #fff;
+  background: var(--white);
   box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
   content: '';
   transition: translate 0.18s ease;

@@ -39,7 +39,7 @@
   overflow: hidden;
   border: 0;
   border-radius: var(--radius-lg);
-  color: #fff;
+  color: var(--white);
   transition: flex-basis 0.17s ease,
     margin 0.17s ease,
     opacity 0.17s ease;
