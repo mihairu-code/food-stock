@@ -1,3 +1,5 @@
+import { RowText } from './RowText'
+
 interface SettingToggleProps {
   id: string
   title: string
@@ -10,10 +12,7 @@ interface SettingToggleProps {
 export function SettingToggle({ id, title, meta, checked, onChange }: SettingToggleProps) {
   return (
     <div className="setting-row">
-      <label className="row-text" htmlFor={id}>
-        <div className="row-name">{title}</div>
-        {meta && <div className="row-meta">{meta}</div>}
-      </label>
+      <RowText title={title} meta={meta} labelFor={id} />
       <input
         id={id}
         className="switch"

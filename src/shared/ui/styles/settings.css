@@ -48,6 +48,15 @@
   margin-top: 0;
 }
 
+/* Отступ над группой — у самой группы: заголовок в ней всегда первый. */
+.settings-group {
+  margin-top: var(--space-5);
+}
+
+.settings-group:first-child {
+  margin-top: 0;
+}
+
 .setting-row {
   display: flex;
   width: 100%;

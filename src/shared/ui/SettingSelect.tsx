@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { RowText } from './RowText'
 
 interface SettingSelectProps {
   id: string
@@ -14,10 +15,7 @@ interface SettingSelectProps {
 export function SettingSelect({ id, title, meta, value, onChange, children }: SettingSelectProps) {
   return (
     <div className="setting-row">
-      <label className="row-text" htmlFor={id}>
-        <div className="row-name">{title}</div>
-        {meta && <div className="row-meta">{meta}</div>}
-      </label>
+      <RowText title={title} meta={meta} labelFor={id} />
       <select id={id} className="inline-select" value={value} onChange={(event) => onChange(event.target.value)}>
         {children}
       </select>

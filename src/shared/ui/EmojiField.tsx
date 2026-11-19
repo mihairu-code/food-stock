@@ -24,6 +24,7 @@ const isTextField = (target: EventTarget | null) =>
 export const EmojiField = memo(function EmojiField({ value, onChange, options, hint }: EmojiFieldProps) {
   const t = useT()
   const panelId = useId()
+  const labelId = useId()
   const [open, setOpen] = useState(false)
   const quick = options.slice(0, VISIBLE_OPTIONS)
 
@@ -48,8 +49,8 @@ export const EmojiField = memo(function EmojiField({ value, onChange, options, h
   }
 
   return (
-    <div className="field">
-      <span className="field-label">
+    <div className="field" role="group" aria-labelledby={labelId}>
+      <span className="field-label" id={labelId}>
         {t('emoji.label')}
         {hint && <small>{hint}</small>}
       </span>

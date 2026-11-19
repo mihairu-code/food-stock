@@ -1,5 +1,6 @@
 import type { MergeKeep, MergePreview } from '@/shared/api'
 import { useT } from '@/shared/i18n'
+import { RowText } from '@/shared/ui'
 import { fateOf, homeNames, homeSummary } from '../lib/mergeText'
 
 interface MergeChoicePageProps {
@@ -22,13 +23,12 @@ export function MergeChoicePage({ email, preview, onChoose }: MergeChoicePagePro
       <h1>{t('merge.choiceTitle')}</h1>
       <p className="auth-lead">{t('merge.choiceLead', { email })}</p>
       {options.map(({ keep, label, kept, lost }) => (
-        <div className="card welcome-card" key={keep}>
-          <div className="hint-label">{label}</div>
+        <section className="card welcome-card" key={keep}>
+          <h2 className="hint-label">{label}</h2>
           {kept.map((home) => (
-            <div key={home.id}>
-              <div className="row-name">{home.name}</div>
-              <div className="row-meta">{homeSummary(home, t)}</div>
-            </div>
+            <p key={home.id}>
+              <RowText title={home.name} meta={homeSummary(home, t)} />
+            </p>
           ))}
           <button
             className="btn"
@@ -41,7 +41,7 @@ export function MergeChoicePage({ email, preview, onChoose }: MergeChoicePagePro
             {t('merge.keep')}
           </button>
           <p className="welcome-note">{fateOf(lost, t)}</p>
-        </div>
+        </section>
       ))}
     </main>
   )

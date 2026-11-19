@@ -1,6 +1,7 @@
 import { ChevronRight } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
+import { RowText } from './RowText'
 
 interface SettingRowProps {
   title: ReactNode
@@ -25,10 +26,7 @@ export function SettingRow({ title, meta, leading, trailing, to, onClick, disabl
   const body = (
     <>
       {leading}
-      <div className="row-text">
-        <div className="row-name">{title}</div>
-        {meta && <div className="row-meta">{meta}</div>}
-      </div>
+      <RowText title={title} meta={meta} />
       {trailing ?? (isAction && !danger && <ChevronRight className="chevron" size={18} aria-hidden="true" />)}
     </>
   )
