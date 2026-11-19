@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { AuthScreen } from './AuthScreen'
 
 interface NoticeProps {
   title: string
@@ -10,13 +11,10 @@ interface NoticeProps {
 /** Сообщение на весь экран с одним действием: «не получилось — повторить». */
 export function Notice({ title, children, actionLabel, onAction }: NoticeProps) {
   return (
-    <main className="auth">
-      <div className="auth-emoji" aria-hidden="true">🏠</div>
-      <h1>{title}</h1>
-      <p className="auth-lead">{children}</p>
+    <AuthScreen title={title} lead={children}>
       <button className="btn" type="button" onClick={onAction}>
         {actionLabel}
       </button>
-    </main>
+    </AuthScreen>
   )
 }
