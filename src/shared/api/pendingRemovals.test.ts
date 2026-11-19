@@ -67,6 +67,37 @@ describe('удаление с возможностью вернуть', () => {
     await vi.waitFor(() => expect(readPendingRemovals().has('milk')).toBe(false))
   })
 
+  it('вместе с записью скрывается и то, что уходит с ней, а «Вернуть» возвращает всё', async () => {
+    let answer: () => void = () => {}
+    const commit = vi.fn(() => new Promise<void>((resolve) => (answer = resolve)))
+    const undo = removeWithUndo({
+      id: 'milk',
+      kind: 'bought',
+      also: [{ id: 'milk-manual', kind: 'shopping-item' }],
+      commit,
+      message: 'toast.backHome',
+      params: { name: 'milk' },
+    })
+    expect(readPendingRemovals().get('milk')).toBe('bought')
+    expect(readPendingRemovals().get('milk-manual')).toBe('shopping-item')
+
+    undo()
+    expect(readPendingRemovals().size).toBe(0)
+    expect(commit).not.toHaveBeenCalled()
+
+    removeWithUndo({
+      id: 'milk',
+      kind: 'bought',
+      also: [{ id: 'milk-manual', kind: 'shopping-item' }],
+      commit,
+      message: 'toast.backHome',
+    })
+    vi.advanceTimersByTime(5000)
+    expect(commit).toHaveBeenCalledOnce()
+    answer()
+    await vi.waitFor(() => expect(readPendingRemovals().size).toBe(0))
+  })
+
   it('«Вернуть» отменяет удаление: запрос не уходит, запись снова видна', () => {
     const { commit, undo } = request('bread', 'shopping-item')
     undo()

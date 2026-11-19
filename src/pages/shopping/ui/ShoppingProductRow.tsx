@@ -1,6 +1,6 @@
 import { memo } from 'react'
 import { ProductStockIcon } from '@/entities/product'
-import type { Product } from '@/shared/api'
+import type { Product, ShoppingItem } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import type { ShoppingActions } from '../model/useShoppingActions'
 import { ShoppingRow } from './ShoppingRow'
@@ -8,6 +8,8 @@ import { ShoppingRow } from './ShoppingRow'
 interface ShoppingProductRowProps {
   product: Product
   sectionName: string
+  /** Ручные позиции с тем же названием — уходят вместе с покупкой. */
+  manualTwins: ShoppingItem[]
   actions: ShoppingActions
   ghost?: boolean
 }
@@ -16,6 +18,7 @@ interface ShoppingProductRowProps {
 export const ShoppingProductRow = memo(function ShoppingProductRow({
   product,
   sectionName,
+  manualTwins,
   actions,
   ghost,
 }: ShoppingProductRowProps) {
@@ -29,7 +32,7 @@ export const ShoppingProductRow = memo(function ShoppingProductRow({
       missing={!product.is_available}
       ghost={ghost}
       icon={<ProductStockIcon icon={product.icon} />}
-      onBuy={() => actions.buyProduct(product)}
+      onBuy={() => actions.buyProduct(product, manualTwins)}
       onEdit={() => actions.editProduct(product)}
       onRemove={() => actions.dropProduct(product)}
     />

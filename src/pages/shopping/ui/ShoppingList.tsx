@@ -36,10 +36,11 @@ export function ShoppingList({ entries: saved }: { entries: ShoppingEntry[] }) {
                 key={entry.key}
                 product={entry.product}
                 sectionName={entry.section?.name ?? ''}
+                manualTwins={entry.manualTwins}
                 actions={actions}
               />
             ) : (
-              <ManualRow key={entry.key} item={entry.item} actions={actions} />
+              <ManualRow key={entry.key} item={entry.item} homeProduct={entry.homeProduct} actions={actions} />
             ),
           )}
         </SortableContext>
@@ -54,6 +55,7 @@ export function ShoppingList({ entries: saved }: { entries: ShoppingEntry[] }) {
                 <ShoppingProductRow
                   product={active.product}
                   sectionName={active.section?.name ?? ''}
+                  manualTwins={active.manualTwins}
                   actions={actions}
                   ghost
                 />

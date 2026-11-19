@@ -4,14 +4,27 @@ import { useDeleteShoppingItem } from '@/entities/shopping-item'
 import { removeWithUndo, type Product, type ShoppingItem } from '@/shared/api'
 import { openSheet } from '@/shared/ui'
 
+/** Продукт дома куплен вместе с ручными позициями того же названия — одним тостом. */
+const asBought = (product: Product, items: ShoppingItem[]) => ({
+  id: product.id,
+  kind: 'bought' as const,
+  also: items.map((item) => ({ id: item.id, kind: 'shopping-item' as const })),
+  message: 'toast.backHome' as const,
+  params: { name: product.name },
+})
+
 export interface ShoppingActions {
   /**
-   * Продукт дома куплен: он снова есть и уходит из списка. Покупку можно вернуть
-   * из тоста — продукт встанет на прежнее место в списке.
+   * Продукт дома куплен: он снова есть и уходит из списка, а с ним — ручные позиции
+   * с тем же названием, оставшиеся от прежних версий. Покупку можно вернуть из тоста —
+   * всё встанет на прежние места в списке.
    */
-  buyProduct: (product: Product) => void
-  /** Ручная позиция куплена: шторка спрашивает, в какой раздел её положить. */
-  buyItem: (item: ShoppingItem) => void
+  buyProduct: (product: Product, manualTwins: ShoppingItem[]) => void
+  /**
+   * Ручная позиция куплена. Если дома есть продукт с тем же названием, отмечается он —
+   * второй продукт не заводится; иначе шторка спрашивает, в какой раздел положить.
+   */
+  buyItem: (item: ShoppingItem, homeProduct: Product | undefined) => void
   /**
    * Убрать из покупок, не покупая: сам продукт и его наличие остаются как были.
    * Как и удаление ручной позиции, это можно вернуть из тоста.
@@ -30,17 +43,24 @@ export function useShoppingActions(): ShoppingActions {
 
   return useMemo<ShoppingActions>(
     () => ({
-      buyProduct(product) {
+      buyProduct(product, manualTwins) {
         removeWithUndo({
-          id: product.id,
-          kind: 'bought',
-          commit: () => setStateAsync({ id: product.id, state: PURCHASED }),
-          message: 'toast.backHome',
-          params: { name: product.name },
+          ...asBought(product, manualTwins),
+          commit: async () => {
+            await setStateAsync({ id: product.id, state: PURCHASED })
+            await Promise.all(manualTwins.map((item) => deleteItemById(item.id)))
+          },
         })
       },
-      buyItem(item) {
-        openSheet({ type: 'purchase', item })
+      buyItem(item, homeProduct) {
+        if (!homeProduct) return openSheet({ type: 'purchase', item })
+        removeWithUndo({
+          ...asBought(homeProduct, [item]),
+          commit: async () => {
+            await setStateAsync({ id: homeProduct.id, state: PURCHASED })
+            await deleteItemById(item.id)
+          },
+        })
       },
       dropProduct(product) {
         removeWithUndo({

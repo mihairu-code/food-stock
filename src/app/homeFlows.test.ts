@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { setLangSetting } from '@/shared/i18n'
 import { findProductNamed, groupProductsBySection, PURCHASED, withAvailability, withToBuy } from '@/entities/product'
 import { sortSections } from '@/entities/section'
-import { buildShoppingList, findShoppingEntryNamed, shoppingEntryName } from '@/entities/shopping-list'
+import { buildShoppingList, findShoppingEntryNamed, listOrderReplacing, shoppingEntryName } from '@/entities/shopping-list'
 import type { Backend, Product } from '@/shared/api'
 import { createLocalBackend } from '@/shared/api/localBackend'
 
@@ -379,5 +379,59 @@ describe('домашние запасы: основные потоки', () => {
     const state = await snapshot()
     expect(state.products.filter((p) => p.to_buy).map((p) => p.name)).toEqual(['Молоко'])
     expect(state.shopping).toHaveLength(3)
+  })
+  it('ручная позиция и продукт дома с тем же названием знают друг о друге', async () => {
+    const fridge = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Холодильник', icon: null, sort_order: 0 })
+    // Двойник от прежней версии: ручная «Молоко» и постоянный продукт «молоко», который закончился.
+    const manual = await backend.createShoppingItem(hid, { id: crypto.randomUUID(), name: 'Молоко', icon: null })
+    const milk = await backend.createProduct(hid, {
+      id: crypto.randomUUID(),
+      section_id: fridge.id,
+      name: ' молоко',
+      icon: null,
+      kind: 'staple',
+    })
+    await setAvailable(milk.id, false)
+    await backend.createShoppingItem(hid, { id: crypto.randomUUID(), name: 'Хлеб', icon: null })
+
+    const { shopping } = await snapshot()
+    const productEntry = shopping.find((entry) => entry.type === 'product')
+    const manualEntry = shopping.find((entry) => entry.type === 'manual' && entry.item.id === manual.id)
+    const bread = shopping.find((entry) => entry.type === 'manual' && entry.item.name === 'Хлеб')
+    expect(productEntry?.type === 'product' && productEntry.manualTwins.map((i) => i.id)).toEqual([manual.id])
+    expect(manualEntry?.type === 'manual' && manualEntry.homeProduct?.id).toBe(milk.id)
+    expect(bread?.type === 'manual' && bread.homeProduct).toBeUndefined()
+  })
+
+  it('новый продукт дома занимает место ручной позиции с тем же названием', async () => {
+    const fridge = await backend.createSection(hid, { id: crypto.randomUUID(), name: 'Холодильник', icon: null, sort_order: 0 })
+    for (const name of ['Хлеб', 'Молоко', 'Сыр']) {
+      await backend.createShoppingItem(hid, { id: crypto.randomUUID(), name, icon: null })
+    }
+    const before = await snapshot()
+    const manual = before.shoppingItems.find((item) => item.name === 'Молоко')!
+
+    // То же, что делает useReplaceItemWithProduct после создания продукта.
+    const milk = await backend.createProduct(hid, {
+      id: crypto.randomUUID(),
+      section_id: fridge.id,
+      name: 'Молоко',
+      icon: null,
+      kind: 'staple',
+    })
+    await backend.setProductState(milk.id, { is_available: true, to_buy: true })
+    await backend.reorderShopping(listOrderReplacing(before.shopping, manual.id, milk.id))
+    await backend.deleteShoppingItem(manual.id)
+
+    const after = await snapshot()
+    expect(after.shopping.map(shoppingEntryName)).toEqual(['Хлеб', 'Молоко', 'Сыр'])
+    expect(after.shopping[1]).toMatchObject({ type: 'product', id: milk.id })
+    expect(after.products).toHaveLength(1)
+  })
+
+  it('порядок замены: продукт встаёт на место позиции, а уже лежащий в списке — остаётся на своём', () => {
+    const entries = ['bread', 'item', 'cheese', 'milk'].map((id) => ({ id }) as Parameters<typeof listOrderReplacing>[0][0])
+    expect(listOrderReplacing(entries, 'item', 'new')).toEqual(['bread', 'new', 'cheese', 'milk'])
+    expect(listOrderReplacing(entries, 'item', 'milk')).toEqual(['bread', 'cheese', 'milk'])
   })
 })

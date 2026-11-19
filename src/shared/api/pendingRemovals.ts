@@ -80,6 +80,11 @@ function listenForLeaving() {
 interface RemovalRequest {
   id: string
   kind: RemovalKind
+  /**
+   * Что уходит вместе с записью под тем же тостом: например, ручная позиция с тем же
+   * названием, когда покупают продукт дома. «Вернуть» возвращает всё сразу.
+   */
+  also?: HiddenRecord[]
   /** Сам запрос: вызывается один раз, когда отменять уже поздно. */
   commit: () => Promise<unknown>
   /** Текст тоста; кнопка «Вернуть» добавляется к нему сама. */
@@ -91,7 +96,7 @@ interface RemovalRequest {
  * Убирает запись с экрана сразу, а с сервера — если человек не нажал «Вернуть».
  * Возвращает ту же отмену, что и кнопка тоста.
  */
-export function removeWithUndo({ id, kind, commit: send, message, params }: RemovalRequest): () => void {
+export function removeWithUndo({ id, kind, also = [], commit: send, message, params }: RemovalRequest): () => void {
   listenForLeaving()
   // Прежнюю отмену заменит новый тост — её удаление уходит сразу.
   commitPendingRemovals()
@@ -105,7 +110,7 @@ export function removeWithUndo({ id, kind, commit: send, message, params }: Remo
       reveal(removal.records)
     },
   }
-  const records = [{ id, kind }]
+  const records = [{ id, kind }, ...also]
   waiting.set(id, { records, commit: send, action, timer: setTimeout(() => commit(id), ACTION_TOAST_MS) })
   hide(records)
   toast(translate(message, params), action)
