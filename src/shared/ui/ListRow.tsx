@@ -1,6 +1,7 @@
 import { Pencil, Trash2, X } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useT } from '@/shared/i18n'
+import { RowText } from './RowText'
 import { SortableRow } from './SortableRow'
 import { SwipeRow } from './SwipeRow'
 
@@ -63,12 +64,7 @@ export function ListRow({
   onRemove,
 }: ListRowProps) {
   const t = useT()
-  const text = (
-    <span className="row-text">
-      <span className="row-name">{name}</span>
-      <span className="row-meta">{meta}</span>
-    </span>
-  )
+  const text = <RowText title={name} meta={meta} />
 
   const row = (
     <div className="row" data-missing={missing}>

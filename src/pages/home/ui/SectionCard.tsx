@@ -9,6 +9,7 @@ import { sameItems } from '@/shared/lib/sameItems'
 import { AddRow, openSheet } from '@/shared/ui'
 import type { ProductActions } from '../model/useProductActions'
 import { ProductRow } from './ProductRow'
+import { SectionHeading } from './SectionHeading'
 
 interface SectionCardProps {
   section: Section
@@ -75,13 +76,7 @@ export const SectionCard = memo(function SectionCard({
           onClick={() => onToggle(section.id)}
         >
           <ChevronDown className="caret" size={18} aria-hidden="true" />
-          <span className="section-title">
-            {section.icon && <span aria-hidden="true">{section.icon}</span>}
-            <span className="section-name">{section.name}</span>
-          </span>
-          <span className="count" aria-label={t('home.sectionCount', { count: products.length })}>
-            {products.length}
-          </span>
+          <SectionHeading section={section} count={products.length} />
         </button>
         <button
           className="icon-btn"

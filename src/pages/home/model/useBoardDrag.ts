@@ -1,11 +1,9 @@
 import type { DragEndEvent, DragOverEvent, DragStartEvent } from '@dnd-kit/core'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useReorderProducts } from '@/entities/product'
 import { useReorderSections } from '@/entities/section'
 import type { Product, Section } from '@/shared/api'
-import { setDragActive } from '@/shared/lib/drag/dragState'
-import { useDragSensors } from '@/shared/lib/drag/useDragSensors'
-import { haptic } from '@/shared/lib/haptics'
+import { useDragDraft } from '@/shared/lib/drag/useDragDraft'
 import { notify } from '@/shared/lib/toast'
 import {
   buildBoard,
@@ -26,59 +24,26 @@ export interface ActiveDrag {
 
 /**
  * Перетаскивание на главном экране: продукты внутри раздела и между разделами, разделы
- * между собой. Пока идёт жест, расположение живёт в черновике; после отпускания оно
- * сохраняется одним запросом, а черновик остаётся на экране до тех пор, пока сюда
- * не придут обновлённые данные, — строка не возвращается на старое место ни на кадр.
+ * между собой. Черновик и его жизнь — в useDragDraft; здесь — правила доски.
  */
 export function useBoardDrag(sections: Section[], products: Product[]) {
   const saved = useMemo(() => buildBoard(sections, products), [sections, products])
-  const [draft, setDraft] = useState<Board | null>(null)
-  const [active, setActive] = useState<ActiveDrag | null>(null)
-  // Данные, которые были на экране в момент отпускания. Пока они не сменились, показываем черновик.
-  const [dropped, setDropped] = useState<Board | null>(null)
+  const drag = useDragDraft<Board, ActiveDrag>(saved)
   const { mutate: reorderProducts } = useReorderProducts()
   const { mutate: reorderSections } = useReorderSections()
-  const sensors = useDragSensors()
-
-  // Данные обновились (оптимистично или с сервера) — дальше показываем их, а не черновик.
-  // Сбрасывать черновик раньше нельзя: до этого момента в `saved` ещё старый порядок.
-  if (draft && !active && dropped && saved !== dropped) {
-    setDraft(null)
-    setDropped(null)
-  }
-
-  function stop() {
-    setDragActive(false)
-    setActive(null)
-  }
-
-  /** Жест закончился без изменений. */
-  function reset() {
-    setDraft(null)
-    setDropped(null)
-  }
-
-  /** Черновик остаётся на экране, пока не придут данные с новым порядком. */
-  function pin(next: Board) {
-    setDraft(next)
-    setDropped(saved)
-  }
 
   function onDragStart({ active: item }: DragStartEvent) {
-    setDragActive(true)
-    setDropped(null)
-    setDraft(saved)
-    setActive({ kind: item.data.current?.kind as DragKind, id: String(item.id) })
-    haptic('pick')
+    drag.startDrag({ kind: item.data.current?.kind as DragKind, id: String(item.id) })
   }
 
   // Продукт оказался над другим разделом — он сразу переезжает туда, и раздел раздвигается.
-  function onDragOver({ active: item, over }: DragOverEvent) {
-    if (over && over.id !== item.id) haptic('move')
+  function onDragOver(event: DragOverEvent) {
+    drag.noteDragOver(event)
+    const { active: item, over } = event
     if (!over || item.data.current?.kind !== 'product') return
     const productId = String(item.id)
     const overId = String(over.id)
-    setDraft((current) => {
+    drag.setDraft((current) => {
       if (!current) return current
       const overSection = over.data.current?.kind === 'section'
       const target = overSection ? overId : sectionOf(current, overId)
@@ -93,23 +58,22 @@ export function useBoardDrag(sections: Section[], products: Product[]) {
   }
 
   function onDragEnd({ active: item, over }: DragEndEvent) {
-    stop()
-    haptic('drop')
-    const board = draft ?? saved
+    drag.finishDrag()
+    const board = drag.draft ?? saved
     const id = String(item.id)
     const overId = over ? String(over.id) : null
 
     if (item.data.current?.kind === 'section') {
       const next = overId ? moveSection(board, id, overId) : board
-      if (sameSections(next, saved)) return reset()
-      pin(next)
+      if (sameSections(next, saved)) return drag.discardDraft()
+      drag.keepDraftUntilSaved(next)
       return reorderSections(next.sections)
     }
 
     const next = overId && over?.data.current?.kind === 'product' ? moveWithinSection(board, id, overId) : board
     const sectionId = sectionOf(next, id)
-    if (!sectionId || sameProducts(next, saved, sectionId)) return reset()
-    pin(next)
+    if (!sectionId || sameProducts(next, saved, sectionId)) return drag.discardDraft()
+    drag.keepDraftUntilSaved(next)
     reorderProducts({ sectionId, productIds: next.products[sectionId] })
 
     if (sectionId !== sectionOf(saved, id)) {
@@ -120,10 +84,10 @@ export function useBoardDrag(sections: Section[], products: Product[]) {
     }
   }
 
-  function onDragCancel() {
-    stop()
-    reset()
+  return {
+    board: drag.draft ?? saved,
+    active: drag.active,
+    sensors: drag.sensors,
+    handlers: { onDragStart, onDragOver, onDragEnd, onDragCancel: drag.cancelDrag },
   }
-
-  return { board: draft ?? saved, active, sensors, handlers: { onDragStart, onDragOver, onDragEnd, onDragCancel } }
 }

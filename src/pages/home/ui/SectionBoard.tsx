@@ -13,6 +13,7 @@ import { useCollapsedSections } from '../model/useCollapsedSections'
 import { useProductActions } from '../model/useProductActions'
 import { ProductRow } from './ProductRow'
 import { SectionCard } from './SectionCard'
+import { SectionHeading } from './SectionHeading'
 
 /** Высота разделов меняется прямо во время жеста (раздел раздвигается, сворачивается) — их нужно перемерять. */
 const MEASURING = { droppable: { strategy: MeasuringStrategy.Always } }
@@ -89,11 +90,7 @@ export function SectionBoard({ sections, products }: { sections: Section[]; prod
           {draggedSection && (
             // Раздел под пальцем: только шапка.
             <div className="card drag-ghost section-ghost" inert>
-              <span className="section-title">
-                {draggedSection.icon && <span aria-hidden="true">{draggedSection.icon}</span>}
-                <span className="section-name">{draggedSection.name}</span>
-              </span>
-              <span className="count">{productsOf(draggedSection.id).length}</span>
+              <SectionHeading section={draggedSection} count={productsOf(draggedSection.id).length} />
             </div>
           )}
         </DragOverlay>,

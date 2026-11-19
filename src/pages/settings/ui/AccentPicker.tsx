@@ -1,5 +1,6 @@
 import { useT } from '@/shared/i18n'
 import { ACCENTS, setAccent, useAppearance } from '@/shared/lib/appearance'
+import { RowText } from '@/shared/ui'
 
 /** Строка настроек с выбором акцентного цвета: ряд кружков, каждый — своего оттенка. */
 export function AccentPicker() {
@@ -8,11 +9,7 @@ export function AccentPicker() {
 
   return (
     <div className="setting-row accent-row">
-      <div className="row-text">
-        <div className="row-name" id="accent-label">
-          {t('settings.accent')}
-        </div>
-      </div>
+      <RowText title={t('settings.accent')} titleId="accent-label" />
       <div className="swatches" role="radiogroup" aria-labelledby="accent-label">
         {ACCENTS.map((option) => (
           <button

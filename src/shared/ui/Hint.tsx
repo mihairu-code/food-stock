@@ -16,9 +16,9 @@ export function Hint({ label, children, onlyWhenHintsOn = false }: HintProps) {
   const hintsOn = useHintsVisible()
   if (onlyWhenHintsOn && !hintsOn) return null
   return (
-    <div className="hint">
-      <div className="hint-label">{label}</div>
+    <aside className="hint">
+      <p className="hint-label">{label}</p>
       {children}
-    </div>
+    </aside>
   )
 }

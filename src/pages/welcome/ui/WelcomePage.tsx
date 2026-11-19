@@ -4,6 +4,7 @@ import { backend } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import { currentInstallTarget, type InstallTarget } from '@/shared/lib/install/install'
 import { notify } from '@/shared/lib/toast'
+import { AuthScreen } from '@/shared/ui'
 import { InstallCard } from './InstallCard'
 
 interface WelcomeProps {
@@ -31,10 +32,7 @@ export function WelcomePage({ invited, onContinue, install: installOverride }: W
   }
 
   return (
-    <main className="auth">
-      <div className="auth-emoji" aria-hidden="true">🏠</div>
-      <h1>{t('app.name')}</h1>
-      <p className="auth-lead">{t(invited ? 'welcome.invited' : 'app.tagline')}</p>
+    <AuthScreen title={t('app.name')} lead={t(invited ? 'welcome.invited' : 'app.tagline')}>
       <div className="card welcome-card">
         <button className="btn" type="button" disabled={busy} onClick={signIn}>
           {t('auth.google')}
@@ -46,6 +44,6 @@ export function WelcomePage({ invited, onContinue, install: installOverride }: W
         <p className="welcome-note">{t('welcome.later')}</p>
       </div>
       {install && <InstallCard target={install} />}
-    </main>
+    </AuthScreen>
   )
 }

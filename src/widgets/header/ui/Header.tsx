@@ -14,12 +14,12 @@ export function Header() {
 
   return (
     <header className="header">
-      <div>
-        <div className="kicker">
+      <hgroup>
+        <p className="kicker">
           {household.name} · {t('n.members', { count: members?.length ?? 1 })}
-        </div>
+        </p>
         <h1>{t(titleKey(pathname))}</h1>
-      </div>
+      </hgroup>
       {/* Аватарка дома; пока её не выбрали — инициалы участников. */}
       <Link className="avatar" to="/settings" data-icon={Boolean(household.icon)} aria-label={t('header.settingsLink')}>
         {household.icon || initials || <UserRound size={18} aria-hidden="true" />}

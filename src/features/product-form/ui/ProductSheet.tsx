@@ -10,9 +10,8 @@ import {
 import { SectionPicker, useSortedSections } from '@/entities/section'
 import { useHomeData, type Product } from '@/shared/api'
 import { useT } from '@/shared/i18n'
-import { useSuggestedEmoji } from '@/shared/lib/emoji/useSuggestedEmoji'
 import { notify } from '@/shared/lib/toast'
-import { useFieldError } from '@/shared/lib/useFieldError'
+import { useNameWithIcon } from '@/shared/lib/useNameWithIcon'
 import { closeSheet, FormSheet, NameIconFields } from '@/shared/ui'
 
 interface ProductSheetProps {
@@ -33,16 +32,9 @@ export function ProductSheet({ product, sectionId: openedFromSection }: ProductS
   const { products } = useHomeData()
   const createProduct = useCreateProduct()
   const editProduct = useEditProduct()
-  const [name, setName] = useState(product?.name ?? '')
-  const { icon, setIcon, options } = useSuggestedEmoji(name, product?.icon ?? null)
-  const nameError = useFieldError()
+  const { name, icon, rejectName, fields } = useNameWithIcon(product?.name, product?.icon)
   const [sectionId, setSectionId] = useState(product?.section_id ?? openedFromSection ?? sections[0]?.id ?? '')
   const [staple, setStaple] = useState(product ? product.kind === 'staple' : false)
-
-  function changeName(next: string) {
-    setName(next)
-    nameError.clear()
-  }
 
   function saveProduct() {
     const trimmed = name.trim()
@@ -52,7 +44,7 @@ export function ProductSheet({ product, sectionId: openedFromSection }: ProductS
     const twin = findProductNamed(products, trimmed, product?.id)
     if (twin) {
       const twinSection = sections.find((candidate) => candidate.id === twin.section_id)
-      nameError.reject(t('productSheet.duplicate', { section: twinSection?.name ?? '' }))
+      rejectName(t('productSheet.duplicate', { section: twinSection?.name ?? '' }))
       return
     }
 
@@ -86,14 +78,8 @@ export function ProductSheet({ product, sectionId: openedFromSection }: ProductS
         label={t('productSheet.name')}
         placeholder={t('productSheet.placeholder')}
         maxLength={80}
-        name={name}
-        onNameChange={changeName}
-        icon={icon}
-        onIconChange={setIcon}
-        icons={options}
         iconHint={t('emoji.hint')}
-        nameError={nameError.error}
-        nameShakeCount={nameError.shakeCount}
+        {...fields}
       />
       <SectionPicker sections={sections} value={sectionId} onChange={setSectionId} />
       <StapleCheckbox checked={staple} onChange={setStaple} />
