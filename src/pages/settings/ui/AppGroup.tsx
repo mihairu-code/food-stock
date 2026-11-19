@@ -4,8 +4,9 @@ import { setHintsVisible } from '@/shared/lib/hints/hints'
 import { useHintsVisible } from '@/shared/lib/hints/useHintsVisible'
 import { SettingSelect, SettingsGroup, SettingToggle } from '@/shared/ui'
 import { AccentPicker } from './AccentPicker'
+import { AppIconPicker } from './AppIconPicker'
 
-/** Приложение: язык, оформление и подсказки. Выбор хранится на устройстве, а не в доме. */
+/** Приложение: язык, оформление, иконка и подсказки. Выбор хранится на устройстве, а не в доме. */
 export function AppGroup() {
   const t = useT()
   const { setting } = useLang()
@@ -38,6 +39,7 @@ export function AppGroup() {
         <option value="dark">{t('settings.themeDark')}</option>
       </SettingSelect>
       <AccentPicker />
+      <AppIconPicker />
       <SettingToggle
         id="hints"
         title={t('settings.hints')}

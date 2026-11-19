@@ -1,3 +1,4 @@
+import { APP_ICONS, appIconFiles, DEFAULT_APP_ICON, type AppIcon } from './appIcons'
 import { createStore, useStore } from './store'
 
 /** 'auto' — тема берётся из настроек устройства. */
@@ -11,27 +12,32 @@ export type Accent = (typeof ACCENTS)[number]
 interface Appearance {
   theme: ThemeSetting
   accent: Accent
+  icon: AppIcon
 }
 
 /* Те же ключи читает скрипт в index.html: он выставляет тему до первой отрисовки,
    чтобы экран не мигал светлым перед тёмным. */
 const THEME_KEY = 'home-stock:theme'
 const ACCENT_KEY = 'home-stock:accent'
+const ICON_KEY = 'home-stock:app-icon'
 
 const systemDark = window.matchMedia('(prefers-color-scheme: dark)')
 
 function read(): Appearance {
   let theme: string | null = null
   let accent: string | null = null
+  let icon: string | null = null
   try {
     theme = localStorage.getItem(THEME_KEY)
     accent = localStorage.getItem(ACCENT_KEY)
+    icon = localStorage.getItem(ICON_KEY)
   } catch {
     // хранилище недоступно — оформление по умолчанию
   }
   return {
     theme: theme === 'light' || theme === 'dark' ? theme : 'auto',
     accent: ACCENTS.includes(accent as Accent) ? (accent as Accent) : 'green',
+    icon: APP_ICONS.includes(icon as AppIcon) ? (icon as AppIcon) : DEFAULT_APP_ICON,
   }
 }
 
@@ -46,9 +52,28 @@ function save(key: string, value: string | null): void {
 
 const store = createStore<Appearance>(read())
 
+/**
+ * Подставляет выбранную иконку в ссылки страницы. iPhone берёт apple-touch-icon в момент
+ * «На экран Домой», Android — иконку из манифеста при установке и при плановой проверке
+ * уже установленного приложения. Сменить иконку на экране сразу веб-приложение не может.
+ */
+function applyIcon(icon: AppIcon): void {
+  const files = appIconFiles(icon)
+  const links: [string, string][] = [
+    ['icon', files.svg],
+    ['apple-touch-icon', files.touch],
+    // Ссылку на манифест vite-plugin-pwa добавляет только в сборке.
+    ['manifest', files.manifest],
+  ]
+  for (const [rel, file] of links) {
+    const link = document.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`)
+    if (link) link.href = `/${file}`
+  }
+}
+
 /** Переносит выбор на страницу: атрибуты для стилей и цвет системной панели вокруг приложения. */
 function apply(): void {
-  const { theme, accent } = store.get()
+  const { theme, accent, icon } = store.get()
   const root = document.documentElement
   root.dataset.theme = theme === 'auto' ? (systemDark.matches ? 'dark' : 'light') : theme
   root.dataset.accent = accent
@@ -58,6 +83,7 @@ function apply(): void {
     meta.removeAttribute('media')
     meta.content = background
   }
+  applyIcon(icon)
 }
 
 /** Вызывается при запуске; дальше оформление следит за сменой темы на устройстве. */
@@ -75,6 +101,12 @@ export function setTheme(theme: ThemeSetting): void {
 export function setAccent(accent: Accent): void {
   save(ACCENT_KEY, accent === 'green' ? null : accent)
   store.set({ ...store.get(), accent })
+  apply()
+}
+
+export function setAppIcon(icon: AppIcon): void {
+  save(ICON_KEY, icon === DEFAULT_APP_ICON ? null : icon)
+  store.set({ ...store.get(), icon })
   apply()
 }
 

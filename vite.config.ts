@@ -1,7 +1,8 @@
 import { fileURLToPath, URL } from 'node:url'
 import react from '@vitejs/plugin-react'
 import { defineConfig, loadEnv, type Plugin } from 'vite'
-import { VitePWA } from 'vite-plugin-pwa'
+import { VitePWA, type ManifestOptions } from 'vite-plugin-pwa'
+import { APP_ICONS, appIconFiles, DEFAULT_APP_ICON, type AppIcon } from './src/shared/lib/appIcons.ts'
 
 /**
  * Соединение с сервером данных открывается, пока браузер ещё скачивает и разбирает
@@ -14,6 +15,49 @@ function preconnect(url: string | undefined): Plugin {
       url
         ? [{ tag: 'link', attrs: { rel: 'preconnect', href: new URL(url).origin, crossorigin: true }, injectTo: 'head-prepend' }]
         : [],
+  }
+}
+
+/**
+ * Манифест с выбранной иконкой. У всех вариантов один id: для телефона это одно и то же
+ * приложение, и Android при следующей проверке манифеста может сменить иконку сам.
+ */
+function manifestWithIcon(icon: AppIcon): Partial<ManifestOptions> {
+  const files = appIconFiles(icon)
+  return {
+    id: '/',
+    name: 'Домашние запасы',
+    short_name: 'Запасы',
+    description: 'Общий список продуктов дома и покупок',
+    lang: 'ru',
+    start_url: '/',
+    scope: '/',
+    display: 'standalone',
+    background_color: '#f7f6f2',
+    theme_color: '#f7f6f2',
+    icons: [
+      { src: files.small, sizes: '192x192', type: 'image/png' },
+      { src: files.large, sizes: '512x512', type: 'image/png' },
+      { src: files.maskable, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+    ],
+  }
+}
+
+/** Манифесты остальных иконок; основной собирает vite-plugin-pwa. */
+function iconManifests(): Plugin {
+  return {
+    name: 'app-icon-manifests',
+    apply: 'build',
+    generateBundle() {
+      for (const icon of APP_ICONS) {
+        if (icon === DEFAULT_APP_ICON) continue
+        this.emitFile({
+          type: 'asset',
+          fileName: appIconFiles(icon).manifest,
+          source: JSON.stringify(manifestWithIcon(icon)),
+        })
+      }
+    },
   }
 }
 
@@ -44,24 +88,12 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       preconnect(env.VITE_SUPABASE_URL),
+      iconManifests(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
-        manifest: {
-          name: 'Домашние запасы',
-          short_name: 'Запасы',
-          description: 'Общий список продуктов дома и покупок',
-          lang: 'ru',
-          start_url: '/',
-          display: 'standalone',
-          background_color: '#f7f6f2',
-          theme_color: '#f7f6f2',
-          icons: [
-            { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
-            { src: 'pwa-512.png', sizes: '512x512', type: 'image/png' },
-            { src: 'pwa-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-          ],
-        },
+        // SVG иконок нужны плиткам в настройках и без сети; PNG — только при установке.
+        includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'icons/*.svg'],
+        manifest: manifestWithIcon(DEFAULT_APP_ICON),
         workbox: {
           // Кешируется только оболочка приложения. Ответы Supabase в кеш не попадают,
           // поэтому приватные данные не переживают смену пользователя.
