@@ -579,3 +579,20 @@ member becomes the owner. Google accounts are left alone.
 
 In the evening — "Undo" for buying a home product too: in a store it's easy to tap the
 wrong row.
+
+## Nov 19, Thu
+
+I wanted the icon to be selectable — a dark one looks better on a dark wallpaper.
+Generated the icon set and the PNG build script with an AI assistant from a reference,
+then went through it and fixed things by hand — drawing seven icons in three sizes
+manually wasn't worth it.
+
+The unpleasant part showed up fast: a web app can't change its Home Screen icon by
+itself. iPhone takes it only at "Add to Home Screen" from Safari, Android at install or
+when it re-checks the manifest. Wrote exactly that under the choice, and put a "Copy app
+link" button next to it to paste into Safari. Link copying already existed in the invite
+sheet — moved it into a shared `copyLink`.
+
+Technically: a separate manifest per icon with the same `id` — for the phone it's one app.
+The manifests are built by a small Vite plugin from the same list of icons. The default
+icon stays in the root of `public/` under its old names: installed apps point there.

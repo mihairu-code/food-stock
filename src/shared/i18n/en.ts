@@ -203,6 +203,7 @@ export const en: Messages = {
   'accent.graphite': 'Graphite',
   'settings.appIcon': 'App icon',
   'settings.appIconMeta': 'To apply the change, add the app to your Home Screen again',
+  'settings.copyAppLink': 'Copy app link',
   'appIcon.checklist': 'Checklist',
   'appIcon.checklistDark': 'Checklist, dark',
   'appIcon.boxLeaf': 'Box with leaf',

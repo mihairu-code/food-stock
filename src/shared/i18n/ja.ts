@@ -194,6 +194,7 @@ export const ja: Messages = {
   'accent.graphite': 'グラファイト',
   'settings.appIcon': 'アプリのアイコン',
   'settings.appIconMeta': '変更を反映するには、アプリをホーム画面に追加し直してください',
+  'settings.copyAppLink': 'アプリのリンクをコピー',
   'appIcon.checklist': 'チェックリスト',
   'appIcon.checklistDark': 'チェックリスト（ダーク）',
   'appIcon.boxLeaf': '箱と葉っぱ',

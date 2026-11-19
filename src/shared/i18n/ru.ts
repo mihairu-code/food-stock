@@ -247,6 +247,7 @@ export const ru = {
   'accent.graphite': 'Графитовый',
   'settings.appIcon': 'Иконка приложения',
   'settings.appIconMeta': 'Чтобы изменения вступили в силу, заново добавьте приложение на экран «Домой»',
+  'settings.copyAppLink': 'Скопировать ссылку на приложение',
   'appIcon.checklist': 'Список',
   'appIcon.checklistDark': 'Список, тёмная',
   'appIcon.boxLeaf': 'Коробка с листком',

@@ -61,6 +61,10 @@
   box-shadow: 0 0 0 2px var(--ink);
 }
 
+.btn.app-link-copy {
+  align-self: flex-start;
+}
+
 .btn.sign-out {
   width: 100%;
   margin-top: var(--space-5);

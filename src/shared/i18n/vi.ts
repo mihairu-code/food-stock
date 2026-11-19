@@ -194,6 +194,7 @@ export const vi: Messages = {
   'accent.graphite': 'Xám than',
   'settings.appIcon': 'Biểu tượng ứng dụng',
   'settings.appIconMeta': 'Để áp dụng thay đổi, hãy thêm lại ứng dụng vào Màn hình chính',
+  'settings.copyAppLink': 'Sao chép liên kết ứng dụng',
   'appIcon.checklist': 'Danh sách',
   'appIcon.checklistDark': 'Danh sách, tối',
   'appIcon.boxLeaf': 'Hộp và lá',

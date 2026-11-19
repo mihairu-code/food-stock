@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.0 — 2026-11-19
+
+- Choose the app icon in settings (seven icons, a manifest per icon).
+- "Copy app link" next to it; shared `copyLink` for invites and the app link.
+
 ## 0.10.0 — 2026-11-18
 
 - Delete with undo: delayed request, "Undo" in the toast; also for removing from the list

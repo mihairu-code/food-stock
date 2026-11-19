@@ -1,20 +1,11 @@
 import { useT } from '@/shared/i18n'
-import { notify } from '@/shared/lib/toast'
+import { copyLink } from '@/shared/lib/copyLink'
 import { Sheet, SheetActions, TextField } from '@/shared/ui'
 
 /** Только что созданная ссылка-приглашение: поделиться или скопировать. Второй раз её не показать. */
 export function InviteLinkSheet({ link }: { link: string }) {
   const t = useT()
   const canShare = typeof navigator.share === 'function'
-
-  async function copyLink() {
-    try {
-      await navigator.clipboard.writeText(link)
-      notify('toast.copied')
-    } catch {
-      notify('toast.copyError')
-    }
-  }
 
   async function shareLink() {
     try {
@@ -34,12 +25,12 @@ export function InviteLinkSheet({ link }: { link: string }) {
       />
       <p className="sheet-description">{t('invite.pwaNote')}</p>
       <SheetActions closeLabel={t('common.done')}>
-        <button className="btn" type="button" data-autofocus onClick={() => void (canShare ? shareLink() : copyLink())}>
+        <button className="btn" type="button" data-autofocus onClick={() => void (canShare ? shareLink() : copyLink(link))}>
           {t(canShare ? 'invite.share' : 'invite.copy')}
         </button>
       </SheetActions>
       {canShare && (
-        <button className="btn danger-text link-copy" type="button" onClick={() => void copyLink()}>
+        <button className="btn danger-text link-copy" type="button" onClick={() => void copyLink(link)}>
           {t('invite.copyLink')}
         </button>
       )}
