@@ -98,9 +98,21 @@
   border-radius: var(--radius-xl);
 }
 
-/* Место, откуда раздел забрали: под пальцем едет «призрак», как у строки. */
+/* Место, куда раздел встанет, — пустое, как у строки (см. sortableRow.css). Шапка
+   остаётся — на ней фокус при перестановке с клавиатуры; не рисуются её содержимое,
+   продукты и сама карточка. */
 .section[data-dragging='true'] {
-  opacity: 0.35;
+  border-color: transparent;
+  background: transparent;
+}
+
+.section[data-dragging='true'] .section-head {
+  border-bottom-color: transparent;
+}
+
+.section[data-dragging='true'] .section-head > *,
+.section[data-dragging='true'] .section-body {
+  visibility: hidden;
 }
 
 .section {
