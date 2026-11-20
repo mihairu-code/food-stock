@@ -9,8 +9,29 @@ the shopping list by itself and comes back to its section once bought. Sections 
 your own — "Fridge", "Pantry", "Snacks". Several people share one home and see each
 other's changes live.
 
+<p>
+  <img src="docs/screenshots/home.jpg" width="200" alt="Home: sections with products and stock dots">
+  <img src="docs/screenshots/shopping.jpg" width="200" alt="Shopping list">
+  <img src="docs/screenshots/add-product.jpg" width="200" alt="Adding a product: icon suggested from the name, section tiles">
+  <img src="docs/screenshots/home-dark.jpg" width="200" alt="Home in the dark theme">
+</p>
+
+What's in it:
+
+- no sign-up: a home is created on first launch, other people join with a one-time link;
+  Google sign-in is optional and merges the device's data into the account;
+- drag and drop for products, sections and the shopping list, with keyboard and screen
+  reader support;
+- swipe for edit and delete, delete with "Undo", one name — one thing across home and
+  shopping;
+- a sheet that stays above the iPhone keyboard (more in [iPhone notes](docs/en/ios-notes.md));
+- light and dark themes, six accent colors, seven app icons, four languages;
+- an install guide for every device; old versions keep working against the same
+  database while a new one rolls out.
+
 Stack: React 19 + TypeScript + Vite, React Router, TanStack Query, Supabase
-(Postgres + Auth + Realtime), dnd-kit, `vite-plugin-pwa`.
+(Postgres + Auth + Realtime), dnd-kit, `vite-plugin-pwa`. Structure — Feature-Sliced
+Design.
 
 ## Run
 

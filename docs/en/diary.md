@@ -596,3 +596,34 @@ sheet — moved it into a shared `copyLink`.
 Technically: a separate manifest per icon with the same `id` — for the phone it's one app.
 The manifests are built by a small Vite plugin from the same list of icons. The default
 icon stays in the root of `public/` under its old names: installed apps point there.
+
+## Nov 19, afternoon
+
+Went over the markup ([0016](decisions/0016-semantic-markup.md)). It grew out of a
+prototype where everything is a `div`, and in places it was plainly wrong: `div`s inside
+`button` and `label`. Picked tags by meaning — `hgroup`, `section`, `aside`, `p` — styles
+stayed on classes, and after the swap I compared positions and computed styles of every
+element: not a single shift. The "name + caption" row text was laid out eight times — now
+it's one `RowText`.
+
+Then I hunted for repetition: the pre-login screen was drawn three times, the drag draft
+lived as a copy in two hooks, the "name + icon + error" state in two forms. Extracted
+`AuthScreen`, `useDragDraft`, `useNameWithIcon`. And wrote the code style down in
+`CONTRIBUTING`: there's no formatter, everything rests on conventions, and they're better
+seen.
+
+In the evening — something about shopping that had bothered me for a while
+([0017](decisions/0017-one-name-one-thing.md)). You could add a manual "Milk" while a
+"Milk" product was at home: two rows about one thing, and buying the manual one created a
+second milk at home. Decided the home product wins: wherever a name appears, both sides
+are checked, and twins from older versions are merged on purchase — under one "Undo".
+
+## Nov 20, Fri
+
+Morning — drag and drop. The browser repainted the half-transparent "ghost" in the row's
+place on every shift of the list; on a phone it was noticeable. Made the place empty: the
+content is hidden, the row itself stays — it holds focus during keyboard reordering. Rows
+make way a bit slower, 180 ms instead of 120: before, they jumped rather than slid.
+
+And that's it: README with screenshots, release notes. Two weeks ago this was a prototype
+from sketches, now it's an app that sits on the Home Screen and works with a shared database.

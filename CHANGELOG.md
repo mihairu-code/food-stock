@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0 — 2026-11-20
+
+- One name, one thing: home products win over manual items with the same name; buying
+  merges twins under one undo.
+- Empty placeholder while dragging, smoother sorting and drop.
+- Semantic markup and shared `RowText`; `AuthScreen`, `useDragDraft`, `useNameWithIcon`.
+- Code style conventions in CONTRIBUTING; `--white` token.
+- README with screenshots.
+
 ## 0.11.0 — 2026-11-19
 
 - Choose the app icon in settings (seven icons, a manifest per icon).
