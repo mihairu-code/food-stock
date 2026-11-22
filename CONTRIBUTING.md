@@ -93,6 +93,18 @@ For a while the old version keeps running on phones against the same database.
 - **Changing the shape of home data** — bump `VERSION` in `shared/api/snapshot.ts`.
 - **Data access only through RLS.** A new table without a policy is a hole.
 
+## Branches and deploys
+
+Vercel builds the app straight from GitHub.
+
+- **Work happens in a feature branch:** `feat/<feature>`, `refactor/<what>`. A finished
+  feature is merged into `main`. Coming back to the same feature with fixes — a new
+  branch with the same name and the next version: `feat/drag-and-drop-v2`, then `-v3`.
+- **Any branch except `main` gets a preview.** Previews have no Supabase keys, so they
+  run in demo mode and never touch the real database.
+- **A push to `main` is a production deploy.** With a migration the order is: branch →
+  check on the preview → migration on the database → merge into `main`.
+
 ## Docs
 
 A notable decision gets a short record in `docs/*/decisions` (context, options, decision,
