@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { ProductStockIcon } from '@/entities/product'
+import { ProductStockIcon, stockState } from '@/entities/product'
 import type { Product, ShoppingItem } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import type { ShoppingActions } from '../model/useShoppingActions'
@@ -29,7 +29,7 @@ export const ShoppingProductRow = memo(function ShoppingProductRow({
       id={product.id}
       name={product.name}
       meta={sectionName ? `${sectionName} · ${stock}` : stock}
-      missing={!product.is_available}
+      stock={stockState(product)}
       ghost={ghost}
       icon={<ProductStockIcon icon={product.icon} />}
       onBuy={() => actions.buyProduct(product, manualTwins)}

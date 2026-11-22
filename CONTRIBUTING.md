@@ -67,7 +67,7 @@ the neighbouring code in the same layer is written.
   `<entity>Api.ts`, with all its queries and mutations.
 - **Slice folders:** `ui/` components, `model/` rules and state hooks, `api/` queries and
   mutations, `lib/` small helpers. `index.ts` exports only what's needed outside.
-- **State in markup — a `data-*` attribute**, not a class: `data-open`, `data-missing`.
+- **State in markup — a `data-*` attribute**, not a class: `data-open`, `data-stock`.
   A modifier class only for a permanent look: `btn subtle`.
 - **Buttons:** every one has `type="button"`; an icon-only button has an `aria-label`
   from the dictionary; icons are `lucide-react`, decorative ones `aria-hidden`.

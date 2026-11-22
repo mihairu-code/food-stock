@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.0 — unreleased
+
+- Orange stock dot for products still at home but on the shopping list ("Still home · on
+  the list"), on Home and in the shopping list; `stockState`, `data-stock`.
+- "Not by colour alone" setting: dot shapes and an Okabe–Ito palette, applied before the
+  first paint (`home-stock:color-safe`).
+
 ## 1.0.0 — 2026-11-20
 
 - One name, one thing: home products win over manual items with the same name; buying

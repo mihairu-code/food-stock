@@ -1,4 +1,4 @@
-/** Иконка продукта с точкой наличия в углу. Цвет точки задаёт строка (`data-missing`). */
+/** Иконка продукта с точкой наличия в углу. Цвет и форму точки задаёт `data-stock` строки. */
 export function ProductStockIcon({ icon }: { icon: string | null }) {
   return (
     <span className="stock">
