@@ -1,6 +1,6 @@
 import { Minus, Plus } from 'lucide-react'
 import { memo } from 'react'
-import { ProductStockIcon } from '@/entities/product'
+import { ProductStockIcon, stockState, type StockState } from '@/entities/product'
 import { isPendingProduct, type Product } from '@/shared/api'
 import { useT, type MessageKey } from '@/shared/i18n'
 import { ListRow } from '@/shared/ui'
@@ -19,10 +19,17 @@ interface ProductRowProps {
 }
 
 /** Подпись под названием: чего не хватает или какой это продукт. */
-function stockCaptionKey(product: Product): MessageKey {
-  if (!product.is_available) return product.to_buy ? 'product.outInList' : 'product.out'
-  if (product.to_buy) return 'product.inList'
+function stockCaptionKey(product: Product, stock: StockState): MessageKey {
+  if (stock === 'out') return product.to_buy ? 'product.outInList' : 'product.out'
+  if (stock === 'low') return 'product.inList'
   return product.kind === 'staple' ? 'product.staple' : 'product.oneOff'
+}
+
+/** Подпись главной кнопки: состояние словами, чтобы скринридер не зависел от цвета точки. */
+const MAIN_LABEL_KEYS: Record<StockState, MessageKey> = {
+  in: 'product.markOut',
+  low: 'product.markOutInList',
+  out: 'product.markIn',
 }
 
 /**
@@ -33,7 +40,8 @@ function stockCaptionKey(product: Product): MessageKey {
  */
 export const ProductRow = memo(function ProductRow({ product, actions, droppable = true, ghost = false }: ProductRowProps) {
   const t = useT()
-  const { name, is_available: available, to_buy: toBuy } = product
+  const { name, to_buy: toBuy } = product
+  const stock = stockState(product)
 
   return (
     <ListRow
@@ -42,14 +50,14 @@ export const ProductRow = memo(function ProductRow({ product, actions, droppable
       dragDescription={t('dnd.product')}
       icon={<ProductStockIcon icon={product.icon} />}
       name={name}
-      meta={t(stockCaptionKey(product))}
-      missing={!available}
+      meta={t(stockCaptionKey(product, stock))}
+      stock={stock}
       // Продукт, только что перенесённый из покупок, ещё не получил настоящий идентификатор.
       disabled={isPendingProduct(product.id)}
       droppable={droppable}
       ghost={ghost}
       main={{
-        label: t(available ? 'product.markOut' : 'product.markIn', { name }),
+        label: t(MAIN_LABEL_KEYS[stock], { name }),
         onClick: () => actions.toggleStock(product),
       }}
       toggle={{

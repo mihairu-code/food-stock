@@ -1,16 +1,17 @@
+import { StockDotSamples } from '@/entities/product'
 import { LANG_NAMES, LANGS, setLangSetting, useLang, useT, type LangSetting } from '@/shared/i18n'
-import { setTheme, useAppearance, type ThemeSetting } from '@/shared/lib/appearance'
+import { setColorSafe, setTheme, useAppearance, type ThemeSetting } from '@/shared/lib/appearance'
 import { setHintsVisible } from '@/shared/lib/hints/hints'
 import { useHintsVisible } from '@/shared/lib/hints/useHintsVisible'
 import { SettingSelect, SettingsGroup, SettingToggle } from '@/shared/ui'
 import { AccentPicker } from './AccentPicker'
 import { AppIconPicker } from './AppIconPicker'
 
-/** Приложение: язык, оформление, иконка и подсказки. Выбор хранится на устройстве, а не в доме. */
+/** Приложение: язык, оформление, различение точек, иконка и подсказки. Выбор хранится на устройстве, а не в доме. */
 export function AppGroup() {
   const t = useT()
   const { setting } = useLang()
-  const { theme } = useAppearance()
+  const { theme, colorSafe } = useAppearance()
   const hints = useHintsVisible()
 
   return (
@@ -39,6 +40,18 @@ export function AppGroup() {
         <option value="dark">{t('settings.themeDark')}</option>
       </SettingSelect>
       <AccentPicker />
+      <SettingToggle
+        id="color-safe"
+        title={t('settings.colorSafe')}
+        meta={
+          <>
+            {t('settings.colorSafeMeta')}
+            <StockDotSamples />
+          </>
+        }
+        checked={colorSafe}
+        onChange={setColorSafe}
+      />
       <AppIconPicker />
       <SettingToggle
         id="hints"

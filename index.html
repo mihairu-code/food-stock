@@ -18,14 +18,16 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>Домашние запасы</title>
     <script>
-      // Тема и акцент выставляются до первой отрисовки, чтобы экран не мигал чужими цветами.
-      // Те же ключи и правила — в src/lib/appearance.ts.
+      // Тема, акцент и режим «не только цветом» выставляются до первой отрисовки, чтобы
+      // экран не мигал чужими цветами, а точки наличия не перерисовывались.
+      // Те же ключи и правила — в src/shared/lib/appearance.ts.
       try {
         var theme = localStorage.getItem('home-stock:theme')
         var dark = theme === 'dark' || (theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
         document.documentElement.dataset.theme = dark ? 'dark' : 'light'
         var accent = localStorage.getItem('home-stock:accent')
         if (accent) document.documentElement.dataset.accent = accent
+        if (localStorage.getItem('home-stock:color-safe') === 'on') document.documentElement.dataset.colorSafe = ''
       } catch (error) {}
     </script>
   </head>

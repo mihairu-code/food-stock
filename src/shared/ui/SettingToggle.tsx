@@ -1,9 +1,11 @@
+import type { ReactNode } from 'react'
 import { RowText } from './RowText'
 
 interface SettingToggleProps {
   id: string
   title: string
-  meta?: string
+  /** Подпись под названием; может нести и пример того, что изменится. */
+  meta?: ReactNode
   checked: boolean
   onChange: (checked: boolean) => void
 }

@@ -14,8 +14,11 @@ interface ListRowProps {
   icon: ReactNode
   name: string
   meta: string
-  /** Продукта дома нет: строка приглушена. */
-  missing?: boolean
+  /**
+   * Наличие продукта дома (stockState в entities/product): от него цвет точки на иконке,
+   * а у закончившегося — приглушённая строка. У ручной позиции покупок не задаётся.
+   */
+  stock?: 'in' | 'low' | 'out'
   /** Строка ещё сохраняется: кнопки и перетаскивание недоступны. */
   disabled?: boolean
   /** На строку можно бросить другую; false — когда она не видна. */
@@ -51,7 +54,7 @@ export function ListRow({
   icon,
   name,
   meta,
-  missing,
+  stock,
   disabled = false,
   droppable = true,
   ghost = false,
@@ -67,7 +70,7 @@ export function ListRow({
   const text = <RowText title={name} meta={meta} />
 
   const row = (
-    <div className="row" data-missing={missing}>
+    <div className="row" data-stock={stock}>
       {main ? (
         <button className="row-main" type="button" disabled={disabled} aria-label={main.label} onClick={main.onClick}>
           {icon}
