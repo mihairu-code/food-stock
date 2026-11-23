@@ -32,6 +32,14 @@ gestures. Details and history are in the [decisions](decisions) and the
   `opacity: 0`. A field with `display: none` or `visibility: hidden` can't take focus.
 - **A field's font is at least `1rem` (16px)**, or the iPhone zooms the page in on
   focus.
+- **Focusing near the bottom edge scrolls the page.** If the iPhone focuses a field
+  itself (a tap on it), it scrolls the page to show the field, even though the field
+  will stand above the keyboard anyway. The search field takes focus by hand instead:
+  `touchend` with `preventDefault` and `focus({ preventScroll: true })`, and the scroll
+  is held in place while the keyboard slides in.
+- **The page doesn't see the "Done" tick above the keyboard.** All it sees is the field
+  losing focus with no touch on the page just before. That's how the home search
+  knows to close.
 
 ## Focus
 
