@@ -234,7 +234,7 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       dataOrThrow(
         await supabase
           .from('sections')
-          .insert({ household_id: householdId, kind: NEW_PRODUCT_KIND, ...input })
+          .insert({ household_id: householdId, ...input })
           .select()
           .single(),
       ) as Section,
@@ -252,7 +252,7 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       dataOrThrow(
         await supabase
           .from('products')
-          .insert({ household_id: householdId, ...input })
+          .insert({ household_id: householdId, kind: NEW_PRODUCT_KIND, ...input })
           .select()
           .single(),
       ) as Product,
