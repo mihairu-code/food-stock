@@ -21,6 +21,17 @@ gestures. Details and history are in the [decisions](decisions) and the
   checked in the app opened from the Home Screen.
 - Above the keyboard there's room for half a sheet: while it's open, `<html>` has
   `data-keyboard` and the form tightens up.
+- **The sheet isn't the only thing standing on the keyboard.** The home search field
+  is pinned to it too. Anything like that gets `data-keyboard-anchor`: `keyboard.ts`
+  checks where the element's bottom really is and adds the miss to the lift. The
+  element's bottom should meet the top of the keyboard, so any gap is better done as
+  padding ([decision 0019](decisions/0019-home-search-at-the-bottom.md)).
+- **The keyboard opens only if `focus()` runs right inside the tap handler.** After an
+  `await`, a timer or a React effect, the field gets focus but no keyboard appears. So a
+  field that has to open on a tap is already in the markup: collapsed, with
+  `opacity: 0`. A field with `display: none` or `visibility: hidden` can't take focus.
+- **A field's font is at least `1rem` (16px)**, or the iPhone zooms the page in on
+  focus.
 
 ## Focus
 

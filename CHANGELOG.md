@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0 — unreleased
+
+- Home search: a round search button right of the tab bar (Home, 12+ products) stretches
+  into a field above the keyboard; `ё` = `е`, Latin diacritics ignored, highlighted
+  matches, "Add «…»" when nothing is found; `features/home-search`.
+- Tab buttons sized from the app column (44px to 3.625rem), so the row fits at any width
+  and browser font; `data-keyboard-anchor` in `keyboard.ts`.
+
 ## 1.1.0 — unreleased
 
 - Orange stock dot for products still at home but on the shopping list ("Still home · on
