@@ -209,8 +209,7 @@ export const vi: Messages = {
   'accent.rose': 'Hồng',
   'accent.graphite': 'Xám than',
   'settings.appIcon': 'Biểu tượng ứng dụng',
-  'settings.appIconMeta': 'Để áp dụng thay đổi, hãy thêm lại ứng dụng vào Màn hình chính',
-  'settings.copyAppLink': 'Sao chép liên kết ứng dụng',
+  'settings.appIconMeta': 'Ứng dụng nhận biểu tượng này khi cài đặt. Ứng dụng đã cài sẽ giữ biểu tượng cũ',
   'appIcon.checklist': 'Danh sách',
   'appIcon.checklistDark': 'Danh sách, tối',
   'appIcon.boxLeaf': 'Hộp và lá',
@@ -238,6 +237,7 @@ export const vi: Messages = {
   'welcome.anon': 'Tiếp tục không cần tài khoản',
   'welcome.later': 'Bạn có thể đăng nhập sau, trong phần cài đặt.',
   'install.title': 'Trình duyệt hay ứng dụng',
+  'install.chooseIcon': 'Hãy chọn biểu tượng trước: sau khi cài đặt sẽ không đổi được',
   'install.leadIos':
     'Bạn có thể tiếp tục ngay trong trình duyệt — mọi thứ đều hoạt động. Hoặc thêm ứng dụng vào Màn hình chính: mở bằng một chạm, toàn màn hình, không có thanh địa chỉ.',
   'install.leadAndroid':

@@ -209,8 +209,7 @@ export const ja: Messages = {
   'accent.rose': 'ローズ',
   'accent.graphite': 'グラファイト',
   'settings.appIcon': 'アプリのアイコン',
-  'settings.appIconMeta': '変更を反映するには、アプリをホーム画面に追加し直してください',
-  'settings.copyAppLink': 'アプリのリンクをコピー',
+  'settings.appIconMeta': 'インストール時にこのアイコンが使われます。インストール済みのアプリのアイコンは変わりません',
   'appIcon.checklist': 'チェックリスト',
   'appIcon.checklistDark': 'チェックリスト（ダーク）',
   'appIcon.boxLeaf': '箱と葉っぱ',
@@ -238,6 +237,7 @@ export const ja: Messages = {
   'welcome.anon': 'アカウントなしで続ける',
   'welcome.later': 'あとから設定でログインすることもできます。',
   'install.title': 'ブラウザかアプリか',
+  'install.chooseIcon': '先にアイコンを選んでください。インストール後は変更できません',
   'install.leadIos':
     'このままブラウザで使えます。ホーム画面に追加すると、ワンタップで、アドレスバーなしの全画面で開けます。',
   'install.leadAndroid':

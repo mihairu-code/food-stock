@@ -218,8 +218,7 @@ export const en: Messages = {
   'accent.rose': 'Rose',
   'accent.graphite': 'Graphite',
   'settings.appIcon': 'App icon',
-  'settings.appIconMeta': 'To apply the change, add the app to your Home Screen again',
-  'settings.copyAppLink': 'Copy app link',
+  'settings.appIconMeta': 'The app gets this icon when installed. An installed app keeps its icon',
   'appIcon.checklist': 'Checklist',
   'appIcon.checklistDark': 'Checklist, dark',
   'appIcon.boxLeaf': 'Box with leaf',
@@ -247,6 +246,7 @@ export const en: Messages = {
   'welcome.anon': 'Continue without an account',
   'welcome.later': 'You can sign in later, in Settings.',
   'install.title': 'Browser or app',
+  'install.chooseIcon': 'Choose an icon first: it can’t be changed after installing',
   'install.leadIos':
     'Keep going right here in the browser — everything works. Or add the app to your Home Screen: it opens with one tap, full screen, without the address bar.',
   'install.leadAndroid':

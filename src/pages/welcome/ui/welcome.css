@@ -41,6 +41,12 @@
   font-size: var(--text-sm);
 }
 
+.install-icon-label {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
 .install-toggle svg {
   transition: rotate 0.18s ease;
 }
