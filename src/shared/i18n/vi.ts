@@ -35,6 +35,11 @@ export const vi: Messages = {
   'search.close': 'Đóng tìm kiếm',
   'search.placeholder': 'Tên sản phẩm',
   'search.clear': 'Xoá và đóng',
+  'search.emptyTitle': 'Trong nhà không có món này',
+  'search.emptyText': 'Không khu vực nào có “{query}”',
+  'search.add': 'Thêm “{name}”',
+  'search.found': { other: 'Tìm thấy {count} món' },
+  'search.nothing': 'Không tìm thấy gì',
   'title.home': 'Trong nhà',
   'header.settingsLink': 'Thành viên và cài đặt',
 

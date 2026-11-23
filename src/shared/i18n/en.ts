@@ -35,6 +35,11 @@ export const en: Messages = {
   'search.close': 'Close search',
   'search.placeholder': 'Product name',
   'search.clear': 'Clear and close',
+  'search.emptyTitle': 'Nothing like that at home',
+  'search.emptyText': '“{query}” isn’t in any section',
+  'search.add': 'Add “{name}”',
+  'search.found': { one: '{count} item found', other: '{count} items found' },
+  'search.nothing': 'Nothing found',
   'title.home': 'At home',
   'header.settingsLink': 'Members and settings',
 

@@ -35,6 +35,11 @@ export const ja: Messages = {
   'search.close': '検索を閉じる',
   'search.placeholder': '品名',
   'search.clear': '消去して閉じる',
+  'search.emptyTitle': '家にはありません',
+  'search.emptyText': '「{query}」はどの場所にもありません',
+  'search.add': '「{name}」を追加',
+  'search.found': { other: '{count}品見つかりました' },
+  'search.nothing': '見つかりませんでした',
   'title.home': '家にあるもの',
   'header.settingsLink': 'メンバーと設定',
 

@@ -62,6 +62,16 @@ export const ru = {
   'search.close': 'Закрыть поиск',
   'search.placeholder': 'Название продукта',
   'search.clear': 'Очистить и закрыть',
+  'search.emptyTitle': 'Дома такого нет',
+  'search.emptyText': '«{query}» нет ни в одном разделе',
+  'search.add': 'Добавить «{name}»',
+  'search.found': {
+    one: 'Найден {count} продукт',
+    few: 'Найдено {count} продукта',
+    many: 'Найдено {count} продуктов',
+    other: 'Найдено {count} продукта',
+  },
+  'search.nothing': 'Ничего не найдено',
   'title.home': 'Дома',
   'header.settingsLink': 'Участники и настройки',
 
