@@ -22,6 +22,8 @@ interface ProductSheetProps {
   product?: Product
   /** Раздел, из которого шторку открыли для добавления. */
   sectionId?: string
+  /** Готовое название нового продукта: то, что искали и не нашли дома. */
+  name?: string
 }
 
 /**
@@ -30,7 +32,7 @@ interface ProductSheetProps {
  * подсказывает, в каком разделе он уже есть. Ручная позиция покупок с тем же названием
  * уступает место продукту: одно название — одна вещь.
  */
-export function ProductSheet({ product, sectionId: openedFromSection }: ProductSheetProps) {
+export function ProductSheet({ product, sectionId: openedFromSection, name: searchedName }: ProductSheetProps) {
   const t = useT()
   const sections = useSortedSections()
   const { products, shoppingItems } = useHomeData()
@@ -38,7 +40,7 @@ export function ProductSheet({ product, sectionId: openedFromSection }: ProductS
   const createProduct = useCreateProduct()
   const editProduct = useEditProduct()
   const replaceItem = useReplaceItemWithProduct()
-  const { name, icon, rejectName, fields } = useNameWithIcon(product?.name, product?.icon)
+  const { name, icon, rejectName, fields } = useNameWithIcon(product?.name ?? searchedName, product?.icon)
   const [sectionId, setSectionId] = useState(product?.section_id ?? openedFromSection ?? sections[0]?.id ?? '')
   const [staple, setStaple] = useState(product ? product.kind === 'staple' : false)
 

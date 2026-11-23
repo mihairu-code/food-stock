@@ -4,7 +4,8 @@ import type { ConfirmSheetProps } from './ConfirmSheet'
 
 /** Какая шторка открыта и с какими данными. Одновременно открыта только одна. */
 export type SheetRequest =
-  | { type: 'add-product'; sectionId?: string }
+  /** `name` — готовое название: «Добавить „…“», когда поиск по дому ничего не нашёл. */
+  | { type: 'add-product'; sectionId?: string; name?: string }
   | { type: 'edit-product'; product: Product }
   | { type: 'add-section' }
   | { type: 'manage-section'; section: Section }
