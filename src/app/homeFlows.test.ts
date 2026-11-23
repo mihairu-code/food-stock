@@ -321,12 +321,15 @@ describe('домашние запасы: основные потоки', () => {
     expect(await snapshot()).toEqual(before)
   })
 
-  it('демо-набор соответствует макету: молоко закончилось, в покупках три позиции', async () => {
+  it('демо-набор: три раздела по 8 продуктов, в покупках 6 продуктов и 2 ручные позиции', async () => {
     await backend.resetLocalData?.()
     hid = (await backend.listMemberships())[0].household.id
     const state = await snapshot()
     expect(state.sections.map((s) => s.name)).toEqual(['Холодильник', 'Шкаф', 'Вкусняшки'])
-    expect(state.shopping).toHaveLength(3)
+    for (const section of state.sections) {
+      expect(state.products.filter((p) => p.section_id === section.id)).toHaveLength(8)
+    }
+    expect(state.shopping).toHaveLength(8)
   })
 
   it('демо-набор заводится на языке интерфейса', async () => {
@@ -346,9 +349,11 @@ describe('домашние запасы: основные потоки', () => {
     for (const p of saved.products) delete p.to_buy
     store.setItem('home-stock:local:v1', JSON.stringify(saved))
 
+    // Тогда в покупках были только закончившиеся: шесть продуктов и две ручные позиции.
     const state = await snapshot()
-    expect(state.products.filter((p) => p.to_buy).map((p) => p.name)).toEqual(['Молоко'])
-    expect(state.shopping).toHaveLength(3)
+    expect(state.products.filter((p) => p.to_buy)).toEqual(state.products.filter((p) => !p.is_available))
+    expect(state.products.filter((p) => p.to_buy)).toHaveLength(6)
+    expect(state.shopping).toHaveLength(8)
   })
 
   it('разовые продукты из прежних данных читаются как обычные', async () => {

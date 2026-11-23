@@ -1,4 +1,4 @@
-import { translate as t } from '@/shared/i18n'
+import { translate as t, type MessageKey } from '@/shared/i18n'
 import type { Backend } from './backend'
 import {
   placeProducts,
@@ -9,6 +9,7 @@ import {
   removeSection,
   setProductState,
   type HomeData,
+  type ProductState,
 } from './homeDataRules'
 import { NEW_PRODUCT_KIND, type Household, type Product, type Section, type ShoppingItem, type User } from './types'
 
@@ -44,15 +45,14 @@ function createDemoState(): LocalState {
     sort_order: tick,
     created_at: at(tick++),
   })
-  const product = (s: Section, name: string, icon: string, is_available = true): Product => ({
+  const product = (s: Section, name: string, icon: string, state: ProductState): Product => ({
     id: crypto.randomUUID(),
     household_id: hid,
     section_id: s.id,
     name,
     icon,
     kind: NEW_PRODUCT_KIND,
-    is_available,
-    to_buy: !is_available,
+    ...state,
     created_at: at(tick),
     updated_at: at(tick++),
     created_by: LOCAL_USER.id,
@@ -67,22 +67,36 @@ function createDemoState(): LocalState {
   })
 
   // Демо-набор заводится один раз, на языке интерфейса в этот момент.
-  const fridge = section(t('demo.fridge'), '🧊')
-  const cupboard = section(t('demo.cupboard'), '🧺')
-  const treats = section(t('demo.treats'), '🍪')
+  // Три раздела по 8 продуктов: хватает, чтобы на «Доме» появилась лупа поиска (20+),
+  // и в каждом разделе видны все четыре состояния: четвёртый продукт закончился и лежит
+  // в покупках, шестой закончился, но покупать его не стали, восьмой ещё есть, но в покупках.
+  const contents: [MessageKey, string, [MessageKey, string][]][] = [
+    ['demo.fridge', '🧊', [
+      ['demo.milk', '🥛'], ['demo.eggs', '🥚'], ['demo.cheese', '🧀'], ['demo.strawberry', '🍓'],
+      ['demo.butter', '🧈'], ['demo.chicken', '🍗'], ['demo.fish', '🐟'], ['demo.lemon', '🍋'],
+    ]],
+    ['demo.cupboard', '🧺', [
+      ['demo.coffee', '☕'], ['demo.rice', '🍚'], ['demo.tea', '🍵'], ['demo.pasta', '🍝'],
+      ['demo.honey', '🍯'], ['demo.salt', '🧂'], ['demo.nuts', '🥜'], ['demo.canned', '🥫'],
+    ]],
+    ['demo.treats', '🍪', [
+      ['demo.chocolate', '🍫'], ['demo.cookies', '🍪'], ['demo.candy', '🍬'], ['demo.popcorn', '🍿'],
+      ['demo.cake', '🍰'], ['demo.donuts', '🍩'], ['demo.croissants', '🥐'], ['demo.waffles', '🧇'],
+    ]],
+  ]
+  const stateAt = (index: number): ProductState => ({
+    is_available: index !== 3 && index !== 5,
+    to_buy: index === 3 || index === 7,
+  })
+  const sections = contents.map(([key, icon]) => section(t(key), icon))
+  const products = contents.flatMap(([, , list], sectionIndex) =>
+    list.map(([key, icon], index) => product(sections[sectionIndex], t(key), icon, stateAt(index))),
+  )
 
   return {
     household,
-    sections: [fridge, cupboard, treats],
-    products: [
-      product(fridge, t('demo.milk'), '🥛', false),
-      product(fridge, t('demo.eggs'), '🥚'),
-      product(fridge, t('demo.cheese'), '🧀'),
-      product(fridge, t('demo.strawberry'), '🍓'),
-      product(cupboard, t('demo.coffee'), '☕'),
-      product(cupboard, t('demo.rice'), '🍚'),
-      product(treats, t('demo.chocolate'), '🍫'),
-    ],
+    sections,
+    products,
     shoppingItems: [item(t('demo.coffeeBeans'), '🫘'), item(t('demo.bread'), '🍞')],
   }
 }

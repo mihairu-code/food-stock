@@ -421,6 +421,23 @@ export const ru = {
   'demo.chocolate': 'Шоколад',
   'demo.coffeeBeans': 'Кофе в зёрнах',
   'demo.bread': 'Хлеб',
+  'demo.butter': 'Сливочное масло',
+  'demo.chicken': 'Курица',
+  'demo.fish': 'Рыба',
+  'demo.lemon': 'Лимон',
+  'demo.tea': 'Чай',
+  'demo.pasta': 'Макароны',
+  'demo.honey': 'Мёд',
+  'demo.salt': 'Соль',
+  'demo.nuts': 'Орехи',
+  'demo.canned': 'Консервы',
+  'demo.cookies': 'Печенье',
+  'demo.candy': 'Конфеты',
+  'demo.popcorn': 'Попкорн',
+  'demo.cake': 'Торт',
+  'demo.donuts': 'Пончики',
+  'demo.croissants': 'Круассаны',
+  'demo.waffles': 'Вафли',
 }
 
 export type Messages = {
