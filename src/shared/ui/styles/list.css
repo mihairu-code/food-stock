@@ -94,7 +94,6 @@
   font-size: var(--text-xs);
 }
 
-.emoji,
 /* Совпадение с поиском по дому. Подложка — из акцента, текст остаётся цвета строки:
    так контраст тот же, что у названия, в обеих темах и с любым акцентом. */
 .row-name mark {
@@ -103,6 +102,7 @@
   color: inherit;
 }
 
+.emoji,
 .row-name {
   transition: opacity 0.18s ease,
     filter 0.18s ease,
