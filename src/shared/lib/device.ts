@@ -43,12 +43,18 @@ export function describeDevice(userAgent: string, flags: { standalone: boolean; 
   return `${browser} · ${os}`
 }
 
+/**
+ * Приложение открыто с экрана «Домой» или в своём окне, а не во вкладке браузера.
+ * Safari на iPhone сообщает это через navigator.standalone, остальные — через display-mode.
+ */
+export function isStandalone(): boolean {
+  const nav = navigator as Navigator & { standalone?: boolean }
+  return nav.standalone === true || window.matchMedia('(display-mode: standalone)').matches
+}
+
 export function currentDevice(): string {
-  const nav = navigator as Navigator & { standalone?: boolean; brave?: unknown }
-  return describeDevice(nav.userAgent, {
-    standalone: nav.standalone === true || window.matchMedia('(display-mode: standalone)').matches,
-    brave: nav.brave !== undefined,
-  })
+  const nav = navigator as Navigator & { brave?: unknown }
+  return describeDevice(nav.userAgent, { standalone: isStandalone(), brave: nav.brave !== undefined })
 }
 
 /** Подпись устройства на языке интерфейса. Понимает и подписи, записанные прежними версиями по-русски. */
