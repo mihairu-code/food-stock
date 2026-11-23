@@ -27,8 +27,8 @@ is far from the thumb, and the tab bar must look the same on every screen.
 
 ## Decision
 
-The separate search button. It shows only on Home, and only with 12 or more products:
-below that, the home fits in a couple of screens anyway.
+The separate search button. It shows only on Home, and only with 20 or more products:
+below that, the home fits in a few screens anyway.
 
 - **A row of five places:** empty, three tabs, search. The empty place balances the
   search button, so the tabs stay centred in the app column and don't move when the

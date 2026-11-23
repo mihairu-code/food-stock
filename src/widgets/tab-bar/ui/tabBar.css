@@ -18,14 +18,19 @@
   pointer-events: none;
 }
 
-/* Зазоры — отступами, а не gap: у свёрнутых мест (ширина 0) зазор тоже должен уходить. */
+/* Зазоры — отступами, а не gap: у свёрнутых мест (ширина 0) зазор тоже должен уходить.
+   Ширины, отступы и рамки всех мест едут одной кривой: сумма ширин тогда меняется так же
+   плавно, и ряд расходится в обе стороны от центра без рывков. Все переходы — здесь,
+   а не в .tab: иначе правило ниже по файлу перебило бы список целиком. */
 .tabs > * {
   flex: none;
   transition: width var(--search-motion),
     margin var(--search-motion),
-    flex-grow var(--search-motion),
+    border-width var(--search-motion),
     opacity 0.2s ease,
-    scale 0.2s ease;
+    background-color 0.18s ease,
+    color 0.18s ease,
+    scale 0.12s ease;
 }
 
 .tabs > * + * {
@@ -73,9 +78,6 @@
   box-shadow: var(--float-shadow);
   color: var(--muted);
   pointer-events: auto;
-  transition: background-color 0.18s ease,
-    color 0.18s ease,
-    scale 0.12s ease;
 }
 
 .tab.active {

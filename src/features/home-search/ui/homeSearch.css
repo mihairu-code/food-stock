@@ -17,8 +17,10 @@
   pointer-events: none;
 }
 
+/* Открытое поле — вся колонка без кнопки «Дом» и зазора. Ширина задана числом, а не
+   flex-grow: переход flex-grow делит свободное место неравномерно, и правый край дёргался. */
 .tabs[data-search-open='true'] .home-search {
-  flex-grow: 1;
+  width: calc(var(--tabs-column) - 2 * var(--tabs-inline) - var(--tab-size) - var(--tabs-gap));
 }
 
 /* Лупа: закрытой занимает всю кнопку; в открытом поле остаётся значком слева. */
@@ -59,6 +61,7 @@
   font-size: var(--text-base);
   opacity: 0;
   pointer-events: none;
+  /* Без обводки фокуса: раскрытое поле с курсором и так видно, рамка вокруг него лишняя. */
   outline: none;
   appearance: none;
   transition: opacity 0.12s ease;
@@ -76,12 +79,6 @@
 .tabs[data-search-open='true'] .home-search-input {
   opacity: 1;
   pointer-events: auto;
-}
-
-/* Фокус виден на самом поле: обводка всей кнопки, как у остальных. */
-.home-search:has(.home-search-input:focus-visible) {
-  outline: 3px solid var(--orange);
-  outline-offset: 2px;
 }
 
 .home-search-clear {
