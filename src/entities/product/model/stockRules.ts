@@ -1,4 +1,4 @@
-import type { Product, ProductState } from '@/shared/api'
+import type { ProductState } from '@/shared/api'
 
 /**
  * Что показывает точка на иконке продукта. Состояние выводится из двух отметок
@@ -16,17 +16,17 @@ export function stockState(product: ProductState): StockState {
 }
 
 /**
- * Наличие поменяли вручную. Закончившийся постоянный продукт сам попадает в покупки;
- * продукт, который снова дома, из покупок уходит. То же правило для прежних версий
- * приложения держит триггер products_sync_to_buy.
+ * Наличие поменяли вручную. Закончившийся продукт сам попадает в покупки, а продукт,
+ * который снова дома, из покупок уходит. Тип продукта не важен: разовых продуктов
+ * больше нет (решение 0020). У прежних версий приложения это же правило для постоянных
+ * продуктов держит триггер products_sync_to_buy.
  */
-export function withAvailability(product: Product, available: boolean): ProductState {
-  if (available) return { is_available: true, to_buy: false }
-  return { is_available: false, to_buy: product.kind === 'staple' ? true : product.to_buy }
+export function withAvailability(available: boolean): ProductState {
+  return { is_available: available, to_buy: !available }
 }
 
 /** Продукт положили в покупки или убрали из них; наличие при этом не меняется. */
-export function withToBuy(product: Product, toBuy: boolean): ProductState {
+export function withToBuy(product: ProductState, toBuy: boolean): ProductState {
   return { is_available: product.is_available, to_buy: toBuy }
 }
 

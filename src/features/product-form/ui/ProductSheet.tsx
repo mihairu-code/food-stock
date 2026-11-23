@@ -2,7 +2,6 @@ import { useState } from 'react'
 import {
   findProductNamed,
   groupProductsBySection,
-  StapleCheckbox,
   useCreateProduct,
   useEditProduct,
   withToBuy,
@@ -42,7 +41,6 @@ export function ProductSheet({ product, sectionId: openedFromSection, name: sear
   const replaceItem = useReplaceItemWithProduct()
   const { name, icon, rejectName, fields } = useNameWithIcon(product?.name ?? searchedName, product?.icon)
   const [sectionId, setSectionId] = useState(product?.section_id ?? openedFromSection ?? sections[0]?.id ?? '')
-  const [staple, setStaple] = useState(product ? product.kind === 'staple' : false)
 
   function saveProduct() {
     const trimmed = name.trim()
@@ -56,7 +54,7 @@ export function ProductSheet({ product, sectionId: openedFromSection, name: sear
       return
     }
 
-    const patch = { name: trimmed, icon: icon || null, kind: staple ? ('staple' as const) : ('one_off' as const) }
+    const patch = { name: trimmed, icon: icon || null }
     const manualTwin = findNamed(shoppingItems, trimmed)
     if (!product) {
       const id = crypto.randomUUID()
@@ -113,7 +111,6 @@ export function ProductSheet({ product, sectionId: openedFromSection, name: sear
         {...fields}
       />
       <SectionPicker sections={sections} value={sectionId} onChange={setSectionId} />
-      <StapleCheckbox checked={staple} onChange={setStaple} />
     </FormSheet>
   )
 }

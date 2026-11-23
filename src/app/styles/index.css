@@ -21,7 +21,6 @@
 @import '../../shared/ui/styles/toast.css';
 @import '../../shared/ui/styles/notice.css';
 @import '../../entities/product/ui/productStockIcon.css';
-@import '../../entities/product/ui/stapleCheckbox.css';
 @import '../../entities/section/ui/sectionPicker.css';
 @import '../../features/choose-app-icon/ui/appIconTiles.css';
 @import '../../features/home-search/ui/homeSearch.css';

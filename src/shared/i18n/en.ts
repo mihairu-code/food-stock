@@ -53,14 +53,13 @@ export const en: Messages = {
   'home.addProductTo': 'Add an item to “{name}”',
   'home.hintLabel': 'How to mark',
   'home.hint':
-    'The dot on the icon shows whether the item is at home: tap the icon when it runs out. An orange dot means it’s still at home but already on the shopping list. Plus puts the item on the shopping list, minus takes it off. Swipe a row left for Edit and Delete; pull it past the middle to delete right away. To reorder an item or a section, press and hold it, then drag.',
+    'The dot on the icon shows whether the item is at home: tap the icon when it runs out, and it goes on the shopping list by itself. An orange dot means it’s still at home but already on the shopping list. Plus puts the item on the shopping list, minus takes it off. Swipe a row left for Edit and Delete; pull it past the middle to delete right away. To reorder an item or a section, press and hold it, then drag.',
   'home.defaultName': 'Our home',
   'home.preparing': 'Setting up your home…',
 
-  'product.staple': 'Always at home',
-  'product.oneOff': 'One-off',
+  'product.atHome': 'At home',
   'product.out': 'Ran out',
-  'product.inList': 'Still home · on the list',
+  'product.inList': 'On the list · still home',
   'product.outInList': 'Ran out · on the shopping list',
   'product.markOut': '{name}: at home. Mark as run out',
   'product.markIn': '{name}: ran out. Mark as at home',
@@ -69,8 +68,6 @@ export const en: Messages = {
   'product.removeFromList': 'Remove “{name}” from the shopping list',
   'product.delete': 'Delete “{name}”',
   'product.edit': 'Edit “{name}”',
-  'product.keep': 'Always keep at home',
-  'product.keepHint': 'When it runs out, it goes on the shopping list by itself',
 
   'productSheet.title': 'Add an item',
   'productSheet.editTitle': 'Edit item',
@@ -105,7 +102,7 @@ export const en: Messages = {
   'shopping.summary': { one: '<b>{count}</b> item to buy', other: '<b>{count}</b> items to buy' },
   'shopping.emptyTitle': 'The list is empty',
   'shopping.emptyText':
-    'Tap “+” next to an item on the Home tab, or add something here. Items you always keep at home land here by themselves when they run out.',
+    'Tap “+” next to an item on the Home tab, or add something here. Items at home land here by themselves when they run out.',
   'shopping.boughtAria': 'Bought: {name}',
   'shopping.remove': 'Remove',
   'shopping.manual': 'Added by hand',
@@ -131,7 +128,6 @@ export const en: Messages = {
 
   'toast.backHome': '“{name}” is at home again',
   'toast.outToList': '“{name}” ran out — added to the shopping list',
-  'toast.out': '“{name}” ran out',
   'toast.addedToList': '“{name}” is on the shopping list',
   'toast.removedFromList': '“{name}” removed from the shopping list',
   'toast.deleted': 'Deleted: “{name}”',
@@ -152,8 +148,6 @@ export const en: Messages = {
   'toast.addedReplacing': '“{name}” added to “{section}” and replaced the line in the shopping list',
   'toast.changesSaved': 'Changes saved',
   'toast.addedItem': 'Added to the shopping list',
-  'toast.purchasedStaple': 'Added to “{name}” as an item you always keep',
-  'toast.purchasedOnce': 'Added to “{name}” as a one-off',
   'toast.boughtNotStored': '“{name}” bought — not added to home',
   'toast.sectionCreated': 'Section “{name}” created',
   'toast.sectionDeleted': 'Section “{name}” deleted',

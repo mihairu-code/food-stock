@@ -1,5 +1,6 @@
 import {
   backend,
+  NEW_PRODUCT_KIND,
   placeProducts,
   useHomeMutation,
   withState,
@@ -21,6 +22,7 @@ export function useCreateProduct() {
         {
           ...input,
           household_id: householdId,
+          kind: NEW_PRODUCT_KIND,
           is_available: true,
           to_buy: false,
           created_at: now,
@@ -43,7 +45,7 @@ export interface ProductEdit {
 }
 
 /**
- * Название, иконка и вид продукта, а при переезде — и раздел. Отметки «дома» и
+ * Название и иконка продукта, а при переезде — и раздел. Отметки «дома» и
  * «в покупках» правка не трогает, поэтому место в покупках у продукта сохраняется.
  */
 export function useEditProduct() {

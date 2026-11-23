@@ -1077,7 +1077,8 @@ describe('обновление существующей базы', () => {
         ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000f2', 'Клубника', 'one_off', true);
     `)
 
-    for (const file of files.filter((name) => name >= '0005')) await apply(file)
+    // До 0012: она делает разовые продукты обычными, а здесь проверяется сама 0005.
+    for (const file of files.filter((name) => name >= '0005' && name < '0012')) await apply(file)
 
     const { rows: products } = await old.query(
       `select name, kind, is_available, to_buy from public.products order by name`,
@@ -1086,6 +1087,39 @@ describe('обновление существующей базы', () => {
       { name: 'Клубника', kind: 'one_off', is_available: true, to_buy: false },
       { name: 'Молоко', kind: 'staple', is_available: false, to_buy: true },
       { name: 'Сыр', kind: 'staple', is_available: true, to_buy: false },
+    ])
+    await old.close()
+  })
+
+  it('0012: разовые продукты становятся обычными, отметки и место в покупках прежние', async () => {
+    const old = new PGlite()
+    await old.exec(SUPABASE_STUB)
+    const migrations = new URL('../migrations/', import.meta.url)
+    const files = readdirSync(migrations).sort()
+    const apply = async (file: string) => old.exec(readFileSync(new URL(file, migrations), 'utf8'))
+
+    for (const file of files.filter((name) => name < '0012')) await apply(file)
+    await old.exec(`
+      insert into public.households (id, name) values ('00000000-0000-0000-0000-0000000000f1', 'Дом');
+      insert into public.sections (id, household_id, name)
+        values ('00000000-0000-0000-0000-0000000000f2', '00000000-0000-0000-0000-0000000000f1', 'Холодильник');
+      insert into public.products (household_id, section_id, name, kind, is_available, to_buy, updated_at) values
+        ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000f2', 'Клубника', 'one_off', true, false, '2026-11-01'),
+        ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000f2', 'Торт', 'one_off', false, false, '2026-11-02'),
+        ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000f2', 'Чай', 'one_off', false, true, '2026-11-03'),
+        ('00000000-0000-0000-0000-0000000000f1', '00000000-0000-0000-0000-0000000000f2', 'Молоко', 'staple', false, true, '2026-11-04');
+    `)
+
+    for (const file of files.filter((name) => name >= '0012')) await apply(file)
+
+    const { rows: products } = await old.query(
+      `select name, kind, is_available, to_buy, updated_at::date::text as updated from public.products order by updated_at`,
+    )
+    expect(products).toEqual([
+      { name: 'Клубника', kind: 'staple', is_available: true, to_buy: false, updated: '2026-11-01' },
+      { name: 'Торт', kind: 'staple', is_available: false, to_buy: false, updated: '2026-11-02' },
+      { name: 'Чай', kind: 'staple', is_available: false, to_buy: true, updated: '2026-11-03' },
+      { name: 'Молоко', kind: 'staple', is_available: false, to_buy: true, updated: '2026-11-04' },
     ])
     await old.close()
   })

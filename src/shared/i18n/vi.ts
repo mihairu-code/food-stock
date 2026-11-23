@@ -53,14 +53,13 @@ export const vi: Messages = {
   'home.addProductTo': 'Thêm món vào “{name}”',
   'home.hintLabel': 'Cách đánh dấu',
   'home.hint':
-    'Chấm trên biểu tượng cho biết món đó còn ở nhà hay không: chạm vào biểu tượng khi món đã hết. Chấm cam nghĩa là món vẫn còn ở nhà nhưng đã có trong danh sách mua. Dấu cộng đưa món vào danh sách mua, dấu trừ bỏ ra. Vuốt dòng sang trái để thấy Sửa và Xóa; kéo quá nửa dòng để xóa ngay. Để sắp xếp lại một món hoặc khu vực, hãy nhấn giữ rồi kéo.',
+    'Chấm trên biểu tượng cho biết món đó còn ở nhà hay không: chạm vào biểu tượng khi món đã hết, món sẽ tự vào danh sách mua. Chấm cam nghĩa là món vẫn còn ở nhà nhưng đã có trong danh sách mua. Dấu cộng đưa món vào danh sách mua, dấu trừ bỏ ra. Vuốt dòng sang trái để thấy Sửa và Xóa; kéo quá nửa dòng để xóa ngay. Để sắp xếp lại một món hoặc khu vực, hãy nhấn giữ rồi kéo.',
   'home.defaultName': 'Nhà mình',
   'home.preparing': 'Đang chuẩn bị nhà của bạn…',
 
-  'product.staple': 'Luôn có sẵn',
-  'product.oneOff': 'Một lần',
+  'product.atHome': 'Có ở nhà',
   'product.out': 'Đã hết',
-  'product.inList': 'Vẫn còn · trong danh sách mua',
+  'product.inList': 'Trong danh sách mua · vẫn còn',
   'product.outInList': 'Đã hết · trong danh sách mua',
   'product.markOut': '{name}: còn ở nhà. Đánh dấu là đã hết',
   'product.markIn': '{name}: đã hết. Đánh dấu là còn ở nhà',
@@ -69,8 +68,6 @@ export const vi: Messages = {
   'product.removeFromList': 'Bỏ “{name}” khỏi danh sách mua',
   'product.delete': 'Xóa “{name}”',
   'product.edit': 'Sửa “{name}”',
-  'product.keep': 'Luôn giữ sẵn trong nhà',
-  'product.keepHint': 'Khi hết, món này sẽ tự vào danh sách mua',
 
   'productSheet.title': 'Thêm món',
   'productSheet.editTitle': 'Sửa món',
@@ -99,7 +96,7 @@ export const vi: Messages = {
   'shopping.summary': { other: '<b>{count}</b> món cần mua' },
   'shopping.emptyTitle': 'Danh sách trống',
   'shopping.emptyText':
-    'Chạm “+” ở món trong thẻ “Nhà” hoặc thêm món tại đây. Những món luôn có sẵn sẽ tự vào đây khi hết.',
+    'Chạm “+” ở món trong thẻ “Nhà” hoặc thêm món tại đây. Các món trong nhà sẽ tự vào đây khi hết.',
   'shopping.boughtAria': 'Đã mua: {name}',
   'shopping.remove': 'Bỏ ra',
   'shopping.manual': 'Thêm thủ công',
@@ -125,7 +122,6 @@ export const vi: Messages = {
 
   'toast.backHome': '“{name}” đã có lại ở nhà',
   'toast.outToList': '“{name}” đã hết — đã thêm vào danh sách mua',
-  'toast.out': '“{name}” đã hết',
   'toast.addedToList': '“{name}” đã vào danh sách mua',
   'toast.removedFromList': 'Đã bỏ “{name}” khỏi danh sách mua',
   'toast.deleted': 'Đã xóa: “{name}”',
@@ -146,8 +142,6 @@ export const vi: Messages = {
   'toast.addedReplacing': 'Đã thêm “{name}” vào “{section}” và thay dòng trong danh sách mua',
   'toast.changesSaved': 'Đã lưu thay đổi',
   'toast.addedItem': 'Đã thêm vào danh sách mua',
-  'toast.purchasedStaple': 'Đã thêm vào “{name}” như món luôn có sẵn',
-  'toast.purchasedOnce': 'Đã thêm vào “{name}” một lần',
   'toast.boughtNotStored': 'Đã mua “{name}” — không thêm vào nhà',
   'toast.sectionCreated': 'Đã tạo khu vực “{name}”',
   'toast.sectionDeleted': 'Đã xóa khu vực “{name}”',

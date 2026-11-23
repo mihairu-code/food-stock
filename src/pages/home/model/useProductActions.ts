@@ -27,11 +27,8 @@ export function useProductActions(): ProductActions {
     () => ({
       toggleStock(product) {
         const available = !product.is_available
-        const state = withAvailability(product, available)
-        setState({ id: product.id, state })
-        notify(available ? 'toast.backHome' : state.to_buy ? 'toast.outToList' : 'toast.out', {
-          name: product.name,
-        })
+        setState({ id: product.id, state: withAvailability(available) })
+        notify(available ? 'toast.backHome' : 'toast.outToList', { name: product.name })
       },
       toggleList(product) {
         const toBuy = !product.to_buy
