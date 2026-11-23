@@ -1,3 +1,5 @@
+import { isStandalone } from '../device'
+
 /** Устройство, под которое показывается инструкция установки. */
 export type InstallDevice = 'iphone' | 'ipad' | 'android' | 'windows' | 'mac' | 'computer'
 
@@ -42,9 +44,5 @@ export function installTarget(
 }
 
 export function currentInstallTarget(): InstallTarget | null {
-  const nav = navigator as Navigator & { standalone?: boolean }
-  return installTarget(nav.userAgent, {
-    standalone: nav.standalone === true || window.matchMedia('(display-mode: standalone)').matches,
-    touch: nav.maxTouchPoints > 1,
-  })
+  return installTarget(navigator.userAgent, { standalone: isStandalone(), touch: navigator.maxTouchPoints > 1 })
 }

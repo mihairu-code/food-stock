@@ -45,8 +45,7 @@ gestures. Details and history are in the [decisions](decisions) and the
 
 - **Buttons and checkboxes in a sheet must not take focus** from the input
   (`onMouseDown={(e) => e.preventDefault()}`), otherwise the keyboard hides and the
-  sheet jumps. That's how the section tiles, emoji suggestions and "Always keep at home"
-  work.
+  sheet jumps. That's how the section tiles and emoji suggestions work.
 - The backdrop closes the sheet only if the tap both started and ended on it: the sheet
   can move under the finger.
 

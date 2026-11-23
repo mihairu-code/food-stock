@@ -1,4 +1,4 @@
-import type { Product, ProductKind, Section, ShoppingItem } from './types'
+import { NEW_PRODUCT_KIND, type Product, type Section, type ShoppingItem } from './types'
 
 /*
  * Правила данных дома, которые повторяют поведение базы: их выполняет локальный
@@ -103,21 +103,19 @@ export function purchaseManualItem(
   data: HomeData,
   itemId: string,
   sectionId: string,
-  makeStaple: boolean,
   ctx: { newId: string; now: string; userId: string | null },
 ): HomeData {
   const item = data.shoppingItems.find((i) => i.id === itemId)
   if (!item) throw new Error('Позиция покупок не найдена')
   const section = data.sections.find((s) => s.id === sectionId)
   if (!section || section.household_id !== item.household_id) throw new Error('Раздел не найден')
-  const kind: ProductKind = makeStaple ? 'staple' : 'one_off'
   const product: Product = {
     id: ctx.newId,
     household_id: item.household_id,
     section_id: sectionId,
     name: item.name,
     icon: item.icon,
-    kind,
+    kind: NEW_PRODUCT_KIND,
     is_available: true,
     to_buy: false,
     created_at: ctx.now,

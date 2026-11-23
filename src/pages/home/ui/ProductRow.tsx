@@ -21,11 +21,15 @@ interface ProductRowProps {
   ghost?: boolean
 }
 
-/** Подпись под названием: чего не хватает или какой это продукт. */
+/**
+ * Подпись под названием — состояние словами, в паре с точкой. Отличие от соседнего
+ * состояния стоит первым: «Есть дома» и «В покупках · ещё есть». В минималистичном виде
+ * подписи скрыты стилями.
+ */
 function stockCaptionKey(product: Product, stock: StockState): MessageKey {
   if (stock === 'out') return product.to_buy ? 'product.outInList' : 'product.out'
   if (stock === 'low') return 'product.inList'
-  return product.kind === 'staple' ? 'product.staple' : 'product.oneOff'
+  return 'product.atHome'
 }
 
 /** Подпись главной кнопки: состояние словами, чтобы скринридер не зависел от цвета точки. */

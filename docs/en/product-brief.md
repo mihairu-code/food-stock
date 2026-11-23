@@ -22,6 +22,8 @@ Just "in stock / out" and "need to buy".
    categories: every home is organised differently.
 2. **Two kinds of products.** A *staple* is something you always want at home.
    A *one-off* was bought once; we just note that it's there.
+   Since version 1.3 there are no kinds: every product behaves like a staple
+   ([decision 0020](decisions/0020-no-one-off-products.md)).
 3. **Stock and shopping are separate things.** "At home" and "need to buy" are not the
    same: you can restock something you still have.
 4. **A staple that runs out goes to shopping by itself.** Once bought, it's back in its

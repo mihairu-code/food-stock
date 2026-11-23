@@ -1,5 +1,6 @@
 import {
   backend,
+  NEW_PRODUCT_KIND,
   pendingProductId,
   useHomeMutation,
   type NewShoppingItem,
@@ -41,9 +42,9 @@ export function useDeleteShoppingItem() {
 export function usePurchaseShoppingItem() {
   const userId = useSession().user.id
   return useHomeMutation(
-    (purchase: { item: ShoppingItem; sectionId: string; makeStaple: boolean }) =>
-      backend.purchaseShoppingItem(purchase.item.id, purchase.sectionId, purchase.makeStaple),
-    (cache, { item, sectionId, makeStaple }) => {
+    (purchase: { item: ShoppingItem; sectionId: string }) =>
+      backend.purchaseShoppingItem(purchase.item.id, purchase.sectionId),
+    (cache, { item, sectionId }) => {
       const now = new Date().toISOString()
       cache.shoppingItems((list) => list.filter((candidate) => candidate.id !== item.id))
       cache.products((list) => [
@@ -54,7 +55,7 @@ export function usePurchaseShoppingItem() {
           section_id: sectionId,
           name: item.name,
           icon: item.icon,
-          kind: makeStaple ? 'staple' : 'one_off',
+          kind: NEW_PRODUCT_KIND,
           is_available: true,
           to_buy: false,
           created_at: now,

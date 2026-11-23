@@ -88,6 +88,35 @@
   white-space: nowrap;
 }
 
+/* У продукта название и точка после него — в ряд: длинное название обрезается, точка
+   остаётся видна. Точку после названия показывает настройка «Где точка» (productStockIcon.css). */
+.row[data-stock] .row-name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.row-name-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.row-name-dot {
+  display: none;
+}
+
+/* Минималистичный вид (настройка): подписей нет, название стоит по центру строки,
+   а сами строки ниже — на «Доме» и в покупках одной высоты. */
+[data-minimal] .row .row-meta {
+  display: none;
+}
+
+[data-minimal] .row,
+[data-minimal] .list .row {
+  min-height: var(--row-minimal-height);
+}
+
 .row-meta {
   margin-top: var(--space-1);
   color: var(--muted);

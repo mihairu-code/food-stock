@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.3.0 — unreleased
+
+- No more staple / one-off products: anything that runs out goes on the shopping list
+  by itself; the "keep at home" checkboxes, `StapleCheckbox` and the staple / one-off
+  row captions are gone. `kind` stays in the database for older versions; new products
+  are written as `staple`, migration `0012` turns every `one_off` into `staple`.
+- Stock dot position setting: icon right, icon left or after the name (`data-dot-place`).
+- Row captions: "At home" / "On the list · still home"; minimal view setting (no captions,
+  52px rows, `data-minimal`).
+- Demo set: three sections of 8 products with all four states.
+- The app icon is chosen in the install card on the welcome screen; settings show the
+  picker only in a browser; "Copy app link" removed; `features/choose-app-icon`,
+  `isStandalone()`.
+
 ## 1.2.0 — unreleased
 
 - Home search: a round search button right of the tab bar (Home, 20+ products) stretches

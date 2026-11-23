@@ -1,5 +1,6 @@
 import { ChevronDown, Download, Monitor, Smartphone } from 'lucide-react'
 import { useState } from 'react'
+import { AppIconTiles } from '@/features/choose-app-icon'
 import { useT, type MessageKey } from '@/shared/i18n'
 import type { InstallMethod, InstallTarget } from '@/shared/lib/install/install'
 import { promptInstall, useCanPromptInstall } from '@/shared/lib/install/installPrompt'
@@ -17,6 +18,7 @@ const LEAD: Record<InstallMethod, MessageKey> = {
 /**
  * Под входом: можно остаться в браузере, а можно поставить приложение. Где браузер
  * умеет ставить сам (Chrome, Edge), — кнопка «Установить»; иначе и в запас — шаги.
+ * Иконку выбирают здесь же: установленное приложение сменить её уже не может (решение 0021).
  */
 export function InstallCard({ target }: { target: InstallTarget }) {
   const t = useT()
@@ -31,6 +33,14 @@ export function InstallCard({ target }: { target: InstallTarget }) {
         <Icon size={18} aria-hidden="true" /> {t('install.title')}
       </h2>
       <p className="install-lead">{t(LEAD[target.method])}</p>
+      {target.method !== 'none' && (
+        <>
+          <p className="install-icon-label" id="install-icon-label">
+            {t('install.chooseIcon')}
+          </p>
+          <AppIconTiles labelledBy="install-icon-label" />
+        </>
+      )}
       {canPrompt && (
         <button className="btn" type="button" onClick={promptInstall}>
           <Download size={16} aria-hidden="true" /> {t('install.button')}

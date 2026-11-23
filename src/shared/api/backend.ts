@@ -6,7 +6,6 @@ import type {
   MergeKeep,
   MergePreview,
   Product,
-  ProductKind,
   Section,
   ShoppingItem,
   User,
@@ -37,14 +36,12 @@ export interface NewProduct {
   section_id: string
   name: string
   icon: string | null
-  kind: ProductKind
 }
 
 /** Что меняется в продукте при правке. Отметки «дома» и «в покупках» правят отдельно. */
 export interface ProductPatch {
   name: string
   icon: string | null
-  kind: ProductKind
 }
 
 export interface ShoppingItemPatch {
@@ -152,7 +149,7 @@ export interface Backend {
   /** Список покупок в новом порядке: идентификаторы продуктов и ручных позиций вперемешку, сверху вниз. */
   reorderShopping(ids: string[]): Promise<void>
   /** Атомарно: создать продукт в разделе и убрать позицию из покупок. */
-  purchaseShoppingItem(itemId: string, sectionId: string, makeStaple: boolean): Promise<void>
+  purchaseShoppingItem(itemId: string, sectionId: string): Promise<void>
 
   /** Сообщает об изменениях, сделанных не в этой вкладке (другой участник или устройство). */
   subscribe(onChange: (change: DataChange) => void): () => void

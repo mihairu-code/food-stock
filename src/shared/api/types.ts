@@ -1,4 +1,12 @@
+/**
+ * Прежний тип продукта: `staple` — постоянный, `one_off` — разовый. С версии 1.3 типа нет,
+ * любой закончившийся продукт сам попадает в покупки (решение 0020). Столбец остался для
+ * прежних версий приложения, которые работают с той же базой.
+ */
 export type ProductKind = 'staple' | 'one_off'
+
+/** Что пишется в `kind` нового продукта: прежние версии считают его постоянным. */
+export const NEW_PRODUCT_KIND: ProductKind = 'staple'
 export type Role = 'owner' | 'member'
 
 /**
@@ -81,13 +89,13 @@ export interface Section {
   created_at: string
 }
 
-/** `staple` — постоянный: закончившись, сам попадает в покупки. `one_off` — разовый. */
 export interface Product {
   id: string
   household_id: string
   section_id: string
   name: string
   icon: string | null
+  /** Прежний тип продукта; новая версия его не читает (решение 0020). */
   kind: ProductKind
   /** Есть ли продукт дома. */
   is_available: boolean

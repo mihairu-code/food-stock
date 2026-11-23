@@ -1,16 +1,17 @@
 import { createClient, type PostgrestError, type User as AuthUser } from '@supabase/supabase-js'
 import type { Backend, DataChange, HomeTable } from './backend'
-import type {
-  Household,
-  Invite,
-  Member,
-  Membership,
-  MergePreview,
-  Product,
-  Role,
-  Section,
-  ShoppingItem,
-  User,
+import {
+  NEW_PRODUCT_KIND,
+  type Household,
+  type Invite,
+  type Member,
+  type Membership,
+  type MergePreview,
+  type Product,
+  type Role,
+  type Section,
+  type ShoppingItem,
+  type User,
 } from './types'
 
 const HOME_TABLES: readonly HomeTable[] = ['sections', 'products', 'shopping_items']
@@ -233,7 +234,7 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       dataOrThrow(
         await supabase
           .from('sections')
-          .insert({ household_id: householdId, ...input })
+          .insert({ household_id: householdId, kind: NEW_PRODUCT_KIND, ...input })
           .select()
           .single(),
       ) as Section,
@@ -267,7 +268,7 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
       throwIfFailed(
         await supabase
           .from('products')
-          .update({ name: patch.name, icon: patch.icon, kind: patch.kind })
+          .update({ name: patch.name, icon: patch.icon })
           .eq('id', productId),
       )
     },
@@ -299,12 +300,13 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
     reorderShopping: async (ids) => {
       throwIfFailed(await supabase.rpc('reorder_shopping', { p_ids: ids }))
     },
-    purchaseShoppingItem: async (itemId, sectionId, makeStaple) => {
+    purchaseShoppingItem: async (itemId, sectionId) => {
       throwIfFailed(
         await supabase.rpc('purchase_shopping_item', {
           p_item_id: itemId,
           p_section_id: sectionId,
-          p_make_staple: makeStaple,
+          // Параметр прежних версий: true даёт продукт, который прежние версии считают постоянным.
+          p_make_staple: true,
         }),
       )
     },

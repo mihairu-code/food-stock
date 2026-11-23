@@ -1,17 +1,32 @@
 import { StockDotSamples } from '@/entities/product'
-import { LANG_NAMES, LANGS, setLangSetting, useLang, useT, type LangSetting } from '@/shared/i18n'
-import { setColorSafe, setTheme, useAppearance, type ThemeSetting } from '@/shared/lib/appearance'
+import { LANG_NAMES, LANGS, setLangSetting, useLang, useT, type LangSetting, type MessageKey } from '@/shared/i18n'
+import {
+  DOT_PLACES,
+  setColorSafe,
+  setDotPlace,
+  setMinimal,
+  setTheme,
+  useAppearance,
+  type DotPlace,
+  type ThemeSetting,
+} from '@/shared/lib/appearance'
 import { setHintsVisible } from '@/shared/lib/hints/hints'
 import { useHintsVisible } from '@/shared/lib/hints/useHintsVisible'
 import { SettingSelect, SettingsGroup, SettingToggle } from '@/shared/ui'
 import { AccentPicker } from './AccentPicker'
 import { AppIconPicker } from './AppIconPicker'
 
-/** Приложение: язык, оформление, различение точек, иконка и подсказки. Выбор хранится на устройстве, а не в доме. */
+const DOT_PLACE_LABELS: Record<DotPlace, MessageKey> = {
+  'icon-right': 'settings.dotPlaceIconRight',
+  'icon-left': 'settings.dotPlaceIconLeft',
+  'after-name': 'settings.dotPlaceAfterName',
+}
+
+/** Приложение: язык, оформление, точки наличия, иконка и подсказки. Выбор хранится на устройстве, а не в доме. */
 export function AppGroup() {
   const t = useT()
   const { setting } = useLang()
-  const { theme, colorSafe } = useAppearance()
+  const { theme, colorSafe, dotPlace, minimal } = useAppearance()
   const hints = useHintsVisible()
 
   return (
@@ -51,6 +66,25 @@ export function AppGroup() {
         }
         checked={colorSafe}
         onChange={setColorSafe}
+      />
+      <SettingSelect
+        id="dot-place"
+        title={t('settings.dotPlace')}
+        value={dotPlace}
+        onChange={(value) => setDotPlace(value as DotPlace)}
+      >
+        {DOT_PLACES.map((place) => (
+          <option key={place} value={place}>
+            {t(DOT_PLACE_LABELS[place])}
+          </option>
+        ))}
+      </SettingSelect>
+      <SettingToggle
+        id="minimal"
+        title={t('settings.minimal')}
+        meta={t('settings.minimalMeta')}
+        checked={minimal}
+        onChange={setMinimal}
       />
       <AppIconPicker />
       <SettingToggle

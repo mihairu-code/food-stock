@@ -4,7 +4,7 @@ A shared home pantry and shopping list, as a PWA for phones. In Russian, English
 and Vietnamese. [По-русски](README.ru.md)
 
 Every product has two independent marks: whether it's at home (a dot on the icon) and
-whether it's on the shopping list (the "+ / −" button). A *staple* that runs out goes to
+whether it's on the shopping list (the "+ / −" button). A product that runs out goes to
 the shopping list by itself and comes back to its section once bought. Sections are
 your own — "Fridge", "Pantry", "Snacks". Several people share one home and see each
 other's changes live.
@@ -25,8 +25,8 @@ What's in it:
 - swipe for edit and delete, delete with "Undo", one name — one thing across home and
   shopping;
 - a sheet that stays above the iPhone keyboard (more in [iPhone notes](docs/en/ios-notes.md));
-- light and dark themes, six accent colors, seven app icons, four languages;
-- an install guide for every device; old versions keep working against the same
+- light and dark themes, six accent colors, four languages;
+- an install guide for every device, with a choice of seven app icons before installing; old versions keep working against the same
   database while a new one rolls out.
 
 Stack: React 19 + TypeScript + Vite, React Router, TanStack Query, Supabase

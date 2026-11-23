@@ -1,4 +1,4 @@
-import { translate as t } from '@/shared/i18n'
+import { translate as t, type MessageKey } from '@/shared/i18n'
 import type { Backend } from './backend'
 import {
   placeProducts,
@@ -9,8 +9,9 @@ import {
   removeSection,
   setProductState,
   type HomeData,
+  type ProductState,
 } from './homeDataRules'
-import type { Household, Product, Section, ShoppingItem, User } from './types'
+import { NEW_PRODUCT_KIND, type Household, type Product, type Section, type ShoppingItem, type User } from './types'
 
 const STORAGE_KEY = 'home-stock:local:v1'
 const LOCAL_USER: User = {
@@ -44,21 +45,14 @@ function createDemoState(): LocalState {
     sort_order: tick,
     created_at: at(tick++),
   })
-  const product = (
-    s: Section,
-    name: string,
-    icon: string,
-    kind: Product['kind'],
-    is_available = true,
-  ): Product => ({
+  const product = (s: Section, name: string, icon: string, state: ProductState): Product => ({
     id: crypto.randomUUID(),
     household_id: hid,
     section_id: s.id,
     name,
     icon,
-    kind,
-    is_available,
-    to_buy: !is_available,
+    kind: NEW_PRODUCT_KIND,
+    ...state,
     created_at: at(tick),
     updated_at: at(tick++),
     created_by: LOCAL_USER.id,
@@ -73,22 +67,36 @@ function createDemoState(): LocalState {
   })
 
   // Демо-набор заводится один раз, на языке интерфейса в этот момент.
-  const fridge = section(t('demo.fridge'), '🧊')
-  const cupboard = section(t('demo.cupboard'), '🧺')
-  const treats = section(t('demo.treats'), '🍪')
+  // Три раздела по 8 продуктов: хватает, чтобы на «Доме» появилась лупа поиска (20+),
+  // и в каждом разделе видны все четыре состояния: четвёртый продукт закончился и лежит
+  // в покупках, шестой закончился, но покупать его не стали, восьмой ещё есть, но в покупках.
+  const contents: [MessageKey, string, [MessageKey, string][]][] = [
+    ['demo.fridge', '🧊', [
+      ['demo.milk', '🥛'], ['demo.eggs', '🥚'], ['demo.cheese', '🧀'], ['demo.strawberry', '🍓'],
+      ['demo.butter', '🧈'], ['demo.chicken', '🍗'], ['demo.fish', '🐟'], ['demo.lemon', '🍋'],
+    ]],
+    ['demo.cupboard', '🧺', [
+      ['demo.coffee', '☕'], ['demo.rice', '🍚'], ['demo.tea', '🍵'], ['demo.pasta', '🍝'],
+      ['demo.honey', '🍯'], ['demo.salt', '🧂'], ['demo.nuts', '🥜'], ['demo.canned', '🥫'],
+    ]],
+    ['demo.treats', '🍪', [
+      ['demo.chocolate', '🍫'], ['demo.cookies', '🍪'], ['demo.candy', '🍬'], ['demo.popcorn', '🍿'],
+      ['demo.cake', '🍰'], ['demo.donuts', '🍩'], ['demo.croissants', '🥐'], ['demo.waffles', '🧇'],
+    ]],
+  ]
+  const stateAt = (index: number): ProductState => ({
+    is_available: index !== 3 && index !== 5,
+    to_buy: index === 3 || index === 7,
+  })
+  const sections = contents.map(([key, icon]) => section(t(key), icon))
+  const products = contents.flatMap(([, , list], sectionIndex) =>
+    list.map(([key, icon], index) => product(sections[sectionIndex], t(key), icon, stateAt(index))),
+  )
 
   return {
     household,
-    sections: [fridge, cupboard, treats],
-    products: [
-      product(fridge, t('demo.milk'), '🥛', 'staple', false),
-      product(fridge, t('demo.eggs'), '🥚', 'staple'),
-      product(fridge, t('demo.cheese'), '🧀', 'staple'),
-      product(fridge, t('demo.strawberry'), '🍓', 'one_off'),
-      product(cupboard, t('demo.coffee'), '☕', 'staple'),
-      product(cupboard, t('demo.rice'), '🍚', 'staple'),
-      product(treats, t('demo.chocolate'), '🍫', 'one_off'),
-    ],
+    sections,
+    products,
     shoppingItems: [item(t('demo.coffeeBeans'), '🫘'), item(t('demo.bread'), '🍞')],
   }
 }
@@ -104,11 +112,13 @@ export function createLocalBackend(store: KeyValueStore = globalThis.localStorag
     if (raw) {
       try {
         const state = JSON.parse(raw) as LocalState
-        // Данные, сохранённые до появления отметки «в покупках»: тогда в списке были
-        // закончившиеся постоянные продукты.
-        const products = state.products.map((p) =>
-          typeof p.to_buy === 'boolean' ? p : { ...p, to_buy: p.kind === 'staple' && !p.is_available },
-        )
+        // Данные прежних версий, как миграции 0005 и 0012 в базе: без отметки «в покупках»
+        // в списке были закончившиеся продукты прежнего вида staple; вид у всех теперь один.
+        const products = state.products.map((p) => ({
+          ...p,
+          kind: NEW_PRODUCT_KIND,
+          to_buy: typeof p.to_buy === 'boolean' ? p.to_buy : p.kind === 'staple' && !p.is_available,
+        }))
         return { ...state, products }
       } catch {
         // повреждённые данные — начинаем с демо-набора
@@ -210,6 +220,7 @@ export function createLocalBackend(store: KeyValueStore = globalThis.localStorag
       }
       const product: Product = {
         household_id: householdId,
+        kind: NEW_PRODUCT_KIND,
         is_available: true,
         to_buy: false,
         created_at: now(),
@@ -261,10 +272,10 @@ export function createLocalBackend(store: KeyValueStore = globalThis.localStorag
     reorderShopping: async (ids) => {
       updateState((s) => ({ ...s, ...placeShopping(s, ids) }))
     },
-    purchaseShoppingItem: async (itemId, sectionId, makeStaple) => {
+    purchaseShoppingItem: async (itemId, sectionId) => {
       updateState((s) => ({
         ...s,
-        ...purchaseManualItem(s, itemId, sectionId, makeStaple, {
+        ...purchaseManualItem(s, itemId, sectionId, {
           newId: crypto.randomUUID(),
           now: now(),
           userId: LOCAL_USER.id,
