@@ -9,7 +9,12 @@
   z-index: 2;
   display: flex;
   justify-content: center;
-  gap: var(--space-2-5);
+  gap: var(--tabs-gap);
+  /* По ширине колонки приложения, а не экрана: на планшете и компьютере лупа встанет
+     у края колонки, а не у края окна. */
+  width: var(--tabs-column);
+  margin-inline: auto;
+  padding-inline: var(--tabs-inline);
   /* Полоса между кнопками не перехватывает нажатия на содержимое под ней. */
   pointer-events: none;
 }
@@ -21,7 +26,8 @@
   height: var(--tab-size);
   place-items: center;
   border: 1px solid var(--line);
-  border-radius: var(--radius-3xl);
+  /* Доля от размера: прежние 1.25rem при 3.625rem. Уменьшенная кнопка не становится кругом. */
+  border-radius: calc(var(--tab-size) * 0.345);
   background: color-mix(in srgb, var(--paper) 90%, transparent);
   -webkit-backdrop-filter: blur(16px) saturate(1.5);
   backdrop-filter: blur(16px) saturate(1.5);
