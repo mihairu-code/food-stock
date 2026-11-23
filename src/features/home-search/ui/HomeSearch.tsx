@@ -4,6 +4,41 @@ import { useT } from '@/shared/i18n'
 import { closeHomeSearch, openHomeSearch, setHomeSearchQuery, useHomeSearch } from '../model/homeSearch'
 
 const INPUT_ID = 'home-search-input'
+/** Сколько после нажатия на лупу клавиатура ещё выезжает и iPhone может двигать страницу. */
+const KEYBOARD_SETTLE_MS = 800
+
+/**
+ * Держит прокрутку страницы на месте, пока выезжает клавиатура: iPhone, фокусируя поле
+ * у нижнего края, сам прокручивает страницу, чтобы показать его, хотя поле и так встанет
+ * над клавиатурой. Касание или ввод отменяют удержание — дальше прокручивает человек.
+ * Возвращает отмену.
+ */
+function holdPageScroll(): () => void {
+  const y = window.scrollY
+  const keep = () => {
+    if (window.scrollY !== y) window.scrollTo(0, y)
+  }
+  const release = () => {
+    window.clearTimeout(timer)
+    window.removeEventListener('scroll', keep)
+    document.removeEventListener('touchstart', release)
+  }
+  const timer = window.setTimeout(release, KEYBOARD_SETTLE_MS)
+  window.addEventListener('scroll', keep)
+  document.addEventListener('touchstart', release, { passive: true })
+  return release
+}
+
+/**
+ * Чем человек управляет сейчас: пальцем или мышью — или клавиатурой. Фокус на лупу после
+ * закрытия возвращается только для клавиатуры: после касания браузер обвёл бы лупу
+ * рамкой фокуса, а на телефоне она там ни к чему.
+ */
+let usingPointer = true
+if (typeof document !== 'undefined') {
+  document.addEventListener('pointerdown', () => (usingPointer = true), { capture: true, passive: true })
+  document.addEventListener('keydown', () => (usingPointer = false), { capture: true, passive: true })
+}
 
 /** Фокус в поле ввода или открыта шторка: «/» и Esc там значат своё. */
 const busyWithOtherInput = (target: EventTarget | null) =>
@@ -25,12 +60,18 @@ export function HomeSearch({ available }: { available: boolean }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
+  const releaseScroll = useRef<() => void>(undefined)
+
   function startSearch() {
     openHomeSearch()
-    inputRef.current?.focus()
+    releaseScroll.current?.()
+    releaseScroll.current = holdPageScroll()
+    // Синхронно, в том же нажатии: иначе iPhone не откроет клавиатуру.
+    inputRef.current?.focus({ preventScroll: true })
   }
 
   function changeQuery(next: string) {
+    releaseScroll.current?.()
     setHomeSearchQuery(next)
     // Результаты — сразу под шапкой, а не там, где был список до ввода.
     window.scrollTo(0, 0)
@@ -45,11 +86,16 @@ export function HomeSearch({ available }: { available: boolean }) {
 
   // Закрыли поиск на «Доме» — список, прокрутка и фокус возвращаются туда, где были.
   // До отрисовки: полный список сразу появляется на прежнем месте, без кадра сверху.
+  // Закрыли касанием — фокус просто уходит из поля (клавиатура прячется), без рамки на лупе.
   const wasOpen = useRef(open)
   useLayoutEffect(() => {
-    if (wasOpen.current && !open && restoreScroll !== null) {
-      window.scrollTo(0, restoreScroll)
-      toggleRef.current?.focus({ preventScroll: true })
+    if (wasOpen.current && !open) {
+      releaseScroll.current?.()
+      if (restoreScroll !== null) {
+        window.scrollTo(0, restoreScroll)
+        if (usingPointer) inputRef.current?.blur()
+        else toggleRef.current?.focus({ preventScroll: true })
+      }
     }
     wasOpen.current = open
   }, [open, restoreScroll])
