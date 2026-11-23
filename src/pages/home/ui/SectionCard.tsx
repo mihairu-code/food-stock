@@ -2,6 +2,7 @@ import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-
 import { CSS } from '@dnd-kit/utilities'
 import { ChevronDown, Pencil } from 'lucide-react'
 import { memo, useMemo } from 'react'
+import type { NameMatch } from '@/features/home-search'
 import type { Product, Section } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import { SORT_TRANSITION } from '@/shared/lib/drag/dragMotion'
@@ -19,6 +20,8 @@ interface SectionCardProps {
   target: boolean
   onToggle: (sectionId: string) => void
   actions: ProductActions
+  /** Совпадения поиска по продуктам раздела; есть — идёт поиск, и добавлять сюда некуда. */
+  matches?: ReadonlyMap<string, NameMatch>
 }
 
 /** Массив продуктов раздела собирается заново при любом изменении дома — сравниваем по содержимому. */
@@ -28,6 +31,7 @@ const sameCard = (prev: SectionCardProps, next: SectionCardProps) =>
   prev.target === next.target &&
   prev.onToggle === next.onToggle &&
   prev.actions === next.actions &&
+  prev.matches === next.matches &&
   sameItems(prev.products, next.products)
 
 /**
@@ -41,6 +45,7 @@ export const SectionCard = memo(function SectionCard({
   target,
   onToggle,
   actions,
+  matches,
 }: SectionCardProps) {
   const t = useT()
   const sortable = useSortable({
@@ -92,13 +97,21 @@ export const SectionCard = memo(function SectionCard({
         <div className="section-products">
           <SortableContext id={section.id} items={productIds} strategy={verticalListSortingStrategy}>
             {products.map((product) => (
-              <ProductRow key={product.id} product={product} actions={actions} droppable={open} />
+              <ProductRow
+                key={product.id}
+                product={product}
+                actions={actions}
+                droppable={open}
+                match={matches?.get(product.id)}
+              />
             ))}
           </SortableContext>
-          <AddRow
-            label={t('home.addProductTo', { name: section.name })}
-            onClick={() => openSheet({ type: 'add-product', sectionId: section.id })}
-          />
+          {!matches && (
+            <AddRow
+              label={t('home.addProductTo', { name: section.name })}
+              onClick={() => openSheet({ type: 'add-product', sectionId: section.id })}
+            />
+          )}
         </div>
       </div>
     </section>

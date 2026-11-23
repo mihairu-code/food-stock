@@ -90,3 +90,13 @@ a {
       animation: none !important;
     }
 }
+
+/* Только для скринридера: текст есть, но не виден (объявления aria-live). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

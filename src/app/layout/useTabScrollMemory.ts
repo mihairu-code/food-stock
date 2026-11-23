@@ -8,13 +8,20 @@ import { useLayoutEffect, useState } from 'react'
  * Положение старого экрана запоминается при первом рендере после перехода: страница
  * в этот момент ещё прежняя, и её прокрутка не тронута. Событие scroll для этого не
  * годится — к нему старый экран уже спрятан и прокрутка подрезана под новую высоту.
+ *
+ * `scrollOf` — что запомнить за экран вместо текущей прокрутки (у «Дома» с открытым
+ * поиском — место до поиска: поиск закроется, и вернуться надо к полному списку).
  */
-export function useTabScrollMemory(pathname: string, keptPaths: readonly string[]): void {
+export function useTabScrollMemory(
+  pathname: string,
+  keptPaths: readonly string[],
+  scrollOf: (path: string) => number = () => window.scrollY,
+): void {
   const [positions] = useState(() => new Map<string, number>())
   const [shownPath, setShownPath] = useState(pathname)
 
   if (shownPath !== pathname) {
-    positions.set(shownPath, window.scrollY)
+    positions.set(shownPath, scrollOf(shownPath))
     setShownPath(pathname)
   }
 

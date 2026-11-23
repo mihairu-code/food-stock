@@ -24,7 +24,9 @@
  *    где координаты считаются от верха экрана, и там, где от сдвинутой видимой части.
  *
  * 4. На случай других таких сюрпризов: когда шторка встала, проверяется, где её низ на
- *    самом деле, и промах добавляется к подъёму.
+ *    самом деле, и промах добавляется к подъёму. Так же проверяется любой элемент,
+ *    прижатый к клавиатуре атрибутом data-keyboard-anchor (поле поиска по дому): его низ
+ *    должен совпасть с верхом клавиатуры, зазор до содержимого — внутренний отступ.
  */
 
 /** Меньше этого от высоты экрана отнимают панели браузера, а не клавиатура. */
@@ -90,11 +92,28 @@ export function nextCorrection(correction: number, miss: number, keyboard: boole
   return Math.max(-MAX_CORRECTION, Math.min(MAX_CORRECTION, correction + miss))
 }
 
-/** Шторка стоит на месте: не едет, не открывается и не тянется пальцем. Только тогда её низ что-то значит. */
-const standsStill = (sheet: HTMLElement) =>
-  !sheet.dataset.pulling &&
-  !sheet.style.transform &&
-  (typeof sheet.getAnimations !== 'function' || sheet.getAnimations().length === 0)
+/**
+ * Промах прижатого к клавиатуре элемента: на сколько его низ ниже низа видимой части
+ * (отрицательный — выше). `frameTop` — верх мерки во весь экран: в приложении на экране
+ * «Домой» он уезжает вверх вместе со сдвигом, и считать надо от него, а не от нуля.
+ */
+export function anchorMiss(anchorBottom: number, frameTop: number, { height, offsetTop }: ViewportReading): number {
+  return anchorBottom - (frameTop + offsetTop + height)
+}
+
+/**
+ * Что сейчас прижато к клавиатуре. Шторка важнее: она открывается поверх поиска
+ * («Добавить» из пустого результата), и подъём должен подходить ей.
+ */
+const keyboardAnchor = () =>
+  document.querySelector<HTMLElement>('dialog.sheet[open]') ??
+  document.querySelector<HTMLElement>('[data-keyboard-anchor]')
+
+/** Элемент стоит на месте: не едет, не открывается и не тянется пальцем. Только тогда его низ что-то значит. */
+const standsStill = (anchor: HTMLElement) =>
+  !anchor.dataset.pulling &&
+  !anchor.style.transform &&
+  (typeof anchor.getAnimations !== 'function' || anchor.getAnimations().length === 0)
 
 export function trackKeyboard(): void {
   const viewport = window.visualViewport
@@ -110,30 +129,25 @@ export function trackKeyboard(): void {
   let settleUntil = 0
   let timer = 0
   let correction = 0
-  /** Подъём по числам телефона в прошлый раз и шторка, к которой относится поправка. */
+  /** Подъём по числам телефона в прошлый раз и элемент, к которому относится поправка. */
   let lastInset = -1
-  let lastSheet: Element | null = null
+  let lastAnchor: Element | null = null
 
   function update() {
     const frame = probe.getBoundingClientRect()
-    const { inset, visible, keyboard } = sheetPlacement({
-      layout: frame.height,
-      height: viewport!.height,
-      offsetTop: viewport!.offsetTop,
-    })
-    // Низ видимой части в тех же координатах, в которых телефон сообщает, где шторка.
-    const visibleBottom = frame.top + viewport!.offsetTop + viewport!.height
-    const sheet = document.querySelector<HTMLElement>('dialog.sheet[open]')
-    if (sheet !== lastSheet) correction = 0
+    const reading = { layout: frame.height, height: viewport!.height, offsetTop: viewport!.offsetTop }
+    const { inset, visible, keyboard } = sheetPlacement(reading)
+    const anchor = keyboardAnchor()
+    if (anchor !== lastAnchor) correction = 0
     // Промах считается, только если числа телефона с прошлого раза не менялись: иначе
-    // шторка ещё стоит по старым, и промах был бы не её.
+    // элемент ещё стоит по старым, и промах был бы не его.
     let miss = 0
-    if (sheet && keyboard && inset === lastInset && standsStill(sheet)) {
-      miss = sheet.getBoundingClientRect().bottom - visibleBottom
+    if (anchor && keyboard && inset === lastInset && standsStill(anchor)) {
+      miss = anchorMiss(anchor.getBoundingClientRect().bottom, frame.top, reading)
     }
     correction = nextCorrection(correction, miss, keyboard)
     lastInset = inset
-    lastSheet = sheet
+    lastAnchor = anchor
     const lift = Math.max(0, Math.round(inset + correction))
 
     // Стили трогаем, только когда числа изменились: перемеряем часто, а меняются они редко.

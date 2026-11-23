@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { nextCorrection, sheetPlacement } from './keyboard'
+import { anchorMiss, nextCorrection, sheetPlacement } from './keyboard'
 
 /*
  * Где стоит шторка при разных состояниях экрана. Числа — с iPhone 14 Pro Max:
@@ -85,5 +85,25 @@ describe('поправка, если шторка всё же встала ни�
 
   it('клавиатура закрылась — поправка сбрасывается', () => {
     expect(nextCorrection(120, 0, false)).toBe(0)
+  })
+})
+
+describe('промах элемента, прижатого к клавиатуре (шторка, поле поиска)', () => {
+  // Запись владельца: мерка высотой 873 стоит низом на 599 при сдвиге 274 — её верх на −274.
+  const reading = { layout: 873, height: 458, offsetTop: 274 }
+  const frameTop = 599 - 873
+
+  it('элемент поднят на 141 от низа мерки — стоит ровно на клавиатуре', () => {
+    expect(anchorMiss(599 - 141, frameTop, reading)).toBe(0)
+  })
+
+  it('элемент остался у низа мерки — промах 141, его поднимут поправкой', () => {
+    expect(anchorMiss(599, frameTop, reading)).toBe(141)
+  })
+
+  it('в Safari во вкладке мерка от верха экрана — промах считается так же', () => {
+    const tab = { layout: 932, height: 456, offsetTop: 0 }
+    expect(anchorMiss(456, 0, tab)).toBe(0)
+    expect(anchorMiss(932, 0, tab)).toBe(476)
   })
 })

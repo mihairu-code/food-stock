@@ -13,6 +13,8 @@ interface ListRowProps {
   dragDescription: string
   icon: ReactNode
   name: string
+  /** Подсвеченная часть названия [start, end) — совпадение с поиском. */
+  highlight?: { start: number; end: number }
   meta: string
   /**
    * Наличие продукта дома (stockState в entities/product): от него цвет точки на иконке,
@@ -53,6 +55,7 @@ export function ListRow({
   dragDescription,
   icon,
   name,
+  highlight,
   meta,
   stock,
   disabled = false,
@@ -67,7 +70,16 @@ export function ListRow({
   onRemove,
 }: ListRowProps) {
   const t = useT()
-  const text = <RowText title={name} meta={meta} />
+  const title = highlight ? (
+    <>
+      {name.slice(0, highlight.start)}
+      <mark>{name.slice(highlight.start, highlight.end)}</mark>
+      {name.slice(highlight.end)}
+    </>
+  ) : (
+    name
+  )
+  const text = <RowText title={title} meta={meta} />
 
   const row = (
     <div className="row" data-stock={stock}>

@@ -28,7 +28,7 @@ export function SheetHost() {
 
   switch (sheet?.type) {
     case 'add-product':
-      return <ProductSheet sectionId={sheet.sectionId} />
+      return <ProductSheet sectionId={sheet.sectionId} name={sheet.name} />
     case 'edit-product':
       return <ProductSheet product={sheet.product} />
     case 'add-section':

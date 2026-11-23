@@ -9,9 +9,58 @@
   z-index: 2;
   display: flex;
   justify-content: center;
-  gap: var(--space-2-5);
+  /* По ширине колонки приложения, а не экрана: на планшете и компьютере лупа встанет
+     у края колонки, а не у края окна. */
+  width: var(--tabs-column);
+  margin-inline: auto;
+  padding-inline: var(--tabs-inline);
   /* Полоса между кнопками не перехватывает нажатия на содержимое под ней. */
   pointer-events: none;
+}
+
+/* Зазоры — отступами, а не gap: у свёрнутых мест (ширина 0) зазор тоже должен уходить.
+   Ширины, отступы и рамки всех мест едут одной кривой: сумма ширин тогда меняется так же
+   плавно, и ряд расходится в обе стороны от центра без рывков. Все переходы — здесь,
+   а не в .tab: иначе правило ниже по файлу перебило бы список целиком. */
+.tabs > * {
+  flex: none;
+  transition: width var(--search-motion),
+    margin var(--search-motion),
+    border-width var(--search-motion),
+    opacity 0.2s ease,
+    background-color 0.18s ease,
+    color 0.18s ease,
+    scale 0.12s ease;
+}
+
+.tabs > * + * {
+  margin-inline-start: var(--tabs-gap);
+}
+
+/* Пустое место слева — пара лупе справа: с ним вкладки стоят ровно по центру. */
+.tab-place {
+  width: var(--tab-size);
+}
+
+/* Открытый поиск: остаётся «Дом» у левого края колонки, лупа растягивается до правого. */
+.tabs[data-search-open='true'] :is(.tab-place, .tab-folding) {
+  width: 0;
+  margin-inline-start: 0;
+  overflow: hidden;
+  border-width: 0;
+  opacity: 0;
+}
+
+.tabs[data-search-open='true'] .tab-place + .tab {
+  margin-inline-start: 0;
+}
+
+/* Клавиатура открыта — ряд стоит на ней. Низ ряда совпадает с верхом клавиатуры
+   (это проверяет keyboard.ts по data-keyboard-anchor), зазор — внутренний отступ.
+   Без safe-area: полоску «Домой» закрывает клавиатура. */
+:root[data-keyboard] .tabs[data-search-open='true'] {
+  bottom: var(--keyboard-inset);
+  padding-bottom: var(--space-2);
 }
 
 .tab {
@@ -21,16 +70,14 @@
   height: var(--tab-size);
   place-items: center;
   border: 1px solid var(--line);
-  border-radius: var(--radius-3xl);
+  /* Доля от размера: прежние 1.25rem при 3.625rem. Уменьшенная кнопка не становится кругом. */
+  border-radius: calc(var(--tab-size) * 0.345);
   background: color-mix(in srgb, var(--paper) 90%, transparent);
   -webkit-backdrop-filter: blur(16px) saturate(1.5);
   backdrop-filter: blur(16px) saturate(1.5);
   box-shadow: var(--float-shadow);
   color: var(--muted);
   pointer-events: auto;
-  transition: background-color 0.18s ease,
-    color 0.18s ease,
-    scale 0.12s ease;
 }
 
 .tab.active {

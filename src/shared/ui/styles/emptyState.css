@@ -23,3 +23,13 @@
   color: var(--muted);
   font-size: var(--text-md);
 }
+
+/* Действие с подстановкой («Добавить „…“» из поиска) бывает длинным — переносится,
+   а не раздвигает экран вбок. */
+.empty .btn {
+  max-width: 100%;
+  white-space: normal;
+  text-wrap: balance;
+  /* Длинное слово при крупном шрифте на узком экране — тоже. */
+  overflow-wrap: anywhere;
+}
