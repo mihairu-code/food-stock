@@ -106,6 +106,17 @@
   display: none;
 }
 
+/* Минималистичный вид (настройка): подписей нет, название стоит по центру строки,
+   а сами строки ниже — на «Доме» и в покупках одной высоты. */
+[data-minimal] .row .row-meta {
+  display: none;
+}
+
+[data-minimal] .row,
+[data-minimal] .list .row {
+  min-height: var(--row-minimal-height);
+}
+
 .row-meta {
   margin-top: var(--space-1);
   color: var(--muted);

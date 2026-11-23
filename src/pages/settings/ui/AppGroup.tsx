@@ -4,6 +4,7 @@ import {
   DOT_PLACES,
   setColorSafe,
   setDotPlace,
+  setMinimal,
   setTheme,
   useAppearance,
   type DotPlace,
@@ -25,7 +26,7 @@ const DOT_PLACE_LABELS: Record<DotPlace, MessageKey> = {
 export function AppGroup() {
   const t = useT()
   const { setting } = useLang()
-  const { theme, colorSafe, dotPlace } = useAppearance()
+  const { theme, colorSafe, dotPlace, minimal } = useAppearance()
   const hints = useHintsVisible()
 
   return (
@@ -78,6 +79,13 @@ export function AppGroup() {
           </option>
         ))}
       </SettingSelect>
+      <SettingToggle
+        id="minimal"
+        title={t('settings.minimal')}
+        meta={t('settings.minimalMeta')}
+        checked={minimal}
+        onChange={setMinimal}
+      />
       <AppIconPicker />
       <SettingToggle
         id="hints"

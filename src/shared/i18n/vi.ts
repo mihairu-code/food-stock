@@ -198,6 +198,8 @@ export const vi: Messages = {
   'settings.dotPlaceIconRight': 'Góc phải biểu tượng',
   'settings.dotPlaceIconLeft': 'Góc trái biểu tượng',
   'settings.dotPlaceAfterName': 'Sau tên món',
+  'settings.minimal': 'Giao diện tối giản',
+  'settings.minimalMeta': 'Không có chú thích dưới tên: chấm, biểu tượng và nút cho biết trạng thái. Dòng thấp hơn, hiển thị được nhiều hơn',
   'settings.hints': 'Gợi ý',
   'settings.hintsMeta': 'Giải thích trên màn hình; người dùng mới thấy trong 3 ngày đầu',
   'accent.green': 'Xanh lá',

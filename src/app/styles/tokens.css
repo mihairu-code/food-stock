@@ -1,7 +1,8 @@
 /* Токены: цвета, тема, акцент и шкала размеров.
    Домашние запасы — мобильный интерфейс: тёплый нейтральный фон и один акцентный цвет для действий.
-   Тему (data-theme), акцент (data-accent) и режим «не только цветом» (data-color-safe)
-   на <html> выставляет shared/lib/appearance.ts.
+   Тему (data-theme), акцент (data-accent), режим «не только цветом» (data-color-safe),
+   место точки (data-dot-place) и минималистичный вид (data-minimal) на <html>
+   выставляет shared/lib/appearance.ts.
 
    Размеры — в rem от корневого шрифта: если в браузере выбран крупный шрифт, растёт весь
    интерфейс. В px остаются только рамки, тени и обводки — волосяные линии, которые
@@ -99,6 +100,8 @@
   /* Как лупа растягивается в поле и обратно. */
   --search-motion: 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
   --tabs-bottom: calc(0.625rem + env(safe-area-inset-bottom) * 0.7);
+  /* Строка продукта в минималистичном виде: без подписи она ниже — 52px вместо 60. */
+  --row-minimal-height: 3.25rem;
 
   color-scheme: light;
   font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

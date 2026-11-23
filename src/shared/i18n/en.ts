@@ -207,6 +207,8 @@ export const en: Messages = {
   'settings.dotPlaceIconRight': 'Icon, right',
   'settings.dotPlaceIconLeft': 'Icon, left',
   'settings.dotPlaceAfterName': 'After the name',
+  'settings.minimal': 'Minimal view',
+  'settings.minimalMeta': 'No captions under names: the dot, the icon and the button show the state. Shorter rows, so more fit on screen',
   'settings.hints': 'Tips',
   'settings.hintsMeta': 'Explanations on screens; shown to new users for the first 3 days',
   'accent.green': 'Green',

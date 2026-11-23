@@ -198,6 +198,8 @@ export const ja: Messages = {
   'settings.dotPlaceIconRight': 'アイコンの右上',
   'settings.dotPlaceIconLeft': 'アイコンの左上',
   'settings.dotPlaceAfterName': '名前の後ろ',
+  'settings.minimal': 'ミニマル表示',
+  'settings.minimalMeta': '名前の下の説明を表示しません。状態は点・アイコン・ボタンでわかります。行が低くなり、一画面に多く表示されます',
   'settings.hints': 'ヒント',
   'settings.hintsMeta': '画面上の説明。新しいユーザーには最初の3日間表示されます',
   'accent.green': 'グリーン',

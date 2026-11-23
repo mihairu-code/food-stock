@@ -23,7 +23,8 @@ interface ProductRowProps {
 
 /**
  * Подпись под названием — состояние словами, в паре с точкой. Отличие от соседнего
- * состояния стоит первым: «Есть дома» и «В покупках · ещё есть».
+ * состояния стоит первым: «Есть дома» и «В покупках · ещё есть». В минималистичном виде
+ * подписи скрыты стилями.
  */
 function stockCaptionKey(product: Product, stock: StockState): MessageKey {
   if (stock === 'out') return product.to_buy ? 'product.outInList' : 'product.out'

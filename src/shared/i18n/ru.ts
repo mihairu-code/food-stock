@@ -256,6 +256,8 @@ export const ru = {
   'settings.dotPlaceIconRight': 'Справа на иконке',
   'settings.dotPlaceIconLeft': 'Слева на иконке',
   'settings.dotPlaceAfterName': 'После названия',
+  'settings.minimal': 'Минималистичный вид',
+  'settings.minimalMeta': 'Без подписей под названиями: состояние показывают точка, иконка и кнопка. Строки ниже — на экране помещается больше',
   'settings.hints': 'Подсказки',
   'settings.hintsMeta': 'Пояснения на экранах; новым пользователям видны первые 3 дня',
   'accent.green': 'Зелёный',
