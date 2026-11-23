@@ -1,11 +1,17 @@
 import { Search, X } from 'lucide-react'
-import { useEffect, useLayoutEffect, useRef, type KeyboardEvent } from 'react'
+import { useEffect, useLayoutEffect, useRef, type KeyboardEvent, type TouchEvent as ReactTouchEvent } from 'react'
 import { useT } from '@/shared/i18n'
 import { closeHomeSearch, openHomeSearch, setHomeSearchQuery, useHomeSearch } from '../model/homeSearch'
 
 const INPUT_ID = 'home-search-input'
 /** Сколько после нажатия на лупу клавиатура ещё выезжает и iPhone может двигать страницу. */
 const KEYBOARD_SETTLE_MS = 800
+/**
+ * Поле потеряло фокус, а страницы за это время никто не касался и клавиш не нажимал —
+ * значит, клавиатуру убрали снаружи страницы: галочкой «Готово» на панели над
+ * клавиатурой iPhone. Касание страницы перед этим — меньше этого назад.
+ */
+const OUTSIDE_BLUR_MS = 400
 
 /**
  * Держит прокрутку страницы на месте, пока выезжает клавиатура: iPhone, фокусируя поле
@@ -32,12 +38,22 @@ function holdPageScroll(): () => void {
 /**
  * Чем человек управляет сейчас: пальцем или мышью — или клавиатурой. Фокус на лупу после
  * закрытия возвращается только для клавиатуры: после касания браузер обвёл бы лупу
- * рамкой фокуса, а на телефоне она там ни к чему.
+ * рамкой фокуса, а на телефоне она там ни к чему. И когда страницы касались в последний
+ * раз — чтобы отличить галочку «Готово» от касания самой страницы.
  */
 let usingPointer = true
+let lastPageInteraction = 0
 if (typeof document !== 'undefined') {
-  document.addEventListener('pointerdown', () => (usingPointer = true), { capture: true, passive: true })
-  document.addEventListener('keydown', () => (usingPointer = false), { capture: true, passive: true })
+  const notePointer = () => {
+    usingPointer = true
+    lastPageInteraction = performance.now()
+  }
+  document.addEventListener('pointerdown', notePointer, { capture: true, passive: true })
+  document.addEventListener('touchstart', notePointer, { capture: true, passive: true })
+  document.addEventListener('keydown', () => {
+    usingPointer = false
+    lastPageInteraction = performance.now()
+  }, { capture: true, passive: true })
 }
 
 /** Фокус в поле ввода или открыта шторка: «/» и Esc там значат своё. */
@@ -61,13 +77,45 @@ export function HomeSearch({ available }: { available: boolean }) {
   const formRef = useRef<HTMLFormElement>(null)
 
   const releaseScroll = useRef<() => void>(undefined)
+  /** Фокус из поля убираем мы сами (прокрутка, «Найти», закрытие) — это не галочка «Готово». */
+  const blurringOurselves = useRef(false)
+
+  /**
+   * Фокус в поле без прокрутки страницы. Синхронно, в том же нажатии: иначе iPhone не
+   * откроет клавиатуру.
+   */
+  function focusWithoutScroll() {
+    releaseScroll.current?.()
+    releaseScroll.current = holdPageScroll()
+    inputRef.current?.focus({ preventScroll: true })
+  }
+
+  function blurField() {
+    blurringOurselves.current = true
+    inputRef.current?.blur()
+    blurringOurselves.current = false
+  }
 
   function startSearch() {
     openHomeSearch()
-    releaseScroll.current?.()
-    releaseScroll.current = holdPageScroll()
-    // Синхронно, в том же нажатии: иначе iPhone не откроет клавиатуру.
-    inputRef.current?.focus({ preventScroll: true })
+    focusWithoutScroll()
+  }
+
+  // Поиск открыт, клавиатура спрятана, и человек нажимает на поле. Если отдать фокус
+  // iPhone, он прокрутит страницу, чтобы показать поле у нижнего края (на записи с телефона
+  // список уезжал вверх почти на высоту клавиатуры). Поэтому фокус ставим сами.
+  function focusOnTap(event: ReactTouchEvent<HTMLInputElement>) {
+    if (!open || document.activeElement === inputRef.current) return
+    event.preventDefault()
+    focusWithoutScroll()
+  }
+
+  // Галочка «Готово» над клавиатурой iPhone закрывает поиск, как крестик и кнопка «Дом».
+  // Её нажатие страница не видит, видно только, что поле потеряло фокус без касания.
+  function closeOnKeyboardDone() {
+    if (!open || blurringOurselves.current || !document.hasFocus()) return
+    if (performance.now() - lastPageInteraction < OUTSIDE_BLUR_MS) return
+    closeHomeSearch()
   }
 
   function changeQuery(next: string) {
@@ -93,7 +141,7 @@ export function HomeSearch({ available }: { available: boolean }) {
       releaseScroll.current?.()
       if (restoreScroll !== null) {
         window.scrollTo(0, restoreScroll)
-        if (usingPointer) inputRef.current?.blur()
+        if (usingPointer) blurField()
         else toggleRef.current?.focus({ preventScroll: true })
       }
     }
@@ -125,7 +173,7 @@ export function HomeSearch({ available }: { available: boolean }) {
     function blurOnListScroll(event: TouchEvent) {
       const input = inputRef.current
       if (input && document.activeElement === input && !formRef.current?.contains(event.target as Node)) {
-        input.blur()
+        blurField()
       }
     }
     document.addEventListener('touchmove', blurOnListScroll, { passive: true })
@@ -143,7 +191,7 @@ export function HomeSearch({ available }: { available: boolean }) {
       // Отправлять нечего: «Найти» на клавиатуре телефона просто убирает её.
       onSubmit={(event) => {
         event.preventDefault()
-        inputRef.current?.blur()
+        blurField()
       }}
     >
       <button
@@ -174,6 +222,8 @@ export function HomeSearch({ available }: { available: boolean }) {
         value={query}
         onChange={(event) => changeQuery(event.target.value)}
         onKeyDown={closeOnEscape}
+        onTouchEnd={focusOnTap}
+        onBlur={closeOnKeyboardDone}
       />
       {open && (
         <button
