@@ -48,9 +48,9 @@
   inset: 0;
   width: 100%;
   min-width: 0;
-  /* Текст — сразу за значком лупы и до крестика: на 320 подсказка «Название продукта»
-     помещается с запасом в пару пикселей. */
-  padding: 0 calc(var(--search-clear-size) / 2 + var(--space-3)) 0 calc(var(--tab-size) / 2 + var(--space-3-5));
+  /* Текст — за значком лупы с заметным зазором и до крестика. На узком экране зазор
+     ужимается, как зазоры панели: на 320 подсказка «Название продукта» помещается целиком. */
+  padding: 0 calc(var(--search-clear-size) / 2 + var(--space-3)) 0 calc(var(--tab-size) / 2 + min(var(--space-5), 5vw));
   text-overflow: ellipsis;
   border: 0;
   border-radius: inherit;
