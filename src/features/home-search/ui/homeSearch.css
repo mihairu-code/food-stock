@@ -1,0 +1,98 @@
+/* Лупа у нижней панели и поле, в которое она растягивается. Вид кнопки — от .tab. */
+
+.home-search {
+  /* Крестик — цель для пальца, но не шире кнопки панели: при крупном шрифте поле и так узкое. */
+  --search-clear-size: min(var(--tab-size), var(--tap-size));
+
+  position: relative;
+  display: block;
+  width: var(--tab-size);
+  height: var(--tab-size);
+}
+
+/* На других вкладках и в маленьком доме лупы нет; место за ней остаётся, вкладки не едут. */
+.home-search[data-available='false'] {
+  opacity: 0;
+  scale: 0.8;
+  pointer-events: none;
+}
+
+.tabs[data-search-open='true'] .home-search {
+  flex-grow: 1;
+}
+
+/* Лупа: закрытой занимает всю кнопку; в открытом поле остаётся значком слева. */
+.home-search-toggle {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: grid;
+  width: var(--tab-size);
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: var(--muted);
+}
+
+.tabs[data-search-open='true'] .home-search-toggle {
+  color: var(--accent);
+  /* Нажатие по значку попадает в поле под ним. */
+  pointer-events: none;
+}
+
+.home-search-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  min-width: 0;
+  /* Текст — сразу за значком лупы и до крестика: на 320 подсказка «Название продукта»
+     помещается с запасом в пару пикселей. */
+  padding: 0 calc(var(--search-clear-size) / 2 + var(--space-3)) 0 calc(var(--tab-size) / 2 + var(--space-3-5));
+  text-overflow: ellipsis;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: var(--ink);
+  /* Не меньше 1rem: с шрифтом мельче iPhone приближает страницу при фокусе. */
+  font: inherit;
+  font-size: var(--text-base);
+  opacity: 0;
+  pointer-events: none;
+  outline: none;
+  appearance: none;
+  transition: opacity 0.12s ease;
+}
+
+.home-search-input::placeholder {
+  color: var(--muted);
+}
+
+/* Свой крестик — «Очистить и закрыть»; браузерный только стирал бы запрос. */
+.home-search-input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.tabs[data-search-open='true'] .home-search-input {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Фокус виден на самом поле: обводка всей кнопки, как у остальных. */
+.home-search:has(.home-search-input:focus-visible) {
+  outline: 3px solid var(--orange);
+  outline-offset: 2px;
+}
+
+.home-search-clear {
+  position: absolute;
+  inset: 0 0 0 auto;
+  display: grid;
+  width: var(--search-clear-size);
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: var(--muted);
+}

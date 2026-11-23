@@ -31,6 +31,10 @@ export const en: Messages = {
   'nav.shopping': 'Shopping',
   'nav.settings': 'Settings',
   'nav.shoppingCount': 'Shopping, items: {count}',
+  'search.label': 'Search home',
+  'search.close': 'Close search',
+  'search.placeholder': 'Product name',
+  'search.clear': 'Clear and close',
   'title.home': 'At home',
   'header.settingsLink': 'Members and settings',
 

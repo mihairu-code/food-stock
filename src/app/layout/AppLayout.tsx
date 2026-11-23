@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Outlet, useLocation } from 'react-router'
+import { homeScrollToRemember } from '@/features/home-search'
 import { HomePage } from '@/pages/home'
 import { ShoppingPage } from '@/pages/shopping'
 import { Header } from '@/widgets/header'
@@ -19,6 +20,8 @@ const KEPT_TABS = [
 
 const KEPT_PATHS: readonly string[] = KEPT_TABS.map((tab) => tab.path)
 
+const scrollToRemember = (path: string) => (path === '/' ? homeScrollToRemember() : window.scrollY)
+
 /** Каркас всех экранов: заголовок, содержимое, вкладки и общее место для шторок. */
 export function AppLayout() {
   const { pathname } = useLocation()
@@ -26,7 +29,7 @@ export function AppLayout() {
   const [visitedTabs, setVisitedTabs] = useState<ReadonlySet<string>>(() => new Set([pathname]))
   if (isKeptTab && !visitedTabs.has(pathname)) setVisitedTabs(new Set(visitedTabs).add(pathname))
 
-  useTabScrollMemory(pathname, KEPT_PATHS)
+  useTabScrollMemory(pathname, KEPT_PATHS, scrollToRemember)
 
   return (
     <div className="app">

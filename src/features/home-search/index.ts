@@ -7,3 +7,4 @@ export {
   useHomeSearch,
 } from './model/homeSearch'
 export { matchProductsByName, normalizeQuery, type NameMatch } from './model/matchProductsByName'
+export { HomeSearch } from './ui/HomeSearch'

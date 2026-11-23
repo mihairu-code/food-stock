@@ -31,6 +31,10 @@ export const ja: Messages = {
   'nav.shopping': '買い物',
   'nav.settings': '設定',
   'nav.shoppingCount': '買い物、{count}件',
+  'search.label': '家の中を検索',
+  'search.close': '検索を閉じる',
+  'search.placeholder': '品名',
+  'search.clear': '消去して閉じる',
   'title.home': '家にあるもの',
   'header.settingsLink': 'メンバーと設定',
 

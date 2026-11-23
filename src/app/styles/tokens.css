@@ -96,6 +96,8 @@
      даже три вкладки; с границей в px кнопка ужимается и ряд встаёт целиком на любом
      экране шире 275px. */
   --tab-size: clamp(44px, (var(--tabs-column) - 2 * var(--tabs-inline) - 4 * var(--tabs-gap)) / 5, 3.625rem);
+  /* Как лупа растягивается в поле и обратно. */
+  --search-motion: 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
   --tabs-bottom: calc(0.625rem + env(safe-area-inset-bottom) * 0.7);
 
   color-scheme: light;

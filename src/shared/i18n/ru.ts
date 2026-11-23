@@ -58,6 +58,10 @@ export const ru = {
   'nav.shopping': 'Покупки',
   'nav.settings': 'Настройки',
   'nav.shoppingCount': 'Покупки, позиций: {count}',
+  'search.label': 'Поиск по дому',
+  'search.close': 'Закрыть поиск',
+  'search.placeholder': 'Название продукта',
+  'search.clear': 'Очистить и закрыть',
   'title.home': 'Дома',
   'header.settingsLink': 'Участники и настройки',
 

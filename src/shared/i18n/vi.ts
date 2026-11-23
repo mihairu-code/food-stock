@@ -31,6 +31,10 @@ export const vi: Messages = {
   'nav.shopping': 'Mua sắm',
   'nav.settings': 'Cài đặt',
   'nav.shoppingCount': 'Mua sắm, số món: {count}',
+  'search.label': 'Tìm trong nhà',
+  'search.close': 'Đóng tìm kiếm',
+  'search.placeholder': 'Tên sản phẩm',
+  'search.clear': 'Xoá và đóng',
   'title.home': 'Trong nhà',
   'header.settingsLink': 'Thành viên và cài đặt',
 
