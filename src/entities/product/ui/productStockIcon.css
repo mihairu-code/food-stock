@@ -77,6 +77,31 @@
   transform: rotate(-45deg);
 }
 
+/* Где точка — настройка, атрибут data-dot-place на <html>. По умолчанию справа вверху
+   иконки. Слева — зеркально. После названия — вторая точка строки (.row-name-dot, её
+   рисует ListRow), а точка на иконке в строках скрыта; у образцов в настройках остаётся. */
+[data-dot-place='icon-left'] .stock-dot {
+  right: auto;
+  left: -0.1875rem;
+}
+
+[data-color-safe][data-dot-place='icon-left'] .stock-dot {
+  left: calc(var(--space-1) * -1);
+}
+
+[data-dot-place='after-name'] .row .stock .stock-dot {
+  display: none;
+}
+
+[data-dot-place='after-name'] .row-name-dot {
+  position: relative;
+  top: auto;
+  right: auto;
+  left: auto;
+  display: block;
+  flex: 0 0 auto;
+}
+
 /* Образцы трёх точек в настройке «Различать не только цветом»: те же иконки, что в списках. */
 .stock-samples {
   display: flex;

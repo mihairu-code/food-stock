@@ -9,12 +9,17 @@ export type ThemeSetting = (typeof THEMES)[number]
 export const ACCENTS = ['green', 'teal', 'blue', 'violet', 'rose', 'graphite'] as const
 export type Accent = (typeof ACCENTS)[number]
 
+/** Где у строки продукта точка наличия: в правом или левом верхнем углу иконки или после названия. */
+export const DOT_PLACES = ['icon-right', 'icon-left', 'after-name'] as const
+export type DotPlace = (typeof DOT_PLACES)[number]
+
 interface Appearance {
   theme: ThemeSetting
   accent: Accent
   icon: AppIcon
   /** Различать не только цветом: точки наличия меняют форму и палитру. */
   colorSafe: boolean
+  dotPlace: DotPlace
 }
 
 /* Те же ключи читает скрипт в index.html: он выставляет тему до первой отрисовки,
@@ -25,6 +30,8 @@ const ICON_KEY = 'home-stock:app-icon'
 /* Включено — 'on', выключено — ключа нет. Сама система не сообщает вебу о нарушениях
    цветового зрения, поэтому режим только ручной. */
 const COLOR_SAFE_KEY = 'home-stock:color-safe'
+/* По умолчанию — справа вверху иконки, тогда ключа нет. */
+const DOT_PLACE_KEY = 'home-stock:dot-place'
 
 const systemDark = window.matchMedia('(prefers-color-scheme: dark)')
 
@@ -33,11 +40,13 @@ function read(): Appearance {
   let accent: string | null = null
   let icon: string | null = null
   let colorSafe: string | null = null
+  let dotPlace: string | null = null
   try {
     theme = localStorage.getItem(THEME_KEY)
     accent = localStorage.getItem(ACCENT_KEY)
     icon = localStorage.getItem(ICON_KEY)
     colorSafe = localStorage.getItem(COLOR_SAFE_KEY)
+    dotPlace = localStorage.getItem(DOT_PLACE_KEY)
   } catch {
     // хранилище недоступно — оформление по умолчанию
   }
@@ -46,6 +55,7 @@ function read(): Appearance {
     accent: ACCENTS.includes(accent as Accent) ? (accent as Accent) : 'green',
     icon: APP_ICONS.includes(icon as AppIcon) ? (icon as AppIcon) : DEFAULT_APP_ICON,
     colorSafe: colorSafe === 'on',
+    dotPlace: DOT_PLACES.includes(dotPlace as DotPlace) ? (dotPlace as DotPlace) : 'icon-right',
   }
 }
 
@@ -81,11 +91,12 @@ function applyIcon(icon: AppIcon): void {
 
 /** Переносит выбор на страницу: атрибуты для стилей и цвет системной панели вокруг приложения. */
 function apply(): void {
-  const { theme, accent, icon, colorSafe } = store.get()
+  const { theme, accent, icon, colorSafe, dotPlace } = store.get()
   const root = document.documentElement
   root.dataset.theme = theme === 'auto' ? (systemDark.matches ? 'dark' : 'light') : theme
   root.dataset.accent = accent
   root.toggleAttribute('data-color-safe', colorSafe)
+  root.dataset.dotPlace = dotPlace
 
   const background = getComputedStyle(root).getPropertyValue('--bg').trim()
   for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')) {
@@ -122,6 +133,12 @@ export function setAppIcon(icon: AppIcon): void {
 export function setColorSafe(colorSafe: boolean): void {
   save(COLOR_SAFE_KEY, colorSafe ? 'on' : null)
   store.set({ ...store.get(), colorSafe })
+  apply()
+}
+
+export function setDotPlace(dotPlace: DotPlace): void {
+  save(DOT_PLACE_KEY, dotPlace === 'icon-right' ? null : dotPlace)
+  store.set({ ...store.get(), dotPlace })
   apply()
 }
 

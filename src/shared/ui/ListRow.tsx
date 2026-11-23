@@ -70,7 +70,7 @@ export function ListRow({
   onRemove,
 }: ListRowProps) {
   const t = useT()
-  const title = highlight ? (
+  const highlighted = highlight ? (
     <>
       {name.slice(0, highlight.start)}
       <mark>{name.slice(highlight.start, highlight.end)}</mark>
@@ -78,6 +78,16 @@ export function ListRow({
     </>
   ) : (
     name
+  )
+  // У продукта точка наличия может стоять и после названия (настройка «Где точка»):
+  // она есть в разметке всегда, а какую из двух точек показать, решают стили.
+  const title = stock ? (
+    <>
+      <span className="row-name-text">{highlighted}</span>
+      <span className="stock-dot row-name-dot" aria-hidden="true" />
+    </>
+  ) : (
+    highlighted
   )
   const text = <RowText title={title} meta={meta} />
 
