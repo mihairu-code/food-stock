@@ -1,7 +1,5 @@
 import type { ReactElement } from 'react'
-
-/** Картинка загрузки: холодильник — запуск приложения, полки — «Дом», список — «Покупки». */
-export type LoadingKind = 'fridge' | 'shelves' | 'list'
+import type { LoadingKind } from '@/shared/lib/loadingKind'
 
 /*
  * Встроенный SVG и CSS-анимация (statusNote.css): без библиотек и картинок, цвета —
@@ -47,7 +45,10 @@ const PICTURES: Record<LoadingKind, ReactElement> = {
   ),
 }
 
-/** Для скринридера картинки нет: состояние называет текст рядом. */
+/**
+ * Картинка загрузки: холодильник, полки или список покупок. Для скринридера её нет:
+ * состояние называет текст рядом.
+ */
 export function LoadingPicture({ kind }: { kind: LoadingKind }) {
   return (
     <svg className="loading-picture" data-kind={kind} viewBox="0 0 48 48" aria-hidden="true" focusable="false">

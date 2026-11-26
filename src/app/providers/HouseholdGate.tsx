@@ -71,7 +71,7 @@ export function HouseholdGate({ user, children }: { user: User; children: ReactN
     return { user, household: current.household, role: current.role, memberships: list, selectHousehold }
   }, [memberships.data, preferred, user, selectHousehold])
 
-  if (memberships.isPending) return <StatusNote fullscreen loading="fridge" />
+  if (memberships.isPending) return <StatusNote fullscreen loading />
   if (memberships.isLoadingError) return <StatusNote fullscreen>{t('load.reloadError')}</StatusNote>
   if (bootstrap.status === 'join-failed') {
     return (
@@ -87,7 +87,7 @@ export function HouseholdGate({ user, children }: { user: User; children: ReactN
       </Notice>
     )
   }
-  if (bootstrap.joining) return <StatusNote fullscreen loading="fridge">{t('join.working')}</StatusNote>
-  if (!session) return <StatusNote fullscreen loading="fridge">{t('home.preparing')}</StatusNote>
+  if (bootstrap.joining) return <StatusNote fullscreen loading>{t('join.working')}</StatusNote>
+  if (!session) return <StatusNote fullscreen loading>{t('home.preparing')}</StatusNote>
   return <SessionContext.Provider value={session}>{children}</SessionContext.Provider>
 }
