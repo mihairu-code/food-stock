@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.3.1 — unreleased
+
+- "Leave home" in the settings (`public.leave_household`, migration `0013`, decision 0022);
+  the longest-standing member becomes the owner; a lone member can't leave.
+- A removed member is told "You were removed from “…”" instead of silently getting a new
+  empty home.
+- iPhone / iPad in a browser without an account: the settings suggest signing in with
+  Google before adding the app to the Home Screen.
+- No two sections with the same name; names compare `ё` as `е`.
+- Loading pictures in `StatusNote` (fridge, shelves, list), shown after 300 ms.
+- `localStorage` access wrapped in `try`; collapsed sections forget deleted ones.
+
 ## 1.3.0 — unreleased
 
 - No more staple / one-off products: anything that runs out goes on the shopping list
