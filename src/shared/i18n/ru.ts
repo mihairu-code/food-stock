@@ -202,6 +202,7 @@ export const ru = {
   'toast.linkError': 'Не удалось создать ссылку',
   'toast.linkRevoked': 'Ссылка отозвана',
   'toast.memberRemoved': 'Участник удалён из дома',
+  'toast.leftHome': 'Вы вышли из дома «{name}»',
   'toast.googleError': 'Не удалось открыть вход через Google',
   'toast.googleFailed': 'Вход через Google не выполнен',
   'toast.demoRestored': 'Демо-данные восстановлены',
@@ -228,6 +229,8 @@ export const ru = {
   'settings.groupMembers': 'Участники',
   'settings.you': '(вы)',
   'settings.removeMemberAria': 'Удалить участника: {name}',
+  'settings.leaveHome': 'Покинуть дом',
+  'settings.leaveHomeMeta': 'Дом останется у других участников',
   'settings.groupAccount': 'Аккаунт',
   'settings.googleMeta': 'Всё, что есть сейчас, сохранится в аккаунте',
   'settings.beforeInstallSafari': 'Дом хранится в Safari',
@@ -390,6 +393,10 @@ export const ru = {
   'confirm.removeMemberTitle': 'Удалить участника?',
   'confirm.removeMemberText':
     '{name} потеряет доступ к дому «{home}». Вернуть его можно будет новой ссылкой.',
+  'confirm.leaveTitle': 'Покинуть «{home}»?',
+  'confirm.leaveText': 'Вы потеряете доступ к дому и его продуктам. Вернуться можно будет только по новой ссылке от участника.',
+  'confirm.leaveOwner': 'Владельцем дома станет {name}.',
+  'confirm.leave': 'Покинуть',
   'confirm.signOutTitle': 'Выйти из аккаунта?',
   'confirm.signOutText':
     'Дома и продукты останутся в аккаунте. Чтобы вернуться к ним, снова войдите через Google.',

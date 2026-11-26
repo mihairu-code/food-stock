@@ -149,6 +149,7 @@ export const vi: Messages = {
   'toast.linkError': 'Không tạo được liên kết',
   'toast.linkRevoked': 'Đã thu hồi liên kết',
   'toast.memberRemoved': 'Đã xóa thành viên khỏi nhà',
+  'toast.leftHome': 'Bạn đã rời khỏi “{name}”',
   'toast.googleError': 'Không mở được trang đăng nhập Google',
   'toast.googleFailed': 'Chưa đăng nhập được bằng Google',
   'toast.demoRestored': 'Đã khôi phục dữ liệu mẫu',
@@ -170,6 +171,8 @@ export const vi: Messages = {
   'settings.groupMembers': 'Thành viên',
   'settings.you': '(bạn)',
   'settings.removeMemberAria': 'Xóa thành viên: {name}',
+  'settings.leaveHome': 'Rời khỏi nhà',
+  'settings.leaveHomeMeta': 'Nhà vẫn còn với các thành viên khác',
   'settings.groupAccount': 'Tài khoản',
   'settings.googleMeta': 'Mọi thứ hiện có sẽ được lưu vào tài khoản',
   'settings.beforeInstallSafari': 'Nhà của bạn được lưu trong Safari',
@@ -328,6 +331,10 @@ export const vi: Messages = {
   'confirm.removeMemberTitle': 'Xóa thành viên?',
   'confirm.removeMemberText':
     '{name} sẽ mất quyền vào nhà “{home}”. Bạn có thể mời lại bằng liên kết mới.',
+  'confirm.leaveTitle': 'Rời khỏi “{home}”?',
+  'confirm.leaveText': 'Bạn sẽ mất quyền vào nhà này và các món đồ trong đó. Muốn quay lại, bạn cần một liên kết mời mới từ thành viên.',
+  'confirm.leaveOwner': '{name} sẽ trở thành chủ nhà.',
+  'confirm.leave': 'Rời khỏi',
   'confirm.signOutTitle': 'Đăng xuất?',
   'confirm.signOutText':
     'Nhà và các món vẫn nằm trong tài khoản. Để quay lại, hãy đăng nhập bằng Google lần nữa.',

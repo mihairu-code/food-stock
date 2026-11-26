@@ -149,6 +149,7 @@ export const ja: Messages = {
   'toast.linkError': 'リンクを作成できませんでした',
   'toast.linkRevoked': 'リンクを無効にしました',
   'toast.memberRemoved': 'メンバーを家から削除しました',
+  'toast.leftHome': '「{name}」から抜けました',
   'toast.googleError': 'Googleログインを開けませんでした',
   'toast.googleFailed': 'Googleログインは完了しませんでした',
   'toast.demoRestored': 'デモデータを元に戻しました',
@@ -170,6 +171,8 @@ export const ja: Messages = {
   'settings.groupMembers': 'メンバー',
   'settings.you': '（自分）',
   'settings.removeMemberAria': 'メンバーを削除：{name}',
+  'settings.leaveHome': 'この家から抜ける',
+  'settings.leaveHomeMeta': '家はほかのメンバーに残ります',
   'settings.groupAccount': 'アカウント',
   'settings.googleMeta': '今あるデータはすべてアカウントに保存されます',
   'settings.beforeInstallSafari': '家のデータはSafariに保存されています',
@@ -327,6 +330,10 @@ export const ja: Messages = {
   'confirm.removeMemberTitle': 'メンバーを削除しますか？',
   'confirm.removeMemberText':
     '{name}さんは「{home}」にアクセスできなくなります。新しいリンクでまた招待できます。',
+  'confirm.leaveTitle': '「{home}」から抜けますか？',
+  'confirm.leaveText': 'この家とアイテムにアクセスできなくなります。戻るには、メンバーから新しい招待リンクをもらう必要があります。',
+  'confirm.leaveOwner': '{name}がオーナーになります。',
+  'confirm.leave': '抜ける',
   'confirm.signOutTitle': 'ログアウトしますか？',
   'confirm.signOutText':
     '家とアイテムはアカウントに残ります。もう一度Googleでログインすると元に戻ります。',

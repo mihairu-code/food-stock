@@ -1,9 +1,13 @@
-import { useHomeData } from '@/shared/api'
+import { backend, useHomeData } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import { useSession } from '@/shared/session'
 import { openSheet, SettingRow, SettingSelect, SettingsGroup } from '@/shared/ui'
+import { LeaveHomeRow } from './LeaveHomeRow'
 
-/** Дом: название и аватарка (меняет владелец), разделы и переключатель, если домов несколько. */
+/**
+ * Дом: название и аватарка (меняет владелец), разделы, переключатель, если домов несколько,
+ * и выход из дома. В демо-режиме дом один и участник один — выходить некуда.
+ */
 export function HomeGroup() {
   const t = useT()
   const { household, role, memberships, selectHousehold } = useSession()
@@ -37,6 +41,7 @@ export function HomeGroup() {
           ))}
         </SettingSelect>
       )}
+      {backend.mode === 'supabase' && <LeaveHomeRow />}
     </SettingsGroup>
   )
 }

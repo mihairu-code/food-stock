@@ -155,6 +155,7 @@ export const en: Messages = {
   'toast.linkError': 'Couldn’t create the link',
   'toast.linkRevoked': 'Link revoked',
   'toast.memberRemoved': 'Member removed from the home',
+  'toast.leftHome': 'You left “{name}”',
   'toast.googleError': 'Couldn’t open Google sign-in',
   'toast.googleFailed': 'Google sign-in wasn’t completed',
   'toast.demoRestored': 'Demo data restored',
@@ -179,6 +180,8 @@ export const en: Messages = {
   'settings.groupMembers': 'Members',
   'settings.you': '(you)',
   'settings.removeMemberAria': 'Remove member: {name}',
+  'settings.leaveHome': 'Leave home',
+  'settings.leaveHomeMeta': 'The home stays with the other members',
   'settings.groupAccount': 'Account',
   'settings.googleMeta': 'Everything you have now will be saved to the account',
   'settings.beforeInstallSafari': 'Your home is stored in Safari',
@@ -335,6 +338,10 @@ export const en: Messages = {
   'confirm.removeMemberTitle': 'Remove this member?',
   'confirm.removeMemberText':
     '{name} will lose access to “{home}”. You can bring them back with a new link.',
+  'confirm.leaveTitle': 'Leave “{home}”?',
+  'confirm.leaveText': 'You’ll lose access to this home and its items. To come back, you’ll need a new invite link from a member.',
+  'confirm.leaveOwner': '{name} will become the owner.',
+  'confirm.leave': 'Leave',
   'confirm.signOutTitle': 'Sign out?',
   'confirm.signOutText':
     'Your homes and items stay in the account. Sign in with Google again to get back to them.',

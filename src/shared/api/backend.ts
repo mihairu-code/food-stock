@@ -112,6 +112,11 @@ export interface Backend {
   listMembers(householdId: string): Promise<Member[]>
   setDisplayName(householdId: string, displayName: string): Promise<void>
   removeMember(householdId: string, userId: string): Promise<void>
+  /**
+   * Самому покинуть дом. Уходит владелец — владельцем становится тот, кто в доме дольше
+   * всех. Последнему участнику уйти нельзя (решение 0022).
+   */
+  leaveHousehold(householdId: string): Promise<void>
 
   listInvites(householdId: string): Promise<Invite[]>
   /** Создаёт одноразовую ссылку и возвращает её токен — больше его получить нельзя. */
