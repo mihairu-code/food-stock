@@ -67,7 +67,7 @@ export function MergeGate({ user, children }: { user: User; children: ReactNode 
   }
 
   if (state.status === 'idle') return children
-  if (state.status === 'working') return <StatusNote fullscreen loading="fridge">{t('merge.working')}</StatusNote>
+  if (state.status === 'working') return <StatusNote fullscreen loading>{t('merge.working')}</StatusNote>
   if (state.status === 'failed') {
     return (
       <Notice

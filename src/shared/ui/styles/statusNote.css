@@ -35,9 +35,21 @@
   animation: none;
 }
 
-/* Заставка из index.html: до этих стилей она скрыта (там же, в index.html). */
+/* Заставка из index.html: до этих стилей она скрыта (там же, в index.html). Из трёх
+   картинок видна та, что выбрал скрипт (data-boot-picture на <html>); без выбора — первая. */
 .boot {
   visibility: visible;
+}
+
+.boot .loading-picture {
+  display: none;
+}
+
+:root:not([data-boot-picture]) .boot .loading-picture:first-child,
+[data-boot-picture='fridge'] .boot .loading-picture[data-kind='fridge'],
+[data-boot-picture='shelves'] .boot .loading-picture[data-kind='shelves'],
+[data-boot-picture='list'] .boot .loading-picture[data-kind='list'] {
+  display: block;
 }
 
 @keyframes loading-appear {

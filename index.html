@@ -29,6 +29,9 @@
         if (accent) document.documentElement.dataset.accent = accent
         if (localStorage.getItem('home-stock:color-safe') === 'on') document.documentElement.dataset.colorSafe = ''
       } catch (error) {}
+      // Картинка заставки — случайная из трёх; React продолжает ту же (src/shared/lib/loadingKind.ts).
+      var pictures = ['fridge', 'shelves', 'list']
+      document.documentElement.dataset.bootPicture = pictures[Math.floor(Math.random() * pictures.length)]
     </script>
     <style>
       /* Пока скачиваются стили и скрипт приложения, экран — цвета темы, а не белый.
@@ -47,9 +50,10 @@
   </head>
   <body>
     <div class="dots" aria-hidden="true"></div>
-    <!-- Заставка до запуска React: тот же холодильник, что LoadingPicture (проверяет
-         bootSplash.test.ts). React заменит её первым экраном. -->
-    <div id="root"><div class="status-note splash boot" data-loading="true"><svg class="loading-picture" data-kind="fridge" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><rect class="loading-body" x="11" y="3" width="26" height="42" rx="4"></rect><path class="loading-shelf" d="M14 26h20M14 35h20"></path><rect class="loading-food" x="16" y="20" width="5" height="6" rx="1"></rect><circle class="loading-food" cx="28" cy="32" r="3"></circle><rect class="loading-food" x="17" y="38" width="12" height="5" rx="1"></rect><g class="loading-door"><rect x="11" y="17" width="26" height="28" rx="4"></rect><path d="M16 23v6"></path></g><path class="loading-seam" d="M11 16h26"></path></svg></div></div>
+    <!-- Заставка до запуска React: те же три картинки, что LoadingPicture (проверяет
+         bootSplash.test.ts); видна одна, выбранная скриптом выше. React заменит заставку
+         первым экраном с той же картинкой. -->
+    <div id="root"><div class="status-note splash boot" data-loading="true"><svg class="loading-picture" data-kind="fridge" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><rect class="loading-body" x="11" y="3" width="26" height="42" rx="4"></rect><path class="loading-shelf" d="M14 26h20M14 35h20"></path><rect class="loading-food" x="16" y="20" width="5" height="6" rx="1"></rect><circle class="loading-food" cx="28" cy="32" r="3"></circle><rect class="loading-food" x="17" y="38" width="12" height="5" rx="1"></rect><g class="loading-door"><rect x="11" y="17" width="26" height="28" rx="4"></rect><path d="M16 23v6"></path></g><path class="loading-seam" d="M11 16h26"></path></svg><svg class="loading-picture" data-kind="shelves" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path class="loading-frame" d="M6 4v40M42 4v40M6 22h36M6 42h36"></path><rect class="loading-item" x="10" y="9" width="7" height="11" rx="1.5"></rect><rect class="loading-item loading-step-1" x="20" y="13" width="9" height="7" rx="1.5"></rect><circle class="loading-item loading-step-2" cx="34" cy="16" r="4"></circle><rect class="loading-item loading-step-3" x="11" y="29" width="6" height="11" rx="2"></rect><rect class="loading-item loading-step-4" x="21" y="32" width="15" height="8" rx="1.5"></rect></svg><svg class="loading-picture" data-kind="list" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><rect class="loading-box" x="5" y="7" width="9" height="9" rx="2"></rect><rect class="loading-box" x="5" y="20" width="9" height="9" rx="2"></rect><rect class="loading-box" x="5" y="33" width="9" height="9" rx="2"></rect><rect class="loading-tick" x="7.5" y="9.5" width="4" height="4" rx="1"></rect><rect class="loading-tick loading-step-1" x="7.5" y="22.5" width="4" height="4" rx="1"></rect><rect class="loading-tick loading-step-2" x="7.5" y="35.5" width="4" height="4" rx="1"></rect><path class="loading-text" d="M20 11.5h22"></path><path class="loading-text loading-step-1" d="M20 24.5h16"></path><path class="loading-text loading-step-2" d="M20 37.5h19"></path></svg></div></div>
     <script type="module" src="/src/app/main.tsx"></script>
   </body>
 </html>

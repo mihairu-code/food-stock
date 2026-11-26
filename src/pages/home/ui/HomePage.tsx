@@ -29,7 +29,7 @@ export function HomePage() {
     query ? (foundCount > 0 ? t('search.found', { count: foundCount }) : t('search.nothing')) : '',
   )
 
-  if (isLoading) return <StatusNote loading="shelves">{t('home.loading')}</StatusNote>
+  if (isLoading) return <StatusNote loading>{t('home.loading')}</StatusNote>
   if (isError) return <StatusNote>{t('common.loadError')}</StatusNote>
 
   if (sections.length === 0) {
