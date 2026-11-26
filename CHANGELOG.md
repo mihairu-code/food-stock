@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.2 — unreleased
+
+- Splash in `index.html`: the theme background and the loading fridge show before the
+  app's script arrives; the first full-screen loading note continues it without a pause.
+
 ## 1.3.1 — unreleased
 
 - "Leave home" in the settings (`public.leave_household`, migration `0013`, decision 0022);
