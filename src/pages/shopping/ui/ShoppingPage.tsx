@@ -10,7 +10,7 @@ export function ShoppingPage() {
   const { isLoading, isError } = useHomeData()
   const entries = useShoppingList()
 
-  if (isLoading) return <StatusNote>{t('shopping.loading')}</StatusNote>
+  if (isLoading) return <StatusNote loading="list">{t('shopping.loading')}</StatusNote>
   if (isError) return <StatusNote>{t('common.loadError')}</StatusNote>
 
   return (

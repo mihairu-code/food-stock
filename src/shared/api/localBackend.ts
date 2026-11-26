@@ -181,6 +181,7 @@ export function createLocalBackend(store: KeyValueStore = globalThis.localStorag
     },
     setDisplayName: notSupported,
     removeMember: notSupported,
+    leaveHousehold: notSupported,
 
     listInvites: async () => [],
     createInvite: notSupported,

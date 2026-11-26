@@ -41,7 +41,7 @@ interface SectionBoardProps {
 export function SectionBoard({ sections, products, query }: SectionBoardProps) {
   const t = useT()
   const actions = useProductActions()
-  const collapsed = useCollapsedSections()
+  const collapsed = useCollapsedSections(sections)
   const { board, active, sensors, handlers } = useBoardDrag(sections, products)
 
   const sectionById = useMemo(() => new Map(sections.map((section) => [section.id, section])), [sections])

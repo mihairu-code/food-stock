@@ -19,10 +19,18 @@ export function readMergeTicket(): MergeTicket | null {
   }
 }
 
+/**
+ * Без try намеренно: не удалось сохранить билет — вход через Google не начинается
+ * (ошибка уходит в тост), иначе данные устройства не перешли бы в аккаунт.
+ */
 export function saveMergeTicket(ticket: MergeTicket): void {
   localStorage.setItem(KEY, JSON.stringify(ticket))
 }
 
 export function clearMergeTicket(): void {
-  localStorage.removeItem(KEY)
+  try {
+    localStorage.removeItem(KEY)
+  } catch {
+    // хранилище недоступно — там и нечего убирать
+  }
 }

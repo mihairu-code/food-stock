@@ -1,12 +1,222 @@
-/* StatusNote: «Загрузка…» и «Не удалось загрузить». */
+/* StatusNote: «Загрузка…» с картинкой и «Не удалось загрузить». */
 
 .status-note {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: var(--space-3);
   padding: var(--space-10) var(--space-5);
   color: var(--muted);
   text-align: center;
   font-size: var(--text-md);
 }
 
+.status-note p {
+  margin: 0;
+}
+
 .splash {
   padding-top: 40dvh;
+}
+
+.splash[data-loading='true'] {
+  /* Картинка над текстом: середина экрана — между ними, как у строки без картинки. */
+  padding-top: calc(40dvh - var(--loading-size) - var(--space-3));
+}
+
+/* Короткая загрузка не мелькает: строка проявляется через 300 мс. */
+.status-note[data-loading='true'] {
+  animation: loading-appear 0.2s ease-out 0.3s both;
+}
+
+@keyframes loading-appear {
+  from {
+    opacity: 0;
+  }
+}
+
+/* LoadingPicture. Цвета — токенами: картинка следует теме и акценту. */
+.loading-picture {
+  width: var(--loading-size);
+  height: var(--loading-size);
+  overflow: visible;
+}
+
+.loading-picture * {
+  transform-box: fill-box;
+}
+
+/* Холодильник: нижняя дверца приоткрывается — внутри продукты. */
+.loading-body {
+  fill: var(--accent-soft);
+  stroke: var(--muted);
+  stroke-width: 2.5;
+}
+
+.loading-shelf {
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  opacity: 0.5;
+}
+
+.loading-food {
+  fill: var(--accent);
+}
+
+.loading-door {
+  transform-origin: left;
+  animation: loading-door 2.4s ease-in-out infinite;
+}
+
+.loading-door rect {
+  fill: var(--paper);
+  stroke: var(--muted);
+  stroke-width: 2.5;
+}
+
+.loading-door path,
+.loading-seam {
+  stroke: var(--muted);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+@keyframes loading-door {
+  0%,
+  20%,
+  90%,
+  100% {
+    transform: none;
+  }
+  45%,
+  65% {
+    transform: scaleX(0.18);
+  }
+}
+
+/* Полки: продукты по одному встают на места, потом их разбирают. */
+.loading-frame {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.loading-item {
+  fill: var(--accent);
+  transform-origin: bottom;
+  animation: loading-stock 2.4s ease-out infinite;
+}
+
+.loading-item.loading-step-1,
+.loading-item.loading-step-3 {
+  opacity: 0.7;
+}
+
+.loading-item.loading-step-2 {
+  fill: var(--stock-low);
+}
+
+@keyframes loading-stock {
+  0% {
+    transform: scaleY(0);
+  }
+  15%,
+  80% {
+    transform: none;
+  }
+  95%,
+  100% {
+    transform: scaleY(0);
+  }
+}
+
+/* Список покупок: пункты отмечаются сверху вниз, отмеченные бледнеют. */
+.loading-box {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2;
+}
+
+.loading-tick {
+  fill: var(--accent);
+  transform-origin: center;
+  animation: loading-tick 2.4s ease-out infinite;
+}
+
+.loading-text {
+  stroke: var(--muted);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  animation: loading-done 2.4s ease-out infinite;
+}
+
+@keyframes loading-tick {
+  0% {
+    transform: scale(0);
+  }
+  15%,
+  85% {
+    transform: none;
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+
+@keyframes loading-done {
+  0% {
+    opacity: 1;
+  }
+  15%,
+  85% {
+    opacity: 0.35;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Шаги одной картинки идут друг за другом. */
+.loading-step-1 {
+  animation-delay: 0.2s;
+}
+
+.loading-step-2 {
+  animation-delay: 0.4s;
+}
+
+.loading-step-3 {
+  animation-delay: 0.6s;
+}
+
+.loading-step-4 {
+  animation-delay: 0.8s;
+}
+
+.loading-picture[data-kind='list'] .loading-step-1 {
+  animation-delay: 0.4s;
+}
+
+.loading-picture[data-kind='list'] .loading-step-2 {
+  animation-delay: 0.8s;
+}
+
+/* Меньше движения: base.css останавливает всё, картинка застывает целым кадром.
+   Вместо движения — спокойное мерцание всей картинки; правило с классом сильнее
+   общего `*` с тем же !important. */
+@media (prefers-reduced-motion: reduce) {
+  .status-note[data-loading='true'] {
+    animation: loading-appear 0.2s ease-out 0.3s both !important;
+  }
+
+  .loading-picture {
+    animation: loading-breathe 2.4s ease-in-out infinite !important;
+  }
+}
+
+@keyframes loading-breathe {
+  50% {
+    opacity: 0.55;
+  }
 }

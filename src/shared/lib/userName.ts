@@ -7,9 +7,17 @@ export function firstName(name: string | null): string {
 }
 
 export function savedName(): string {
-  return localStorage.getItem(NAME_KEY) ?? ''
+  try {
+    return localStorage.getItem(NAME_KEY) ?? ''
+  } catch {
+    return ''
+  }
 }
 
 export function saveName(name: string): void {
-  localStorage.setItem(NAME_KEY, name)
+  try {
+    localStorage.setItem(NAME_KEY, name)
+  } catch {
+    // хранилище недоступно — имя уже записано в дом, на устройстве его просто не будет
+  }
 }

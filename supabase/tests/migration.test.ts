@@ -1310,3 +1310,71 @@ describe('удаление анонимных пользователей, кот
     await expect(as({ id: ACTIVE_MEMBER }, () => rows(`select private.forget_inactive_anonymous()`))).rejects.toThrow()
   })
 })
+
+describe('«Покинуть дом»', () => {
+  const id = (n: number) => `00000000-0000-0000-0000-0000000013${String(n).padStart(2, '0')}`
+  const OWNER = { id: id(1) }
+  /** Вступил первым — станет владельцем, когда владелец уйдёт. */
+  const FIRST = { id: id(2) }
+  const SECOND = { id: id(3) }
+  const STRANGER = { id: id(4) }
+  const LONER = { id: id(5) }
+
+  let home: string
+  let lonerHome: string
+
+  const membersOf = (householdId: string) =>
+    rows<{ user_id: string; role: string }>(
+      `select user_id, role from public.household_members where household_id = $1 order by user_id`,
+      [householdId],
+    )
+  const leave = (user: TestUser, householdId: string) =>
+    as(user, () => rows(`select public.leave_household($1)`, [householdId]))
+
+  beforeAll(async () => {
+    for (const user of [OWNER, FIRST, SECOND, STRANGER, LONER]) {
+      await db.query(`insert into auth.users (id) values ($1)`, [user.id])
+    }
+    home = await createHousehold(OWNER, 'Общий дом')
+    await createSection(OWNER, home, 'Холодильник')
+    for (const [user, joined] of [
+      [FIRST, '2 days'],
+      [SECOND, '1 day'],
+    ] as const) {
+      await db.query(
+        `insert into public.household_members (household_id, user_id, role, created_at)
+         values ($1, $2, 'member', now() - $3::interval)`,
+        [home, user.id, joined],
+      )
+    }
+    lonerHome = await createHousehold(LONER, 'Свой дом')
+  })
+
+  it('посторонний и гость без входа уйти из чужого дома не могут', async () => {
+    await expect(leave(STRANGER, home)).rejects.toThrow(/не участник/)
+    await expect(as(null, () => rows(`select public.leave_household($1)`, [home]))).rejects.toThrow(/permission denied/)
+    expect(await membersOf(home)).toHaveLength(3)
+  })
+
+  it('последний участник уйти не может: дом с продуктами не удаляется', async () => {
+    await expect(leave(LONER, lonerHome)).rejects.toThrow(/Последний участник/)
+    expect(await membersOf(lonerHome)).toEqual([{ user_id: LONER.id, role: 'owner' }])
+  })
+
+  it('владелец уходит: владельцем становится тот, кто в доме дольше всех, разделы на месте', async () => {
+    await leave(OWNER, home)
+    expect(await membersOf(home)).toEqual([
+      { user_id: FIRST.id, role: 'owner' },
+      { user_id: SECOND.id, role: 'member' },
+    ])
+    expect(await rows(`select name from public.sections where household_id = $1`, [home])).toEqual([
+      { name: 'Холодильник' },
+    ])
+  })
+
+  it('участник уходит: владелец прежний, сам он дом больше не видит', async () => {
+    await leave(SECOND, home)
+    expect(await membersOf(home)).toEqual([{ user_id: FIRST.id, role: 'owner' }])
+    expect(await as(SECOND, () => rows(`select id from public.households where id = $1`, [home]))).toEqual([])
+  })
+})

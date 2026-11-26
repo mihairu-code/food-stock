@@ -86,7 +86,7 @@ export function AuthGate({ children }: { children: (user: User) => ReactNode }) 
     action()
   }
 
-  if (state.status === 'loading') return <StatusNote fullscreen />
+  if (state.status === 'loading') return <StatusNote fullscreen loading="fridge" />
   if (state.status === 'welcome') {
     return (
       <WelcomePage

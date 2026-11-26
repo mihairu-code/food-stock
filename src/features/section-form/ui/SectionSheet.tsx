@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { useCreateSection, useRenameSection } from '@/entities/section'
 import { useHomeData, type Section } from '@/shared/api'
 import { useT } from '@/shared/i18n'
+import { findNamed } from '@/shared/lib/sameName'
 import { notify } from '@/shared/lib/toast'
+import { useFieldError } from '@/shared/lib/useFieldError'
 import { closeSheet, FormSheet, NameIconFields } from '@/shared/ui'
 
 /** Самые частые места в доме; остальные иконки — в панели. */
@@ -14,6 +16,11 @@ interface SectionSheetProps {
   onRequestDelete?: () => void
 }
 
+/**
+ * Создание и переименование раздела. Второй раздел с тем же названием не заводится (как
+ * у продуктов, решение 0017): поле встряхивается. Сам раздел своё название не занимает —
+ * можно сменить только иконку.
+ */
 export function SectionSheet({ section, onRequestDelete }: SectionSheetProps) {
   const t = useT()
   const { sections } = useHomeData()
@@ -21,10 +28,20 @@ export function SectionSheet({ section, onRequestDelete }: SectionSheetProps) {
   const renameSection = useRenameSection()
   const [name, setName] = useState(section?.name ?? '')
   const [icon, setIcon] = useState(section?.icon ?? '')
+  const nameError = useFieldError()
+
+  function changeName(next: string) {
+    setName(next)
+    nameError.clear()
+  }
 
   function saveSection() {
     const trimmed = name.trim()
     if (!trimmed) return
+    if (findNamed(sections, trimmed, section?.id)) {
+      nameError.reject(t('section.duplicate'))
+      return
+    }
     if (section) {
       renameSection.mutate({ id: section.id, patch: { name: trimmed, icon: icon || null } })
     } else {
@@ -56,7 +73,9 @@ export function SectionSheet({ section, onRequestDelete }: SectionSheetProps) {
         label={t('section.name')}
         maxLength={60}
         name={name}
-        onNameChange={setName}
+        onNameChange={changeName}
+        nameError={nameError.error}
+        nameShakeCount={nameError.shakeCount}
         icon={icon}
         onIconChange={setIcon}
         icons={SECTION_EMOJIS}

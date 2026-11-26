@@ -6,6 +6,7 @@ import { beforeEach, expect, it, vi } from 'vitest'
  */
 
 const inserted: { table: string; row: Record<string, unknown> }[] = []
+const called: { fn: string; args: Record<string, unknown> }[] = []
 
 vi.mock('@supabase/supabase-js', () => ({
   createClient: () => ({
@@ -15,6 +16,10 @@ vi.mock('@supabase/supabase-js', () => ({
         return { select: () => ({ single: async () => ({ data: row, error: null }) }) }
       },
     }),
+    rpc: async (fn: string, args: Record<string, unknown>) => {
+      called.push({ fn, args })
+      return { data: null, error: null }
+    },
   }),
 }))
 
@@ -22,6 +27,7 @@ const { createSupabaseBackend } = await import('./supabaseBackend')
 
 beforeEach(() => {
   inserted.length = 0
+  called.length = 0
 })
 
 it('новый продукт уходит с kind = staple: прежние версии ведут его как постоянный', async () => {
@@ -38,4 +44,10 @@ it('у раздела нет kind', async () => {
   expect(inserted).toEqual([
     { table: 'sections', row: { household_id: 'h1', id: 's1', name: 'Шкаф', icon: null, sort_order: 0 } },
   ])
+})
+
+it('«Покинуть дом» вызывает leave_household только с домом: кто уходит, база знает по входу', async () => {
+  const backend = createSupabaseBackend('https://example.test', 'public-key')
+  await backend.leaveHousehold('h1')
+  expect(called).toEqual([{ fn: 'leave_household', args: { p_household_id: 'h1' } }])
 })

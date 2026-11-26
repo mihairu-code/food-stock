@@ -196,6 +196,9 @@ export function createSupabaseBackend(url: string, publicKey: string): Backend {
           .eq('user_id', userId),
       )
     },
+    leaveHousehold: async (householdId) => {
+      throwIfFailed(await supabase.rpc('leave_household', { p_household_id: householdId }))
+    },
 
     listInvites: async (householdId) =>
       dataOrThrow(

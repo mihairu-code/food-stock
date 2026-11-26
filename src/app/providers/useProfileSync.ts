@@ -17,9 +17,13 @@ export function useProfileSync(user: User, memberships: Membership[] | undefined
     if (!homes) return
     const device = currentDevice()
     const signature = [user.id, user.email ?? '', user.avatarUrl ?? '', device, displayName, homes].join('|')
-    if (localStorage.getItem(SYNCED_KEY) === signature) return
-    // Отметка ставится сразу: повторный вызов эффекта не отправит второй запрос.
-    localStorage.setItem(SYNCED_KEY, signature)
+    try {
+      if (localStorage.getItem(SYNCED_KEY) === signature) return
+      // Отметка ставится сразу: повторный вызов эффекта не отправит второй запрос.
+      localStorage.setItem(SYNCED_KEY, signature)
+    } catch {
+      // хранилище недоступно — подпись отправляется при каждом запуске, это не страшно
+    }
     backend
       .syncProfile(device, displayName)
       .then(() =>
@@ -30,7 +34,11 @@ export function useProfileSync(user: User, memberships: Membership[] | undefined
       )
       .catch(() => {
         // Подпись — удобство, а не необходимость; попробуем при следующем запуске.
-        localStorage.removeItem(SYNCED_KEY)
+        try {
+          localStorage.removeItem(SYNCED_KEY)
+        } catch {
+          // хранилище недоступно
+        }
       })
   }, [user.id, user.email, user.avatarUrl, displayName, homes])
 }

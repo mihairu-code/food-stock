@@ -2,9 +2,17 @@
 const KEY = 'home-stock:household'
 
 export function preferredHousehold(): string | null {
-  return localStorage.getItem(KEY)
+  try {
+    return localStorage.getItem(KEY)
+  } catch {
+    return null
+  }
 }
 
 export function rememberHousehold(householdId: string): void {
-  localStorage.setItem(KEY, householdId)
+  try {
+    localStorage.setItem(KEY, householdId)
+  } catch {
+    // хранилище недоступно — следующий запуск начнётся с первого дома
+  }
 }
