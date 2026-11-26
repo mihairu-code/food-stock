@@ -150,6 +150,7 @@ export const vi: Messages = {
   'toast.linkRevoked': 'Đã thu hồi liên kết',
   'toast.memberRemoved': 'Đã xóa thành viên khỏi nhà',
   'toast.leftHome': 'Bạn đã rời khỏi “{name}”',
+  'toast.removedFromHome': 'Bạn đã bị xóa khỏi “{name}”',
   'toast.googleError': 'Không mở được trang đăng nhập Google',
   'toast.googleFailed': 'Chưa đăng nhập được bằng Google',
   'toast.demoRestored': 'Đã khôi phục dữ liệu mẫu',

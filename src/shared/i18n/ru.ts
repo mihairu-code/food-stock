@@ -203,6 +203,7 @@ export const ru = {
   'toast.linkRevoked': 'Ссылка отозвана',
   'toast.memberRemoved': 'Участник удалён из дома',
   'toast.leftHome': 'Вы вышли из дома «{name}»',
+  'toast.removedFromHome': 'Вас удалили из дома «{name}»',
   'toast.googleError': 'Не удалось открыть вход через Google',
   'toast.googleFailed': 'Вход через Google не выполнен',
   'toast.demoRestored': 'Демо-данные восстановлены',

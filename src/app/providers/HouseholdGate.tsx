@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { preferredHousehold, rememberHousehold } from '@/entities/household'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { leftHouseholdSelf, preferredHousehold, rememberHousehold } from '@/entities/household'
 import { membershipsQuery, prefetchHome, type User } from '@/shared/api'
 import { useT } from '@/shared/i18n'
+import { notify } from '@/shared/lib/toast'
 import { firstName, savedName } from '@/shared/lib/userName'
 import { SessionContext, type Session } from '@/shared/session'
 import { Notice, StatusNote } from '@/shared/ui'
+import { removedHome, type ShownHome } from './removedHome'
 import { useHomeBootstrap } from './useHomeBootstrap'
 import { useProfileSync } from './useProfileSync'
 import { useVisitMark } from './useVisitMark'
@@ -28,6 +30,28 @@ export function HouseholdGate({ user, children }: { user: User; children: ReactN
     const householdId = preferredHousehold()
     if (householdId) prefetchHome(householdId)
   }, [])
+
+  // Открытый дом с названием: когда он пропадёт из списка, назвать его будет уже не по чему.
+  // При запуске это дом из снимка прошлого запуска, поэтому удаление, случившееся, пока
+  // приложение было закрыто, тоже замечается.
+  const shownHome = useRef<ShownHome | null>(null)
+  useEffect(() => {
+    const list = memberships.data
+    if (!list) return
+    if (memberships.dataUpdatedAt > 0) {
+      const removed = removedHome(shownHome.current, list, leftHouseholdSelf)
+      // Дальше, как и раньше, — первый из оставшихся домов (session ниже), а если домов
+      // нет, новый пустой создаст useHomeBootstrap.
+      if (removed) notify('toast.removedFromHome', { name: removed.name })
+    }
+    // Открыт выбранный на устройстве дом, а если его нет — первый из списка. Первый из
+    // снимка прошлого запуска не в счёт: его человек мог и не видеть (например, после
+    // слияния аккаунтов), а «Вас удалили» о нём было бы неправдой.
+    const shown =
+      list.find((membership) => membership.household.id === preferred)?.household ??
+      (memberships.dataUpdatedAt > 0 ? list[0]?.household : undefined)
+    shownHome.current = shown ? { id: shown.id, name: shown.name } : null
+  }, [memberships.data, memberships.dataUpdatedAt, preferred])
 
   useRealtimeSync()
   useProfileSync(user, memberships.data, displayName)

@@ -150,6 +150,7 @@ export const ja: Messages = {
   'toast.linkRevoked': 'リンクを無効にしました',
   'toast.memberRemoved': 'メンバーを家から削除しました',
   'toast.leftHome': '「{name}」から抜けました',
+  'toast.removedFromHome': '「{name}」から削除されました',
   'toast.googleError': 'Googleログインを開けませんでした',
   'toast.googleFailed': 'Googleログインは完了しませんでした',
   'toast.demoRestored': 'デモデータを元に戻しました',

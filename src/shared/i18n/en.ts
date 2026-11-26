@@ -156,6 +156,7 @@ export const en: Messages = {
   'toast.linkRevoked': 'Link revoked',
   'toast.memberRemoved': 'Member removed from the home',
   'toast.leftHome': 'You left “{name}”',
+  'toast.removedFromHome': 'You were removed from “{name}”',
   'toast.googleError': 'Couldn’t open Google sign-in',
   'toast.googleFailed': 'Google sign-in wasn’t completed',
   'toast.demoRestored': 'Demo data restored',
