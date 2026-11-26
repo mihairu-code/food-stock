@@ -17,17 +17,34 @@ export function parseInviteToken(text: string): string | null {
  * (после возврата якоря в адресе уже нет).
  */
 export function readInviteToken(): string | null {
-  return parseInviteToken(window.location.hash) ?? localStorage.getItem(PENDING_INVITE_KEY)
+  return parseInviteToken(window.location.hash) ?? readPendingToken()
+}
+
+function readPendingToken(): string | null {
+  try {
+    return localStorage.getItem(PENDING_INVITE_KEY)
+  } catch {
+    return null
+  }
 }
 
 export function rememberInviteToken(): void {
   const token = parseInviteToken(window.location.hash)
-  if (token) localStorage.setItem(PENDING_INVITE_KEY, token)
+  if (!token) return
+  try {
+    localStorage.setItem(PENDING_INVITE_KEY, token)
+  } catch {
+    // хранилище недоступно — после входа через Google ссылку придётся открыть снова
+  }
 }
 
 /** Убирает токен отовсюду, чтобы он не остался в истории и не сработал повторно. */
 export function clearInviteToken(): void {
-  localStorage.removeItem(PENDING_INVITE_KEY)
+  try {
+    localStorage.removeItem(PENDING_INVITE_KEY)
+  } catch {
+    // хранилище недоступно — там и нечего убирать
+  }
   if (window.location.hash.includes('join=')) {
     window.history.replaceState(null, '', window.location.pathname + window.location.search)
   }
