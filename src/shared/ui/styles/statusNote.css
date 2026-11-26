@@ -29,6 +29,17 @@
   animation: loading-appear 0.2s ease-out 0.3s both;
 }
 
+/* Загрузка при запуске продолжает то, что уже на экране (заставку из index.html или
+   прежнюю загрузку), — без новой паузы. */
+.status-note[data-loading='true'][data-instant='true'] {
+  animation: none;
+}
+
+/* Заставка из index.html: до этих стилей она скрыта (там же, в index.html). */
+.boot {
+  visibility: visible;
+}
+
 @keyframes loading-appear {
   from {
     opacity: 0;
@@ -206,7 +217,7 @@
    Вместо движения — спокойное мерцание всей картинки; правило с классом сильнее
    общего `*` с тем же !important. */
 @media (prefers-reduced-motion: reduce) {
-  .status-note[data-loading='true'] {
+  .status-note[data-loading='true']:not([data-instant='true']) {
     animation: loading-appear 0.2s ease-out 0.3s both !important;
   }
 
