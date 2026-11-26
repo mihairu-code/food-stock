@@ -85,6 +85,7 @@ export const ja: Messages = {
   'section.newTitle': '新しい置き場所',
   'section.newDescription': '例：「冷蔵庫」「戸棚」「おやつ」',
   'section.name': '置き場所の名前',
+  'section.duplicate': 'この置き場所はすでにあります',
   'section.delete': '置き場所を削除',
   'section.deleteTitle': '「{name}」を削除しますか？',
   'section.deleteText': { other: '置き場所と一緒に、<b>{count}品</b>が完全に削除されます。' },

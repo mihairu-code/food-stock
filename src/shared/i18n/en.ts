@@ -85,6 +85,7 @@ export const en: Messages = {
   'section.newTitle': 'New section',
   'section.newDescription': 'For example, “Fridge”, “Cupboard” or “Treats”',
   'section.name': 'Section name',
+  'section.duplicate': 'This section already exists',
   'section.delete': 'Delete section',
   'section.deleteTitle': 'Delete “{name}”?',
   'section.deleteText': {

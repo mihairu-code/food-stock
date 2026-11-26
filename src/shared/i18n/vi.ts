@@ -85,6 +85,7 @@ export const vi: Messages = {
   'section.newTitle': 'Khu vực mới',
   'section.newDescription': 'Ví dụ: “Tủ lạnh”, “Tủ bếp” hoặc “Đồ ăn vặt”',
   'section.name': 'Tên khu vực',
+  'section.duplicate': 'Khu vực này đã có',
   'section.delete': 'Xóa khu vực',
   'section.deleteTitle': 'Xóa “{name}”?',
   'section.deleteText': { other: '<b>{count} món</b> sẽ bị xóa vĩnh viễn cùng với khu vực này.' },

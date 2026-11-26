@@ -122,6 +122,7 @@ export const ru = {
   'section.newTitle': 'Новый раздел',
   'section.newDescription': 'Например, «Холодильник», «Шкаф» или «Вкусняшки»',
   'section.name': 'Название раздела',
+  'section.duplicate': 'Такой раздел уже есть',
   'section.delete': 'Удалить раздел',
   'section.deleteTitle': 'Удалить «{name}»?',
   'section.deleteText': {
