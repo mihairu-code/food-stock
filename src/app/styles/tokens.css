@@ -100,6 +100,8 @@
   /* Как лупа растягивается в поле и обратно. */
   --search-motion: 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
   --tabs-bottom: calc(0.625rem + env(safe-area-inset-bottom) * 0.7);
+  /* Картинка загрузки в StatusNote. */
+  --loading-size: 3.5rem;
   /* Строка продукта в минималистичном виде: без подписи она ниже — 52px вместо 60. */
   --row-minimal-height: 3.25rem;
 
