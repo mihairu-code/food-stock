@@ -1,5 +1,6 @@
 export { AddRow } from './AddRow'
 export { AuthScreen } from './AuthScreen'
+export { CoachHost } from './coach'
 export { EmojiField } from './EmojiField'
 export { EmptyState } from './EmptyState'
 export { Hint } from './Hint'

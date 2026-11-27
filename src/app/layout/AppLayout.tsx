@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router'
 import { homeScrollToRemember } from '@/features/home-search'
 import { HomePage } from '@/pages/home'
 import { ShoppingPage } from '@/pages/shopping'
+import { CoachHost } from '@/shared/ui'
 import { Header } from '@/widgets/header'
 import { TabBar } from '@/widgets/tab-bar'
 import { SheetHost } from '../sheets/SheetHost'
@@ -22,7 +23,7 @@ const KEPT_PATHS: readonly string[] = KEPT_TABS.map((tab) => tab.path)
 
 const scrollToRemember = (path: string) => (path === '/' ? homeScrollToRemember() : window.scrollY)
 
-/** Каркас всех экранов: заголовок, содержимое, вкладки и общее место для шторок. */
+/** Каркас всех экранов: заголовок, содержимое, вкладки и общее место для шторок и окон подсказок. */
 export function AppLayout() {
   const { pathname } = useLocation()
   const isKeptTab = KEPT_PATHS.includes(pathname)
@@ -53,6 +54,7 @@ export function AppLayout() {
       </main>
       <TabBar />
       <SheetHost />
+      <CoachHost />
     </div>
   )
 }

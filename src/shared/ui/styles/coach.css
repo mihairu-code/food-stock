@@ -1,0 +1,153 @@
+/* Окно подсказки или совета: затемнение с вырезом под элемент и пузырь с текстом.
+   Окно во весь экран; его отступы сверху и снизу — вырезы экрана, их же читает
+   useCoachPlacement, чтобы пузырь туда не вставал. */
+
+.coach {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+  border: 0;
+  overflow: hidden;
+  background: transparent;
+  color: var(--ink);
+}
+
+/* Затемнение рисует вырез своей тенью, поэтому фон под окном прозрачный. */
+.coach::backdrop {
+  background: transparent;
+}
+
+.coach[open] {
+  animation: coach-in 0.2s ease;
+}
+
+/* Окно без элемента — по центру на сплошном затемнении. */
+.coach[open][data-center] {
+  display: grid;
+  place-items: center;
+  padding-inline: var(--space-4);
+  background: var(--scrim);
+}
+
+/* Вырез: кольцо по краю и огромная тень вокруг — это и есть затемнение. */
+.coach-spot {
+  position: absolute;
+  box-shadow: 0 0 0 2px var(--spot-ring),
+    0 0 0 100vmax var(--scrim);
+  pointer-events: none;
+  transition: left 0.2s ease,
+    top 0.2s ease,
+    width 0.2s ease,
+    height 0.2s ease;
+}
+
+.coach-bubble {
+  position: absolute;
+  display: grid;
+  width: min(100% - 2 * var(--space-3), 20rem);
+  gap: var(--space-2);
+  padding: var(--space-3-5) var(--space-4) var(--space-3);
+  border-radius: var(--radius-2xl);
+  background: var(--paper);
+  box-shadow: var(--float-shadow);
+}
+
+/* Пока пузырь не измерен, он невидим: иначе мелькнул бы в углу экрана. */
+.coach-bubble[data-placed='false'] {
+  visibility: hidden;
+}
+
+.coach[data-center] .coach-bubble {
+  position: relative;
+  width: min(100%, 20rem);
+}
+
+.coach-arrow {
+  position: absolute;
+  width: var(--space-3-5);
+  height: var(--space-3-5);
+  background: var(--paper);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.coach-bubble[data-side='below'] .coach-arrow {
+  top: calc(var(--space-1-5) * -1);
+}
+
+.coach-bubble[data-side='above'] .coach-arrow {
+  bottom: calc(var(--space-1-5) * -1);
+}
+
+.coach-progress {
+  margin: 0;
+  color: var(--accent);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.coach-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.coach-text {
+  margin: 0;
+  font-size: var(--text-md);
+  line-height: 1.4;
+}
+
+.coach-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.coach-dots {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.coach-dot {
+  width: var(--space-1-5);
+  height: var(--space-1-5);
+  border-radius: 50%;
+  background: var(--line);
+}
+
+.coach-dot[data-current='true'] {
+  background: var(--accent);
+}
+
+.coach-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+@keyframes coach-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coach[open] {
+    animation: none;
+  }
+
+  .coach-spot {
+    transition: none;
+  }
+}
