@@ -68,6 +68,7 @@ export const SectionCard = memo(function SectionCard({
     >
       <header
         className="section-head"
+        data-coach={`section-${section.id}`}
         ref={sortable.setActivatorNodeRef}
         {...sortable.attributes}
         {...sortable.listeners}
@@ -87,6 +88,7 @@ export const SectionCard = memo(function SectionCard({
           className="icon-btn"
           type="button"
           aria-label={t('home.editSection', { name: section.name })}
+          data-coach={`section-edit-${section.id}`}
           onClick={() => openSheet({ type: 'manage-section', section })}
         >
           <Pencil size={16} />
@@ -109,6 +111,7 @@ export const SectionCard = memo(function SectionCard({
           {!matches && (
             <AddRow
               label={t('home.addProductTo', { name: section.name })}
+              coach="add-product"
               onClick={() => openSheet({ type: 'add-product', sectionId: section.id })}
             />
           )}

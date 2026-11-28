@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { PURCHASED, useSetProductState, withToBuy } from '@/entities/product'
 import { useDeleteShoppingItem } from '@/entities/shopping-item'
 import { removeWithUndo, type Product, type ShoppingItem } from '@/shared/api'
+import { noteBought } from '@/shared/lib/coach/tips'
 import { openSheet } from '@/shared/ui'
 
 /** Продукт дома куплен вместе с ручными позициями того же названия — одним тостом. */
@@ -44,6 +45,7 @@ export function useShoppingActions(): ShoppingActions {
   return useMemo<ShoppingActions>(
     () => ({
       buyProduct(product, manualTwins) {
+        noteBought(product.id)
         removeWithUndo({
           ...asBought(product, manualTwins),
           commit: async () => {
@@ -54,6 +56,7 @@ export function useShoppingActions(): ShoppingActions {
       },
       buyItem(item, homeProduct) {
         if (!homeProduct) return openSheet({ type: 'purchase', item })
+        noteBought(homeProduct.id)
         removeWithUndo({
           ...asBought(homeProduct, [item]),
           commit: async () => {

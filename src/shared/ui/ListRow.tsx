@@ -41,6 +41,11 @@ interface ListRowProps {
   removeLabel: string
   removeSwipeLabel: string
   onRemove: () => void
+  /**
+   * Метка для окон подсказок: строка получает data-coach «<метка>-row», кнопка с иконкой
+   * и названием — «<метка>-main», кнопка справа — «<метка>-toggle».
+   */
+  coach?: string
 }
 
 /**
@@ -68,6 +73,7 @@ export function ListRow({
   removeLabel,
   removeSwipeLabel,
   onRemove,
+  coach,
 }: ListRowProps) {
   const t = useT()
   const highlighted = highlight ? (
@@ -94,7 +100,14 @@ export function ListRow({
   const row = (
     <div className="row" data-stock={stock}>
       {main ? (
-        <button className="row-main" type="button" disabled={disabled} aria-label={main.label} onClick={main.onClick}>
+        <button
+          className="row-main"
+          type="button"
+          disabled={disabled}
+          aria-label={main.label}
+          data-coach={coach && `${coach}-main`}
+          onClick={main.onClick}
+        >
           {icon}
           {text}
         </button>
@@ -120,6 +133,7 @@ export function ListRow({
         className="list-toggle"
         type="button"
         disabled={disabled}
+        data-coach={coach && `${coach}-toggle`}
         data-on={toggle.on}
         aria-label={toggle.label}
         onClick={toggle.onClick}
@@ -135,6 +149,7 @@ export function ListRow({
     <SortableRow id={id} kind={kind} label={name} description={dragDescription} disabled={disabled} droppable={droppable}>
       <SwipeRow
         disabled={disabled}
+        coach={coach && `${coach}-row`}
         actions={[
           { label: t('common.edit'), icon: <Pencil size={20} />, tone: 'accent', onSelect: onEdit },
           { label: removeSwipeLabel, icon: <Trash2 size={20} />, tone: 'danger', onSelect: onRemove },

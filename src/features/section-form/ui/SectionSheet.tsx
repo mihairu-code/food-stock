@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { useCreateSection, useRenameSection } from '@/entities/section'
 import { useHomeData, type Section } from '@/shared/api'
 import { useT } from '@/shared/i18n'
-import { findNamed } from '@/shared/lib/sameName'
+import { findNamed, sameName } from '@/shared/lib/sameName'
 import { notify } from '@/shared/lib/toast'
 import { useFieldError } from '@/shared/lib/useFieldError'
-import { closeSheet, FormSheet, NameIconFields } from '@/shared/ui'
+import { closeSheet, FormSheet, NameIconFields, type SectionPick } from '@/shared/ui'
 
 /** Самые частые места в доме; остальные иконки — в панели. */
 const SECTION_EMOJIS = ['🧊', '🧺', '🍪', '🥫', '🧴']
@@ -14,6 +14,8 @@ interface SectionSheetProps {
   /** Раздел для переименования; без него шторка создаёт новый. */
   section?: Section
   onRequestDelete?: () => void
+  /** «Свой раздел» среди готовых: шторка ничего не создаёт, а отдаёт название и иконку. */
+  pick?: SectionPick
 }
 
 /**
@@ -21,7 +23,7 @@ interface SectionSheetProps {
  * у продуктов, решение 0017): поле встряхивается. Сам раздел своё название не занимает —
  * можно сменить только иконку.
  */
-export function SectionSheet({ section, onRequestDelete }: SectionSheetProps) {
+export function SectionSheet({ section, onRequestDelete, pick }: SectionSheetProps) {
   const t = useT()
   const { sections } = useHomeData()
   const createSection = useCreateSection()
@@ -38,11 +40,13 @@ export function SectionSheet({ section, onRequestDelete }: SectionSheetProps) {
   function saveSection() {
     const trimmed = name.trim()
     if (!trimmed) return
-    if (findNamed(sections, trimmed, section?.id)) {
+    if (findNamed(sections, trimmed, section?.id) || pick?.taken.some((taken) => sameName(taken, trimmed))) {
       nameError.reject(t('section.duplicate'))
       return
     }
-    if (section) {
+    if (pick) {
+      pick.onPick({ name: trimmed, icon })
+    } else if (section) {
       renameSection.mutate({ id: section.id, patch: { name: trimmed, icon: icon || null } })
     } else {
       const sort_order = sections.reduce((max, s) => Math.max(max, s.sort_order + 1), 0)
@@ -55,8 +59,8 @@ export function SectionSheet({ section, onRequestDelete }: SectionSheetProps) {
   return (
     <FormSheet
       title={t(section ? 'section.title' : 'section.newTitle')}
-      description={section ? undefined : t('section.newDescription')}
-      submitLabel={t(section ? 'common.save' : 'common.create')}
+      description={section ? undefined : t(pick ? 'section.pickDescription' : 'section.newDescription')}
+      submitLabel={t(section ? 'common.save' : pick ? 'common.add' : 'common.create')}
       disabled={!name.trim()}
       onSubmit={saveSection}
       footer={

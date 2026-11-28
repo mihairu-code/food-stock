@@ -85,6 +85,8 @@ export const ProductRow = memo(function ProductRow({
       removeLabel={t('product.delete', { name })}
       removeSwipeLabel={t('common.delete')}
       onRemove={() => actions.deleteProduct(product)}
+      // Окна обучения и советов встают на конкретный продукт, поэтому метка — его id.
+      coach={ghost ? undefined : `item-${product.id}`}
     />
   )
 })

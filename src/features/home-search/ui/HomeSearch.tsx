@@ -198,6 +198,7 @@ export function HomeSearch({ available }: { available: boolean }) {
         ref={toggleRef}
         className="home-search-toggle"
         type="button"
+        data-coach="search"
         aria-label={t('search.label')}
         aria-expanded={open}
         aria-controls={INPUT_ID}

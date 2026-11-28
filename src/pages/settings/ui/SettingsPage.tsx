@@ -6,6 +6,7 @@ import { useSession } from '@/shared/session'
 import { Hint, openSheet, SettingRow, SettingsGroup } from '@/shared/ui'
 import { AccountGroup } from './AccountGroup'
 import { AppGroup } from './AppGroup'
+import { CoachGroup } from './CoachGroup'
 import { HomeGroup } from './HomeGroup'
 import { MembersGroup } from './MembersGroup'
 
@@ -39,6 +40,7 @@ export function SettingsPage() {
         <Hint label={t('settings.demoLabel')}>{t('settings.demoText')}</Hint>
         <HomeGroup />
         <AppGroup />
+        <CoachGroup />
         <SettingsGroup label={t('settings.groupData')}>
           <SettingRow
             danger
@@ -57,6 +59,7 @@ export function SettingsPage() {
       <MembersGroup />
       <AccountGroup />
       <AppGroup />
+      <CoachGroup />
       {!user.isAnonymous && (
         <button className="btn subtle sign-out" type="button" onClick={confirmSignOut}>
           <LogOut size={16} aria-hidden="true" /> {t('settings.signOut')}

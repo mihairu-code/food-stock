@@ -32,7 +32,7 @@ export function SheetHost() {
     case 'edit-product':
       return <ProductSheet product={sheet.product} />
     case 'add-section':
-      return <SectionSheet />
+      return <SectionSheet pick={sheet.pick} />
     case 'manage-section':
       return <SectionManagerSheet section={sheet.section} />
     case 'add-item':

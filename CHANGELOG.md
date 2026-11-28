@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.4.0 — unreleased
+
+- Getting started: five spotlight windows in a row (`CoachHost`, `CoachWindow` on
+  `<dialog>`, `placeCoach`, `tour.ts`) — add an item; the item, the plus and the Shopping
+  tab; the tick and "+ Add" in Shopping; the swipe; "New section" and the section pencil.
+  The counter is the step; windows close only by their button; everyone goes through it,
+  "Go through getting started again" restarts it — decision 0023.
+- Ready-made sections on an empty home with multi-select and "Your own section"
+  (`SectionSheet` pick mode).
+- Feature tips after the tour (rearranging items and sections, search, invite), at most
+  one a minute; habit tips 1–8 from the third day, at most once a day.
+- Settings: "Getting started and tips" with the tips switch; the hints switch and the
+  "How to mark", "Smart list" and account paragraphs are removed; the first plus gets a
+  longer toast about the orange dot, once.
+
 ## 1.3.2 — unreleased
 
 - Splash in `index.html`: the theme background and a loading picture show before the

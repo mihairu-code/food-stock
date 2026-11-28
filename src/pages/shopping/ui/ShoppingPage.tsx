@@ -2,20 +2,22 @@ import { useShoppingList } from '@/entities/shopping-list'
 import { useHomeData } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import { rich } from '@/shared/i18n/rich'
-import { EmptyState, Hint, openSheet, StatusNote, SummaryBar } from '@/shared/ui'
+import { EmptyState, openSheet, StatusNote, SummaryBar } from '@/shared/ui'
+import { useShoppingCoach } from '../model/useShoppingCoach'
 import { ShoppingList } from './ShoppingList'
 
 export function ShoppingPage() {
   const t = useT()
   const { isLoading, isError } = useHomeData()
   const entries = useShoppingList()
+  useShoppingCoach({ entries: entries.length, loaded: !isLoading && !isError })
 
   if (isLoading) return <StatusNote loading>{t('shopping.loading')}</StatusNote>
   if (isError) return <StatusNote>{t('common.loadError')}</StatusNote>
 
   return (
     <>
-      <SummaryBar onAdd={() => openSheet({ type: 'add-item' })}>
+      <SummaryBar onAdd={() => openSheet({ type: 'add-item' })} coach="shopping-add">
         {entries.length === 0 ? t('shopping.nothing') : rich(t('shopping.summary', { count: entries.length }))}
       </SummaryBar>
 
@@ -24,10 +26,6 @@ export function ShoppingPage() {
       ) : (
         <ShoppingList entries={entries} />
       )}
-
-      <Hint label={t('shopping.hintLabel')} onlyWhenHintsOn>
-        {t('shopping.hint')}
-      </Hint>
     </>
   )
 }

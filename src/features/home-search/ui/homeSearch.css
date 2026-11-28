@@ -93,3 +93,43 @@
   background: transparent;
   color: var(--muted);
 }
+
+/* Окно подсказки про поиск: лупа трясётся, пока оно открыто. Без движения — стоит,
+   её и так выделяет вырез. */
+.home-search-toggle[data-coach-motion='shake'] svg {
+  animation: search-shake 1.5s 0.2s ease-in-out infinite;
+}
+
+@keyframes search-shake {
+  0%,
+  55%,
+  100% {
+    transform: none;
+  }
+
+  7% {
+    transform: rotate(-16deg);
+  }
+
+  14% {
+    transform: rotate(13deg);
+  }
+
+  21% {
+    transform: rotate(-10deg);
+  }
+
+  28% {
+    transform: rotate(7deg);
+  }
+
+  35% {
+    transform: rotate(-4deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-search-toggle[data-coach-motion='shake'] svg {
+    animation: none;
+  }
+}

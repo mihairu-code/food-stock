@@ -2,12 +2,22 @@ import type { Product, Section, ShoppingItem } from '@/shared/api'
 import { createStore, useStore } from '@/shared/lib/store'
 import type { ConfirmSheetProps } from './ConfirmSheet'
 
+/**
+ * «Свой раздел» среди готовых на пустом доме: шторка не создаёт раздел, а отдаёт название
+ * и иконку. Раздел создастся вместе с отмеченными готовыми.
+ */
+export interface SectionPick {
+  /** Названия, уже занятые другими кнопками. */
+  taken: readonly string[]
+  onPick: (picked: { name: string; icon: string }) => void
+}
+
 /** Какая шторка открыта и с какими данными. Одновременно открыта только одна. */
 export type SheetRequest =
   /** `name` — готовое название: «Добавить „…“», когда поиск по дому ничего не нашёл. */
   | { type: 'add-product'; sectionId?: string; name?: string }
   | { type: 'edit-product'; product: Product }
-  | { type: 'add-section' }
+  | { type: 'add-section'; pick?: SectionPick }
   | { type: 'manage-section'; section: Section }
   | { type: 'add-item' }
   | { type: 'edit-item'; item: ShoppingItem }

@@ -41,6 +41,8 @@ export function TabBar() {
       data-search-open={searchOpen}
       // Пока открыт поиск, ряд стоит на клавиатуре; keyboard.ts проверяет, не промахнулся ли он.
       data-keyboard-anchor={searchOpen ? '' : undefined}
+      // Окно подсказки не ставит пузырь на панель вкладок.
+      data-coach-floor=""
     >
       <span className="tab-place" aria-hidden="true" />
       <NavLink
@@ -55,6 +57,7 @@ export function TabBar() {
       <NavLink
         className="tab tab-folding"
         to="/shopping"
+        data-coach="tab-shopping"
         aria-label={shoppingCount > 0 ? t('nav.shoppingCount', { count: shoppingCount }) : t('nav.shopping')}
         inert={searchOpen}
       >

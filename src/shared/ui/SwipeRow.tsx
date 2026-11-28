@@ -20,6 +20,8 @@ interface SwipeRowProps {
   actions: SwipeAction[]
   /** Жест отключён: строка ещё сохраняется. Во время перетаскивания он выключается сам. */
   disabled?: boolean
+  /** Метка для окна подсказки (data-coach): окно про свайп подёргивает эту строку. */
+  coach?: string
   children: ReactNode
 }
 
@@ -88,7 +90,7 @@ const resist = (over: number) => over / (1 + over / RUBBER_LIMIT)
  * Пока палец ведёт строку, она двигается напрямую, минуя перерисовку React, —
  * так она не отстаёт от пальца.
  */
-export function SwipeRow({ actions, disabled = false, children }: SwipeRowProps) {
+export function SwipeRow({ actions, disabled = false, coach, children }: SwipeRowProps) {
   const root = useRef<HTMLDivElement>(null)
   const content = useRef<HTMLDivElement>(null)
   const tray = useRef<HTMLDivElement>(null)
@@ -308,7 +310,7 @@ export function SwipeRow({ actions, disabled = false, children }: SwipeRowProps)
   }
 
   return (
-    <div className="swipe" ref={root} data-active={revealed}>
+    <div className="swipe" ref={root} data-active={revealed} data-coach={coach}>
       <div className="swipe-actions" ref={tray} inert={!revealed}>
         {actions.map((action) => (
           <button

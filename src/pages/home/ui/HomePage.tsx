@@ -5,8 +5,12 @@ import { matchProductsByName, normalizeQuery, useHomeSearch } from '@/features/h
 import { useHomeData } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import { rich } from '@/shared/i18n/rich'
-import { AddRow, EmptyState, Hint, openSheet, StatusNote, SummaryBar } from '@/shared/ui'
+import { AddRow, EmptyState, openSheet, StatusNote, SummaryBar } from '@/shared/ui'
+import { useFeatureTips } from '../model/useFeatureTips'
+import { useHomeCoach } from '../model/useHomeCoach'
+import { useHomeTips } from '../model/useHomeTips'
 import { useSearchAnnouncement } from '../model/useSearchAnnouncement'
+import { ReadySections } from './ReadySections'
 import { SectionBoard } from './SectionBoard'
 
 const addSection = () => openSheet({ type: 'add-section' })
@@ -29,18 +33,15 @@ export function HomePage() {
     query ? (foundCount > 0 ? t('search.found', { count: foundCount }) : t('search.nothing')) : '',
   )
 
+  const loaded = !isLoading && !isError
+  useHomeCoach({ sections, products, loaded })
+  useHomeTips({ sections, products, loaded })
+  useFeatureTips({ sections, products, loaded })
+
   if (isLoading) return <StatusNote loading>{t('home.loading')}</StatusNote>
   if (isError) return <StatusNote>{t('common.loadError')}</StatusNote>
 
-  if (sections.length === 0) {
-    return (
-      <EmptyState emoji="🏠" title={t('home.emptyTitle')} text={t('home.emptyText')}>
-        <button className="btn" type="button" onClick={addSection}>
-          <Plus size={16} /> {t('home.createSection')}
-        </button>
-      </EmptyState>
-    )
-  }
+  if (sections.length === 0) return <ReadySections />
 
   const atHome = products.filter((product) => product.is_available).length
   const searchedName = nameFromQuery(search.query)
@@ -73,14 +74,8 @@ export function HomePage() {
         <SectionBoard sections={sections} products={products} query={query} />
       )}
 
-      {/* Во время поиска — только найденное: добавлять разделы и читать подсказку незачем. */}
-      {!query && <AddRow label={t('section.newTitle')} onClick={addSection} />}
-
-      {!query && products.length > 0 && (
-        <Hint label={t('home.hintLabel')} onlyWhenHintsOn>
-          {t('home.hint')}
-        </Hint>
-      )}
+      {/* Во время поиска — только найденное: добавлять разделы незачем. */}
+      {!query && <AddRow label={t('section.newTitle')} onClick={addSection} coach="new-section" />}
     </>
   )
 }
