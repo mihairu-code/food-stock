@@ -133,14 +133,23 @@ export function startCoach(request: CoachRequest): void {
  */
 export function finishCoach(id: string, { seen: wasSeen }: { seen: boolean }): void {
   if (active.get()?.id !== id) return
-  if (wasSeen) {
-    const next = new Set(seen.get()).add(id)
-    seen.set(next)
-    writeSeen(next)
-  }
+  if (wasSeen) markCoachSeen(id)
   lastClosedAt = Date.now()
   active.set(null)
 }
+
+/**
+ * Отметить показанным то, что показывается без окна, — например, длинный текст тоста
+ * в первый раз. «Показать заново» вернёт и его.
+ */
+export function markCoachSeen(id: string): void {
+  if (seen.get().has(id)) return
+  const next = new Set(seen.get()).add(id)
+  seen.set(next)
+  writeSeen(next)
+}
+
+export const isCoachSeen = (id: string): boolean => seen.get().has(id)
 
 /** «Показать подсказки и советы заново». */
 export function resetCoachSeen(): void {

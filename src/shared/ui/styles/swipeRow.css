@@ -77,3 +77,72 @@
   touch-action: pan-y;
   transition: transform 0.17s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+
+/* Окно подсказки про свайп: строка несколько раз дёргается влево и отпружинивает,
+   из-под неё выглядывает край кнопок — так и хочется потянуть. */
+.swipe[data-coach-motion='jiggle'] .swipe-actions {
+  width: var(--space-8);
+  visibility: visible;
+}
+
+.swipe[data-coach-motion='jiggle'] .swipe-content {
+  animation: swipe-jiggle 3.4s 0.3s ease-out infinite;
+}
+
+/* Окно подсказки про перестановку: строка приподнимается, как будто её взяли. */
+.swipe[data-coach-motion='lift'] {
+  position: relative;
+  z-index: 1;
+  animation: row-lift 1.8s 0.3s ease-in-out infinite;
+}
+
+@keyframes swipe-jiggle {
+  0%,
+  17%,
+  30%,
+  47%,
+  60%,
+  77%,
+  100% {
+    transform: none;
+  }
+
+  5%,
+  35%,
+  65% {
+    transform: translateX(calc(var(--space-8) * -1));
+  }
+
+  10%,
+  40%,
+  70% {
+    transform: translateX(var(--space-1-5));
+  }
+}
+
+@keyframes row-lift {
+  0%,
+  100% {
+    transform: none;
+    box-shadow: none;
+  }
+
+  30%,
+  70% {
+    transform: translateY(calc(var(--space-1) * -1)) scale(1.02);
+    box-shadow: var(--float-shadow);
+  }
+}
+
+/* Без движения: строка просто стоит сдвинутой или приподнятой, пока открыто окно. */
+@media (prefers-reduced-motion: reduce) {
+  .swipe[data-coach-motion='jiggle'] .swipe-content {
+    animation: none;
+    transform: translateX(calc(var(--space-8) * -1));
+  }
+
+  .swipe[data-coach-motion='lift'] {
+    animation: none;
+    box-shadow: var(--float-shadow);
+  }
+}

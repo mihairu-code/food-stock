@@ -85,6 +85,9 @@ export const ProductRow = memo(function ProductRow({
       removeLabel={t('product.delete', { name })}
       removeSwipeLabel={t('common.delete')}
       onRemove={() => actions.deleteProduct(product)}
+      // Окна подсказок встают на продукт, который есть дома и не в покупках: у него плюс,
+      // о котором и говорит подсказка.
+      coach={!ghost && stock === 'in' && !toBuy ? 'product' : undefined}
     />
   )
 })

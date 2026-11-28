@@ -3,6 +3,7 @@ import { SectionPicker, useSortedSections } from '@/entities/section'
 import { useDeleteShoppingItem, usePurchaseShoppingItem } from '@/entities/shopping-item'
 import type { ShoppingItem } from '@/shared/api'
 import { useT } from '@/shared/i18n'
+import { markFirstStep } from '@/shared/lib/coach/firstSteps'
 import { notify } from '@/shared/lib/toast'
 import { closeSheet, FormSheet, Sheet, SheetActions } from '@/shared/ui'
 
@@ -22,6 +23,7 @@ export function PurchaseSheet({ item }: { item: ShoppingItem }) {
     const section = sections.find((candidate) => candidate.id === sectionId)
     if (!section) return
     purchase.mutate({ item, sectionId: section.id })
+    markFirstStep('bought')
     notify('toast.addedTo', { name: section.name })
     closeSheet()
   }
@@ -29,6 +31,7 @@ export function PurchaseSheet({ item }: { item: ShoppingItem }) {
   /** Куплено, но домой не добавляем: позиция просто уходит из списка. */
   function markBoughtWithoutStoring() {
     deleteItem.mutate(item.id)
+    markFirstStep('bought')
     notify('toast.boughtNotStored', { name: item.name })
     closeSheet()
   }

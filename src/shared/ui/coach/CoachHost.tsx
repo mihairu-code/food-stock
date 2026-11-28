@@ -17,8 +17,8 @@ const SETTLE_MS = 600
 /**
  * Место для окон подсказок и советов. Монтируется один раз в каркасе приложения. Окно
  * открывается только на спокойном экране: без шторки, без тоста с «Вернуть» (окно закрыло
- * бы его кнопку) и без экранной клавиатуры. Поиск и перетаскивание экран исключает сам:
- * пока они идут, он не предлагает окон.
+ * бы его кнопку), без экранной клавиатуры и не посреди перетаскивания. Поиск экран
+ * исключает сам: пока он открыт, окон не предлагает.
  */
 export function CoachHost() {
   const candidates = useCoachCandidates()
@@ -36,7 +36,10 @@ export function CoachHost() {
     if (!candidate && retryAt === null) return
     const delay = candidate ? SETTLE_MS : Math.max(SETTLE_MS, retryAt! - Date.now())
     const timer = window.setTimeout(() => {
-      const pick = document.documentElement.hasAttribute('data-keyboard') ? null : nextCoach().candidate
+      // Пока открыта клавиатура или строку несут пальцем, окно подождёт.
+      const busy =
+        document.documentElement.hasAttribute('data-keyboard') || document.querySelector("[data-dragging='true']") !== null
+      const pick = busy ? null : nextCoach().candidate
       if (pick) startCoach(pick.request)
       else setAttempt((count) => count + 1)
     }, delay)

@@ -109,6 +109,7 @@ export const SectionCard = memo(function SectionCard({
           {!matches && (
             <AddRow
               label={t('home.addProductTo', { name: section.name })}
+              coach="add-product"
               onClick={() => openSheet({ type: 'add-product', sectionId: section.id })}
             />
           )}

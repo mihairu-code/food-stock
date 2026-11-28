@@ -42,6 +42,7 @@ export function ShoppingRow({ id, name, meta, icon, stock, ghost = false, onBuy,
       removeLabel={t('product.removeFromList', { name })}
       removeSwipeLabel={t('shopping.remove')}
       onRemove={onRemove}
+      coach={ghost ? undefined : 'shopping'}
     />
   )
 }

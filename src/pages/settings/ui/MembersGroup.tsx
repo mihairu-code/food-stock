@@ -1,6 +1,7 @@
 import { inviteLink, useCreateInvite, useInvites } from '@/entities/invite'
 import { useMembers } from '@/entities/member'
 import { useT } from '@/shared/i18n'
+import { markFirstStep } from '@/shared/lib/coach/firstSteps'
 import { useSession } from '@/shared/session'
 import { openSheet, SettingRow, SettingsGroup } from '@/shared/ui'
 import { InviteRow } from './InviteRow'
@@ -30,7 +31,10 @@ export function MembersGroup() {
           disabled={createInvite.isPending}
           onClick={() =>
             createInvite.mutate(undefined, {
-              onSuccess: (token) => openSheet({ type: 'invite-link', link: inviteLink(token) }),
+              onSuccess: (token) => {
+                markFirstStep('invited')
+                openSheet({ type: 'invite-link', link: inviteLink(token) })
+              },
             })
           }
         />

@@ -6,6 +6,7 @@ import { useHomeData } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import { rich } from '@/shared/i18n/rich'
 import { AddRow, EmptyState, Hint, openSheet, StatusNote, SummaryBar } from '@/shared/ui'
+import { useHomeCoach } from '../model/useHomeCoach'
 import { useSearchAnnouncement } from '../model/useSearchAnnouncement'
 import { ReadySections } from './ReadySections'
 import { SectionBoard } from './SectionBoard'
@@ -29,6 +30,8 @@ export function HomePage() {
   const announcement = useSearchAnnouncement(
     query ? (foundCount > 0 ? t('search.found', { count: foundCount }) : t('search.nothing')) : '',
   )
+
+  useHomeCoach({ hasSections: sections.length > 0, products, loaded: !isLoading && !isError })
 
   if (isLoading) return <StatusNote loading>{t('home.loading')}</StatusNote>
   if (isError) return <StatusNote>{t('common.loadError')}</StatusNote>
