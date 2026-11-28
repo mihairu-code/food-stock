@@ -7,6 +7,8 @@ import { useAppearance } from '@/shared/lib/appearance'
 import type { CoachRequest } from '@/shared/lib/coach/coach'
 import { completeTourStep, TOUR_STEPS, useTourStep } from '@/shared/lib/coach/tour'
 import { useCoach } from '@/shared/lib/coach/useCoach'
+import { firstOnBoard } from './firstOnBoard'
+import { useCollapsedIds } from './useCollapsedSections'
 
 interface HomeCoachInput {
   sections: Section[]
@@ -14,13 +16,6 @@ interface HomeCoachInput {
   /** Данные загружены: пока идёт загрузка, подсказывать не о чем. */
   loaded: boolean
 }
-
-/** Самый новый продукт: обучение показывает на нём то, что человек только что добавил. */
-const newest = (products: readonly Product[]) =>
-  products.reduce<Product | undefined>(
-    (latest, product) => (!latest || product.created_at > latest.created_at ? product : latest),
-    undefined,
-  )
 
 /**
  * Шаги обучения на «Доме» (ТЗ обучения: шаги 1, 2, 4, 5; шаг 3 — в «Покупках»). Обучение
@@ -33,13 +28,15 @@ export function useHomeCoach({ sections, products, loaded }: HomeCoachInput): vo
   const search = useHomeSearch()
   const { colorSafe } = useAppearance()
   const step = useTourStep()
+  const collapsed = useCollapsedIds()
 
   const onHome = loaded && pathname === '/' && !search.open
   const count = products.length
   const progress = t('coach.tourProgress', { step, total: TOUR_STEPS })
-  // На продукте с плюсом (не в покупках) — свежем, который человек только что добавил.
-  const plusId = newest(products.filter((product) => !product.to_buy))?.id
-  const rowId = newest(products)?.id
+  // Окна встают на первый видимый продукт доски (с плюсом — для шага про плюс): он у верха
+  // экрана, а у нового человека это и есть только что добавленный продукт.
+  const plusId = firstOnBoard(sections, products, collapsed, (item) => !item.to_buy)?.id
+  const rowId = firstOnBoard(sections, products, collapsed)?.id
   const firstSectionId = sections[0]?.id
 
   // У того, у кого продукты уже есть (пользуется приложением давно), шаг «добавьте

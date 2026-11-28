@@ -11,6 +11,8 @@ import { TOUR_DONE, useTourStep } from '@/shared/lib/coach/tour'
 import { useCoach } from '@/shared/lib/coach/useCoach'
 import { useSession } from '@/shared/session'
 import { openSheet } from '@/shared/ui'
+import { firstOnBoard } from './firstOnBoard'
+import { useCollapsedIds } from './useCollapsedSections'
 
 /** Совет переставлять продукты — с трёх продуктов: переставлять уже есть что. */
 const DRAG_PRODUCTS_AT = 3
@@ -38,10 +40,11 @@ export function useFeatureTips({ sections, products, loaded }: FeatureTipsInput)
   const { role } = useSession()
   const alone = useMembers().data?.length === 1
   const { mutate: createInvite } = useCreateInvite()
+  const collapsed = useCollapsedIds()
 
   const ready = enabled && tourDone && loaded && pathname === '/' && !search.open
   const count = products.length
-  const rowId = products[0]?.id
+  const rowId = firstOnBoard(sections, products, collapsed)?.id
   const firstSectionId = sections[0]?.id
   // Приглашает владелец; в демо-режиме приглашений нет.
   const canInvite = backend.mode !== 'local' && role === 'owner' && alone

@@ -1,5 +1,6 @@
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import type { Section } from '@/shared/api'
+import { createStore, useStore } from '@/shared/lib/store'
 import { useSession } from '@/shared/session'
 
 const KEY = 'home-stock:collapsed-sections'
@@ -34,6 +35,12 @@ export function toggleCollapsed(
   return existing ? toggled.filter((id) => existing.has(id)) : toggled
 }
 
+/** Одно хранилище на экран: свёрнутые разделы знает и доска, и обучение (оно встаёт на развёрнутый). */
+const collapsed = createStore<readonly string[]>(readCollapsed())
+
+/** Какие разделы свёрнуты — для тех, кому нужно только знать, а не сворачивать. */
+export const useCollapsedIds = () => useStore(collapsed)
+
 /**
  * Свёрнутые разделы главного экрана; выбор помнится на устройстве.
  * Список один на все дома устройства, поэтому id разделов, которых больше нет, убираются
@@ -41,15 +48,13 @@ export function toggleCollapsed(
  */
 export function useCollapsedSections(sections: readonly Section[]) {
   const singleHome = useSession().memberships.length === 1
-  const [ids, setIds] = useState(readCollapsed)
+  const ids = useStore(collapsed)
 
   const toggle = useCallback(
     (sectionId: string) => {
-      setIds((current) => {
-        const next = toggleCollapsed(current, sectionId, singleHome ? new Set(sections.map(({ id }) => id)) : null)
-        saveCollapsed(next)
-        return next
-      })
+      const next = toggleCollapsed(collapsed.get(), sectionId, singleHome ? new Set(sections.map(({ id }) => id)) : null)
+      collapsed.set(next)
+      saveCollapsed(next)
     },
     [sections, singleHome],
   )
