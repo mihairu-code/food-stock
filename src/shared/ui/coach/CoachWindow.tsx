@@ -2,19 +2,11 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { useT } from '@/shared/i18n'
 import { finishCoach, type CoachAction, type CoachRequest } from '@/shared/lib/coach/coach'
 import { lockPageScroll } from '@/shared/lib/scrollLock'
+import { findCoachTarget } from './findCoachTarget'
 import { useCoachPlacement } from './useCoachPlacement'
 
 /** Сколько ждать конца плавной прокрутки к элементу, если браузер не скажет о нём сам. */
 const SCROLL_WAIT_MS = 450
-
-/** Элемент под вырезом: первый видимый с этим data-coach (спрятанная вкладка не в счёт). */
-function findTarget(name: string | undefined): HTMLElement | null {
-  if (!name) return null
-  for (const element of document.querySelectorAll<HTMLElement>(`[data-coach="${name}"]`)) {
-    if (element.getClientRects().length > 0) return element
-  }
-  return null
-}
 
 /** Элемент целиком на экране — прокручивать к нему незачем. */
 const inView = (element: HTMLElement) => {
@@ -51,7 +43,9 @@ function scrollToTarget(element: HTMLElement, done: () => void): () => void {
  * Окно подсказки или совета поверх всего приложения на нативном <dialog>: фокус внутри,
  * Escape закрывает, остальное затемнено, а элемент, к которому относится подсказка, виден
  * в вырезе. Под модальным окном элемент недоступен, поэтому касание в вырезе ловит окно и
- * поступает по правилу `tap`: нажимает элемент, листает шаги или просто закрывается.
+ * поступает по правилу `tap` шага или окна: нажимает элемент или листает шаги. Закрыть
+ * окно можно только его кнопкой (или Escape — как «Понятно»): касание мимо ничего не делает,
+ * чтобы обучение не терялось от случайного нажатия.
  */
 export function CoachWindow({ request }: { request: CoachRequest }) {
   const t = useT()
@@ -87,7 +81,7 @@ export function CoachWindow({ request }: { request: CoachRequest }) {
 
   // Открытие: прокрутить к элементу, заморозить страницу и показать окно.
   useEffect(() => {
-    const first = findTarget(request.steps[0].target)
+    const first = findCoachTarget(request.steps[0].target)
     if (request.steps[0].target && !first) {
       finishCoach(request.id, { seen: false })
       return
@@ -108,16 +102,23 @@ export function CoachWindow({ request }: { request: CoachRequest }) {
     }
   }, [request])
 
-  /** Шаг — это свой элемент под вырезом. Пропал — окно закрывается молча. */
+  /**
+   * Шаг — это свой элемент под вырезом. Шаг, чьего элемента нет на экране, пропускается в
+   * ту же сторону: окно само не закрывается. Дальше шагов нет — окно пройдено.
+   */
   function goTo(index: number) {
-    const name = request.steps[index].target
-    const next = findTarget(name)
-    if (name && !next) {
-      finish(false)
+    const direction = index > step ? 1 : -1
+    let next = index
+    while (next >= 0 && next < count && request.steps[next].target && !findCoachTarget(request.steps[next].target)) {
+      next += direction
+    }
+    if (next >= count) {
+      finish(true)
       return
     }
-    setTarget(next)
-    setStep(index)
+    if (next < 0) return
+    setTarget(findCoachTarget(request.steps[next].target))
+    setStep(next)
   }
 
   // Движение элемента, пока окно открыто (подёргивание строки, тряска лупы).
@@ -168,9 +169,10 @@ export function CoachWindow({ request }: { request: CoachRequest }) {
           event.clientX <= spot.left + spot.width &&
           event.clientY >= spot.top &&
           event.clientY <= spot.top + spot.height
-        if (inSpot && request.tap === 'next' && !last) goTo(step + 1)
-        else if (inSpot && request.tap === 'press' && target) finish(true, () => target.click())
-        else finish(true)
+        if (!inSpot) return
+        const tap = current.tap ?? request.tap
+        if (tap === 'next' && !last) goTo(step + 1)
+        else if (tap === 'press' && target) finish(true, () => target.click())
       }}
     >
       {spot && !centered && (

@@ -60,7 +60,7 @@ export function useShoppingCoach({ entries, loaded }: { entries: number; loaded:
         ? {
             id: 'invite',
             order: 8,
-            tap: 'close',
+            tap: 'none',
             progress,
             steps: [{ title: t('coach.inviteTitle'), text: t('coach.invite') }],
             actions: [
@@ -89,7 +89,7 @@ export function useShoppingCoach({ entries, loaded }: { entries: number; loaded:
             id: 'tip-shop-order',
             order: 105,
             kind: 'tip',
-            tap: 'close',
+            tap: 'none',
             steps: [{ target: 'shopping-list', title: t('tip.title'), text: t('tip.shopOrder') }],
           }
         : null,

@@ -10,7 +10,7 @@ import {
 } from './coach'
 
 const candidate = (id: string, order: number, since: number, kind?: 'tip'): CoachCandidate => ({
-  request: { id, order, steps: [{ text: id }], tap: 'close', kind },
+  request: { id, order, steps: [{ text: id }], tap: 'none', kind },
   since,
 })
 

@@ -84,7 +84,7 @@ export function useHomeCoach({ hasSections, products, loaded }: HomeCoachInput):
         ? {
             id: 'swipe',
             order: 5,
-            tap: 'close',
+            tap: 'none',
             steps: [{ target: 'product-row', text: t('coach.swipe'), motion: 'jiggle' }],
           }
         : null,
@@ -97,7 +97,7 @@ export function useHomeCoach({ hasSections, products, loaded }: HomeCoachInput):
         ? {
             id: 'drag',
             order: 6,
-            tap: 'close',
+            tap: 'none',
             steps: [{ target: 'product-row', text: t('coach.drag'), motion: 'lift' }],
           }
         : null,

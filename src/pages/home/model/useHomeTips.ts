@@ -80,7 +80,7 @@ export function useHomeTips({ sections, products, loaded }: HomeTipsInput): void
             id: 'tip-one-off',
             order: 101,
             kind: 'tip',
-            tap: 'close',
+            tap: 'none',
             steps: [{ target: 'tab-shopping', title: t('tip.title'), text: t('tip.oneOff') }],
           }
         : null,
@@ -99,7 +99,7 @@ export function useHomeTips({ sections, products, loaded }: HomeTipsInput): void
             id: `tip-stale-${staleId}`,
             order: 102,
             kind: 'tip',
-            tap: 'close',
+            tap: 'none',
             steps: [
               {
                 target: `item-${staleId}-row`,
@@ -124,7 +124,7 @@ export function useHomeTips({ sections, products, loaded }: HomeTipsInput): void
             order: 103,
             kind: 'tip',
             repeatDays: ACCOUNT_REPEAT_DAYS,
-            tap: 'close',
+            tap: 'none',
             steps: [{ title: t('tip.title'), text: accountText }],
             actions: [
               { label: t('tip.noRemind'), run: () => markCoachSeen('tip-account') },
@@ -145,7 +145,7 @@ export function useHomeTips({ sections, products, loaded }: HomeTipsInput): void
             id: 'tip-crowded',
             order: 106,
             kind: 'tip',
-            tap: 'close',
+            tap: 'none',
             steps: [
               {
                 target: `section-${crowdedId}`,
@@ -169,7 +169,7 @@ export function useHomeTips({ sections, products, loaded }: HomeTipsInput): void
             id: 'tip-minimal',
             order: 107,
             kind: 'tip',
-            tap: 'close',
+            tap: 'none',
             steps: [{ title: t('tip.title'), text: t('tip.minimal') }],
             actions: [{ label: t('common.ok') }, { label: t('tip.turnOn'), primary: true, run: () => setMinimal(true) }],
           }
@@ -184,7 +184,7 @@ export function useHomeTips({ sections, products, loaded }: HomeTipsInput): void
             id: 'tip-mark-early',
             order: 108,
             kind: 'tip',
-            tap: 'close',
+            tap: 'none',
             steps: [{ title: t('tip.title'), text: t('tip.markEarly') }],
           }
         : null,

@@ -16,8 +16,11 @@ export const BACKLOG_GAP_MS = 60_000
 /** Советы — не чаще раза в сутки: они про привычки, а не про кнопки, и не срочные. */
 export const TIP_GAP_MS = DAY_MS
 
-/** Что делает касание в вырезе: нажимает сам элемент, листает шаги или просто закрывает окно. */
-export type CoachTap = 'press' | 'next' | 'close'
+/**
+ * Что делает касание в вырезе: нажимает сам элемент (и окно закрывается), листает шаги
+ * или ничего. Закрыть окно касанием мимо или в вырез нельзя — только его кнопкой.
+ */
+export type CoachTap = 'press' | 'next' | 'none'
 
 export interface CoachAction {
   label: string
@@ -32,6 +35,8 @@ export interface CoachStep {
   text: string
   /** Движение элемента, пока окно открыто: ставится ему в `data-coach-motion`. */
   motion?: string
+  /** Касание в вырезе на этом шаге, если не такое, как у всего окна. */
+  tap?: CoachTap
 }
 
 export interface CoachRequest {
@@ -44,7 +49,7 @@ export interface CoachRequest {
   kind?: 'tip'
   /** Закрытый совет вернётся через столько дней, а не исчезнет насовсем («Не напоминать» — насовсем). */
   repeatDays?: number
-  /** Строка над текстом, например «Первые шаги · 2 из 5». */
+  /** Строка над текстом, например «Обучение · 2 из 5». */
   progress?: string
   /** Кнопки последнего шага; без них — «Понятно». */
   actions?: CoachAction[]

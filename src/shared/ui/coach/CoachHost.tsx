@@ -10,6 +10,7 @@ import {
 import { useToastMessage } from '@/shared/lib/toast'
 import { useActiveSheet } from '../sheet'
 import { CoachWindow } from './CoachWindow'
+import { findCoachTarget } from './findCoachTarget'
 
 /** Экран успокоился (закрылась шторка, ушёл тост) — окно ждёт ещё столько, чтобы не выскочить вдогонку. */
 const SETTLE_MS = 600
@@ -43,7 +44,10 @@ export function CoachHost() {
       const busy =
         document.documentElement.hasAttribute('data-keyboard') || document.querySelector("[data-dragging='true']") !== null
       const pick = busy ? null : nextCoach().candidate
-      if (pick) startCoach(pick.request)
+      // Элемента первого шага ещё нет на экране (раздел свёрнут, строка не дорисована) —
+      // окно не открываем, а ждём: само оно не закроется, и пустое затемнение было бы хуже.
+      const first = pick?.request.steps[0].target
+      if (pick && (!first || findCoachTarget(first))) startCoach(pick.request)
       else setAttempt((count) => count + 1)
     }, delay)
     return () => window.clearTimeout(timer)
