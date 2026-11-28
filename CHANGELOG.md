@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.4.0 — unreleased
+
+- Hints as spotlight windows over the app (`CoachHost`, `CoachWindow` on `<dialog>`,
+  `placeCoach`), one at a time, at the moment they're needed: add the first item, the
+  item vs. the plus (two steps), swipe, drag, the Bought tick, invite, search; "First
+  steps · N of 5" inside the windows — decision 0023.
+- Ready-made sections on an empty home with multi-select and "Your own section"
+  (`SectionSheet` pick mode).
+- Tips 1–8 in the same window: from the third day, at most once a day, conditions in
+  `features/tips`; the account tip repeats after 30 days unless "Don't remind me".
+- Settings: "Hints and tips" group with both switches and "Show hints and tips again".
+- The "How to mark", "Smart list" and account paragraphs are removed; the first plus gets
+  a longer toast about the orange dot, once.
+
 ## 1.3.2 — unreleased
 
 - Splash in `index.html`: the theme background and a loading picture show before the
