@@ -88,9 +88,6 @@ export const vi: Messages = {
   'home.sectionCount': 'Số món: {count}',
   'home.editSection': 'Sửa khu vực “{name}”',
   'home.addProductTo': 'Thêm món vào “{name}”',
-  'home.hintLabel': 'Cách đánh dấu',
-  'home.hint':
-    'Chấm trên biểu tượng cho biết món đó còn ở nhà hay không: chạm vào biểu tượng khi món đã hết, món sẽ tự vào danh sách mua. Chấm cam nghĩa là món vẫn còn ở nhà nhưng đã có trong danh sách mua. Dấu cộng đưa món vào danh sách mua, dấu trừ bỏ ra. Vuốt dòng sang trái để thấy Sửa và Xóa; kéo quá nửa dòng để xóa ngay. Để sắp xếp lại một món hoặc khu vực, hãy nhấn giữ rồi kéo.',
   'home.defaultName': 'Nhà mình',
   'home.preparing': 'Đang chuẩn bị nhà của bạn…',
 
@@ -146,9 +143,6 @@ export const vi: Messages = {
   'shopping.manual': 'Thêm thủ công',
   'shopping.out': 'đã hết',
   'shopping.stillHome': 'vẫn còn ở nhà',
-  'shopping.hintLabel': 'Danh sách thông minh',
-  'shopping.hint':
-    'Món đã mua được đánh dấu là còn ở nhà và vẫn nằm trong khu vực của nó. Vuốt dòng sang trái để sửa hoặc bỏ ra mà không mua; kéo quá nửa dòng để bỏ ra ngay.',
   'shopping.addTitle': 'Thêm vào danh sách mua',
   'shopping.editTitle': 'Sửa món cần mua',
   'shopping.duplicate': 'Món này đã có trong danh sách mua',
@@ -169,6 +163,7 @@ export const vi: Messages = {
   'toast.addedToList': '“{name}” đã vào danh sách mua',
   'toast.addedToListFirst': 'Đã thêm “{name}” vào danh sách mua. Vẫn còn trong nhà nên chấm màu cam',
   'toast.addedToListFirstSafe': 'Đã thêm “{name}” vào danh sách mua. Vẫn còn trong nhà nên chấm màu xanh dương',
+  'toast.coachReset': 'Hướng dẫn và mẹo sẽ hiện lại',
   'toast.removedFromList': 'Đã bỏ “{name}” khỏi danh sách mua',
   'toast.deleted': 'Đã xóa: “{name}”',
   'toast.undo': 'Hoàn tác',
@@ -230,15 +225,8 @@ export const vi: Messages = {
   'settings.nameMeta': 'Tên của bạn — các thành viên trong nhà sẽ thấy',
   'settings.joinMeta': 'Dán lời mời vào một nhà khác',
   'settings.signOut': 'Đăng xuất',
-  'settings.anonLabel': 'Chưa có tài khoản',
-  'settings.anonGoogle':
-    'Quyền vào nhà chỉ được lưu trên thiết bị này, còn trình duyệt và ứng dụng trên Màn hình chính bị coi là hai thành viên khác nhau. Hãy đăng nhập bằng Google để ở đâu bạn cũng là một người với cùng dữ liệu.',
-  'settings.anonNoGoogle':
-    'Quyền vào nhà được lưu trên thiết bị này. Nếu bạn xóa dữ liệu trình duyệt hoặc đổi điện thoại, bạn có thể quay lại bằng liên kết mới từ một thành viên khác.',
-  'settings.accountLabel': 'Đã kết nối tài khoản',
-  'settings.accountText':
-    'Hãy đăng nhập cùng tài khoản Google này trong trình duyệt hoặc trong ứng dụng trên Màn hình chính — ở đó sẽ có cùng nhà và cùng các món.',
   'settings.groupApp': 'Ứng dụng',
+  'settings.groupCoach': 'Hướng dẫn và mẹo',
   'settings.language': 'Ngôn ngữ',
   'settings.languageAuto': 'Theo thiết bị',
   'settings.theme': 'Giao diện',
@@ -254,8 +242,11 @@ export const vi: Messages = {
   'settings.dotPlaceAfterName': 'Sau tên món',
   'settings.minimal': 'Giao diện tối giản',
   'settings.minimalMeta': 'Không có chú thích dưới tên: chấm, biểu tượng và nút cho biết trạng thái. Dòng thấp hơn, hiển thị được nhiều hơn',
-  'settings.hints': 'Gợi ý',
-  'settings.hintsMeta': 'Giải thích trên màn hình; người dùng mới thấy trong 3 ngày đầu',
+  'settings.hints': 'Hướng dẫn',
+  'settings.hintsMeta': 'Cách dùng các nút; người mới thấy trong 3 ngày đầu',
+  'settings.tips': 'Mẹo',
+  'settings.tipsMeta': 'Cách theo dõi đồ dễ hơn; tối đa mỗi ngày một lần',
+  'settings.coachReset': 'Hiện lại hướng dẫn và mẹo',
   'accent.green': 'Xanh lá',
   'accent.teal': 'Xanh ngọc',
   'accent.blue': 'Xanh dương',

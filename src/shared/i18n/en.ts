@@ -90,9 +90,6 @@ export const en: Messages = {
   'home.sectionCount': 'Items: {count}',
   'home.editSection': 'Edit section “{name}”',
   'home.addProductTo': 'Add an item to “{name}”',
-  'home.hintLabel': 'How to mark',
-  'home.hint':
-    'The dot on the icon shows whether the item is at home: tap the icon when it runs out, and it goes on the shopping list by itself. An orange dot means it’s still at home but already on the shopping list. Plus puts the item on the shopping list, minus takes it off. Swipe a row left for Edit and Delete; pull it past the middle to delete right away. To reorder an item or a section, press and hold it, then drag.',
   'home.defaultName': 'Our home',
   'home.preparing': 'Setting up your home…',
 
@@ -154,9 +151,6 @@ export const en: Messages = {
   'shopping.manual': 'Added by hand',
   'shopping.out': 'ran out',
   'shopping.stillHome': 'still at home',
-  'shopping.hintLabel': 'Smart list',
-  'shopping.hint':
-    'An item you bought is marked as at home again and stays in its section. Swipe a row left to edit it or remove it without buying; pull it past the middle to remove it right away.',
   'shopping.addTitle': 'Add to the shopping list',
   'shopping.editTitle': 'Edit shopping item',
   'shopping.duplicate': 'This is already on the shopping list',
@@ -177,6 +171,7 @@ export const en: Messages = {
   'toast.addedToList': '“{name}” is on the shopping list',
   'toast.addedToListFirst': '“{name}” is on the shopping list. It’s still at home, so the dot is orange',
   'toast.addedToListFirstSafe': '“{name}” is on the shopping list. It’s still at home, so the dot is blue',
+  'toast.coachReset': 'Hints and tips will show again',
   'toast.removedFromList': '“{name}” removed from the shopping list',
   'toast.deleted': 'Deleted: “{name}”',
   'toast.undo': 'Undo',
@@ -241,15 +236,8 @@ export const en: Messages = {
   'settings.nameMeta': 'Your name — members of the home see it',
   'settings.joinMeta': 'Paste an invitation to another home',
   'settings.signOut': 'Sign out',
-  'settings.anonLabel': 'No account',
-  'settings.anonGoogle':
-    'Access to the home is kept only on this device, and the browser and the Home Screen app count as different members. Sign in with Google to be the same person with the same data everywhere.',
-  'settings.anonNoGoogle':
-    'Access to the home is kept on this device. If you clear the browser data or change phones, you can come back with a new link from another member.',
-  'settings.accountLabel': 'Account connected',
-  'settings.accountText':
-    'Sign in to the same Google account in the browser or in the Home Screen app — you’ll find the same homes and items there.',
   'settings.groupApp': 'App',
+  'settings.groupCoach': 'Hints and tips',
   'settings.language': 'Language',
   'settings.languageAuto': 'Same as device',
   'settings.theme': 'Theme',
@@ -265,8 +253,11 @@ export const en: Messages = {
   'settings.dotPlaceAfterName': 'After the name',
   'settings.minimal': 'Minimal view',
   'settings.minimalMeta': 'No captions under names: the dot, the icon and the button show the state. Shorter rows, so more fit on screen',
-  'settings.hints': 'Tips',
-  'settings.hintsMeta': 'Explanations on screens; shown to new users for the first 3 days',
+  'settings.hints': 'Hints',
+  'settings.hintsMeta': 'How the buttons work; for new users, the first 3 days',
+  'settings.tips': 'Tips',
+  'settings.tipsMeta': 'Easier ways to keep track; at most once a day',
+  'settings.coachReset': 'Show hints and tips again',
   'accent.green': 'Green',
   'accent.teal': 'Teal',
   'accent.blue': 'Blue',

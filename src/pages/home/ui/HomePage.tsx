@@ -5,7 +5,7 @@ import { matchProductsByName, normalizeQuery, useHomeSearch } from '@/features/h
 import { useHomeData } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import { rich } from '@/shared/i18n/rich'
-import { AddRow, EmptyState, Hint, openSheet, StatusNote, SummaryBar } from '@/shared/ui'
+import { AddRow, EmptyState, openSheet, StatusNote, SummaryBar } from '@/shared/ui'
 import { useHomeCoach } from '../model/useHomeCoach'
 import { useHomeTips } from '../model/useHomeTips'
 import { useSearchAnnouncement } from '../model/useSearchAnnouncement'
@@ -72,14 +72,8 @@ export function HomePage() {
         <SectionBoard sections={sections} products={products} query={query} />
       )}
 
-      {/* Во время поиска — только найденное: добавлять разделы и читать подсказку незачем. */}
+      {/* Во время поиска — только найденное: добавлять разделы незачем. */}
       {!query && <AddRow label={t('section.newTitle')} onClick={addSection} />}
-
-      {!query && products.length > 0 && (
-        <Hint label={t('home.hintLabel')} onlyWhenHintsOn>
-          {t('home.hint')}
-        </Hint>
-      )}
     </>
   )
 }

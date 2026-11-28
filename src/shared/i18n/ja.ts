@@ -88,9 +88,6 @@ export const ja: Messages = {
   'home.sectionCount': '{count}品',
   'home.editSection': '置き場所「{name}」を編集',
   'home.addProductTo': '「{name}」に追加',
-  'home.hintLabel': '使い方',
-  'home.hint':
-    'アイコンの点は、家にあるかどうかを表します。なくなったらアイコンをタップすると、自動で買い物リストに入ります。オレンジの点は、まだ家にあるけれど買い物リストに入っているという意味です。＋で買い物リストに入れ、−で外します。行を左にスワイプすると「編集」と「削除」が出ます。真ん中まで引くとすぐに削除されます。並べ替えるには、品物や置き場所を長押ししてドラッグします。',
   'home.defaultName': 'わが家',
   'home.preparing': '準備しています…',
 
@@ -146,9 +143,6 @@ export const ja: Messages = {
   'shopping.manual': '手動で追加',
   'shopping.out': '在庫なし',
   'shopping.stillHome': 'まだ家にあります',
-  'shopping.hintLabel': 'スマートリスト',
-  'shopping.hint':
-    '購入したアイテムは「在庫あり」に戻り、元の置き場所に残ります。行を左にスワイプすると、編集したり、買わずに外したりできます。真ん中まで引くとすぐに外れます。',
   'shopping.addTitle': '買い物リストに追加',
   'shopping.editTitle': '買い物アイテムを編集',
   'shopping.duplicate': 'これはすでに買い物リストにあります',
@@ -169,6 +163,7 @@ export const ja: Messages = {
   'toast.addedToList': '「{name}」を買い物リストに追加しました',
   'toast.addedToListFirst': '「{name}」を買い物リストに追加しました。まだ家にあるので点はオレンジです',
   'toast.addedToListFirstSafe': '「{name}」を買い物リストに追加しました。まだ家にあるので点は青です',
+  'toast.coachReset': '操作ガイドとヒントをもう一度表示します',
   'toast.removedFromList': '「{name}」を買い物リストから外しました',
   'toast.deleted': '「{name}」を削除しました',
   'toast.undo': '元に戻す',
@@ -230,15 +225,8 @@ export const ja: Messages = {
   'settings.nameMeta': 'あなたの名前。家のメンバーに表示されます',
   'settings.joinMeta': '別の家への招待リンクを貼り付けます',
   'settings.signOut': 'ログアウト',
-  'settings.anonLabel': 'アカウントなし',
-  'settings.anonGoogle':
-    '家へのアクセスはこの端末にだけ保存されていて、ブラウザとホーム画面のアプリは別のメンバーとして扱われます。Googleでログインすると、どこでも同じ人として同じデータを使えます。',
-  'settings.anonNoGoogle':
-    '家へのアクセスはこの端末に保存されています。ブラウザのデータを消したり機種変更したりした場合は、ほかのメンバーから新しいリンクをもらうと戻れます。',
-  'settings.accountLabel': 'アカウント接続済み',
-  'settings.accountText':
-    'ブラウザやホーム画面のアプリで同じGoogleアカウントにログインすると、同じ家とアイテムが表示されます。',
   'settings.groupApp': 'アプリ',
+  'settings.groupCoach': '操作ガイドとヒント',
   'settings.language': '言語',
   'settings.languageAuto': '端末の設定に合わせる',
   'settings.theme': 'テーマ',
@@ -254,8 +242,11 @@ export const ja: Messages = {
   'settings.dotPlaceAfterName': '名前の後ろ',
   'settings.minimal': 'ミニマル表示',
   'settings.minimalMeta': '名前の下の説明を表示しません。状態は点・アイコン・ボタンでわかります。行が低くなり、一画面に多く表示されます',
-  'settings.hints': 'ヒント',
-  'settings.hintsMeta': '画面上の説明。新しいユーザーには最初の3日間表示されます',
+  'settings.hints': '操作ガイド',
+  'settings.hintsMeta': 'ボタンの使い方。はじめの3日間は自動で表示',
+  'settings.tips': 'ヒント',
+  'settings.tipsMeta': '在庫管理を楽にするコツ。1日1回まで',
+  'settings.coachReset': '操作ガイドとヒントをもう一度表示',
   'accent.green': 'グリーン',
   'accent.teal': 'ティール',
   'accent.blue': 'ブルー',

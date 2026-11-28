@@ -10,8 +10,6 @@ import {
   type DotPlace,
   type ThemeSetting,
 } from '@/shared/lib/appearance'
-import { setHintsVisible } from '@/shared/lib/hints/hints'
-import { useHintsVisible } from '@/shared/lib/hints/useHintsVisible'
 import { SettingSelect, SettingsGroup, SettingToggle } from '@/shared/ui'
 import { AccentPicker } from './AccentPicker'
 import { AppIconPicker } from './AppIconPicker'
@@ -22,12 +20,11 @@ const DOT_PLACE_LABELS: Record<DotPlace, MessageKey> = {
   'after-name': 'settings.dotPlaceAfterName',
 }
 
-/** Приложение: язык, оформление, точки наличия, иконка и подсказки. Выбор хранится на устройстве, а не в доме. */
+/** Приложение: язык, оформление, точки наличия и иконка. Выбор хранится на устройстве, а не в доме. */
 export function AppGroup() {
   const t = useT()
   const { setting } = useLang()
   const { theme, colorSafe, dotPlace, minimal } = useAppearance()
-  const hints = useHintsVisible()
 
   return (
     <SettingsGroup label={t('settings.groupApp')}>
@@ -87,13 +84,6 @@ export function AppGroup() {
         onChange={setMinimal}
       />
       <AppIconPicker />
-      <SettingToggle
-        id="hints"
-        title={t('settings.hints')}
-        meta={t('settings.hintsMeta')}
-        checked={hints}
-        onChange={setHintsVisible}
-      />
     </SettingsGroup>
   )
 }
