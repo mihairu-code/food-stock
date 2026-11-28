@@ -6,6 +6,7 @@ import { useHomeData } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import { rich } from '@/shared/i18n/rich'
 import { AddRow, EmptyState, openSheet, StatusNote, SummaryBar } from '@/shared/ui'
+import { useFeatureTips } from '../model/useFeatureTips'
 import { useHomeCoach } from '../model/useHomeCoach'
 import { useHomeTips } from '../model/useHomeTips'
 import { useSearchAnnouncement } from '../model/useSearchAnnouncement'
@@ -35,6 +36,7 @@ export function HomePage() {
   const loaded = !isLoading && !isError
   useHomeCoach({ sections, products, loaded })
   useHomeTips({ sections, products, loaded })
+  useFeatureTips({ sections, products, loaded })
 
   if (isLoading) return <StatusNote loading>{t('home.loading')}</StatusNote>
   if (isError) return <StatusNote>{t('common.loadError')}</StatusNote>

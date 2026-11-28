@@ -46,10 +46,12 @@ export interface CoachRequest {
   steps: CoachStep[]
   tap: CoachTap
   /**
-   * `tip` — совет по привычке: не чаще раза в сутки. `tour` — шаг обучения: не отмечается
-   * показанным навсегда (обучение можно пройти заново), а по закрытию зовёт `onDone`.
+   * `tip` — совет по привычке: не чаще раза в сутки. `feature` — совет по функции
+   * (перестановка, поиск): не раньше чем через минуту после прошлого окна, даже если повод
+   * свежий, — после обучения они не должны сыпаться подряд. `tour` — шаг обучения: не
+   * отмечается показанным навсегда (обучение можно пройти заново), а по закрытию зовёт `onDone`.
    */
-  kind?: 'tip' | 'tour'
+  kind?: 'tip' | 'feature' | 'tour'
   /** Человек закрыл окно сам (кнопкой, Escape или нажав элемент в вырезе). */
   onDone?: () => void
   /** Закрытый совет вернётся через столько дней, а не исчезнет насовсем («Не напоминать» — насовсем). */
@@ -136,7 +138,7 @@ export function pickCoach(candidates: readonly CoachCandidate[], memory: CoachMe
     const from = Math.max(
       memory.snoozed[id] ?? 0,
       kind === 'tip' ? tipsFrom : 0,
-      candidate.since > memory.lastClosedAt ? 0 : backlogFrom,
+      candidate.since > memory.lastClosedAt && kind !== 'feature' ? 0 : backlogFrom,
     )
     if (from <= now) ready.push(candidate)
     else retryAt = Math.min(retryAt, from)

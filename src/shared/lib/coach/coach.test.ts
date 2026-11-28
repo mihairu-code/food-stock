@@ -9,7 +9,7 @@ import {
   type CoachMemory,
 } from './coach'
 
-const candidate = (id: string, order: number, since: number, kind?: 'tip'): CoachCandidate => ({
+const candidate = (id: string, order: number, since: number, kind?: 'tip' | 'feature'): CoachCandidate => ({
   request: { id, order, steps: [{ text: id }], tap: 'none', kind },
   since,
 })
@@ -89,6 +89,20 @@ describe('очередь советов', () => {
     })
     expect(pickCoach(list, memory({ snoozed: { 'tip-account': until } }), until).candidate?.request.id).toBe(
       'tip-account',
+    )
+  })
+})
+
+describe('советы по функциям', () => {
+  it('приходят не раньше чем через минуту после прошлого окна, даже со свежим поводом', () => {
+    const closedAt = 1_000
+    const feature = candidate('feature-drag', 11, closedAt + 1, 'feature')
+    expect(pickCoach([feature], memory({ lastClosedAt: closedAt }), closedAt + 2)).toEqual({
+      candidate: null,
+      retryAt: closedAt + BACKLOG_GAP_MS,
+    })
+    expect(pickCoach([feature], memory({ lastClosedAt: closedAt }), closedAt + BACKLOG_GAP_MS).candidate?.request.id).toBe(
+      'feature-drag',
     )
   })
 })
