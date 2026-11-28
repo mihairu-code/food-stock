@@ -11,10 +11,14 @@ export const TOUR_STEPS = 5
 /** Обучение пройдено: шагов больше нет. */
 export const TOUR_DONE = TOUR_STEPS + 1
 
-/** Разбор сохранённого: без записи или с мусором — обучение с начала. */
+/**
+ * Разбор сохранённого: без записи или с мусором — обучение с начала. Шаг дальше «пройдено»
+ * значит, что обучение пройдено в версии, где шагов было больше: заново его не показываем.
+ */
 export function parseTourStep(raw: string | null): number {
   const step = Number(raw)
-  return Number.isInteger(step) && step >= 1 && step <= TOUR_DONE ? step : 1
+  if (!Number.isInteger(step) || step < 1) return 1
+  return Math.min(step, TOUR_DONE)
 }
 
 /** Следующий шаг после того, как закрыли окно шага `done`; чужой шаг ничего не двигает. */

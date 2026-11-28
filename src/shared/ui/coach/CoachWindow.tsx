@@ -5,38 +5,19 @@ import { lockPageScroll } from '@/shared/lib/scrollLock'
 import { findCoachTarget } from './findCoachTarget'
 import { useCoachPlacement } from './useCoachPlacement'
 
-/** Сколько ждать конца плавной прокрутки к элементу, если браузер не скажет о нём сам. */
-const SCROLL_WAIT_MS = 450
-
 /** Элемент целиком на экране — прокручивать к нему незачем. */
 const inView = (element: HTMLElement) => {
   const { top, bottom } = element.getBoundingClientRect()
   return top >= 0 && bottom <= window.innerHeight
 }
 
-/** Прокрутить элемент в середину экрана и дождаться, пока страница встанет. */
-function scrollToTarget(element: HTMLElement, done: () => void): () => void {
-  if (inView(element)) {
-    done()
-    return () => {}
-  }
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  element.scrollIntoView({ block: 'center', behavior: reduce ? 'auto' : 'smooth' })
-  let finished = false
-  const finish = () => {
-    if (finished) return
-    finished = true
-    window.removeEventListener('scrollend', finish)
-    window.clearTimeout(timer)
-    done()
-  }
-  window.addEventListener('scrollend', finish)
-  const timer = window.setTimeout(finish, SCROLL_WAIT_MS)
-  return () => {
-    finished = true
-    window.removeEventListener('scrollend', finish)
-    window.clearTimeout(timer)
-  }
+/**
+ * Поставить элемент в середину экрана — сразу, без плавной прокрутки. Плавная на длинном
+ * доме не успевала: страница замораживалась на полпути, и вырез оказывался у края экрана
+ * или за ним, а с ним и кнопки окна.
+ */
+function bringIntoView(element: HTMLElement): void {
+  if (!inView(element)) element.scrollIntoView({ block: 'center', behavior: 'instant' })
 }
 
 /**
@@ -86,17 +67,16 @@ export function CoachWindow({ request }: { request: CoachRequest }) {
       finishCoach(request.id, { seen: false })
       return
     }
+    // Сначала элемент на экран, потом заморозить страницу и показать окно.
     const show = () => {
+      if (first) bringIntoView(first)
       unlock.current = lockPageScroll()
       dialog.current?.showModal()
       setTarget(first)
       setOpen(true)
     }
-    let cancelScroll = () => {}
-    if (first) cancelScroll = scrollToTarget(first, show)
-    else show()
+    show()
     return () => {
-      cancelScroll()
       unlock.current?.()
       unlock.current = null
     }
@@ -117,7 +97,16 @@ export function CoachWindow({ request }: { request: CoachRequest }) {
       return
     }
     if (next < 0) return
-    setTarget(findCoachTarget(request.steps[next].target))
+    const element = findCoachTarget(request.steps[next].target)
+    if (element && !inView(element)) {
+      // Элемент следующего шага за экраном (кнопка «Новый раздел» внизу, карандаш раздела
+      // вверху): страница заморожена, пока открыто окно, — отпускаем, ставим элемент на
+      // экран и замораживаем снова.
+      unlock.current?.()
+      bringIntoView(element)
+      unlock.current = lockPageScroll()
+    }
+    setTarget(element)
     setStep(next)
   }
 

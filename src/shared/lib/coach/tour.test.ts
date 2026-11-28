@@ -19,7 +19,10 @@ describe('обучение', () => {
     expect(parseTourStep(null)).toBe(1)
     expect(parseTourStep('abc')).toBe(1)
     expect(parseTourStep('0')).toBe(1)
-    expect(parseTourStep('99')).toBe(1)
     expect(parseTourStep('4')).toBe(4)
+  })
+
+  it('пройденное в версии с бо́льшим числом шагов остаётся пройденным', () => {
+    expect(parseTourStep('99')).toBe(TOUR_DONE)
   })
 })
