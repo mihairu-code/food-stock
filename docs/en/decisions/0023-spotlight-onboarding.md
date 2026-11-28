@@ -1,4 +1,4 @@
-# 0023. Onboarding — spotlight windows at the moment of action
+# 0023. Onboarding — five spotlight windows in a row, everything else as tips
 
 **Status:** accepted · November 2026
 
@@ -15,53 +15,56 @@ Options:
 
 1. **Slides at first launch.** People flip through without reading and have forgotten
    them by the time they matter.
-2. **A step-by-step tour with highlights.** At first the home is empty, so there's
-   nothing to highlight; a "Next" chain breaks on one stray tap; most people press
-   "Skip" and then see nothing at all.
-3. **A bubble next to the element at the moment of action.** It comes when it's needed
-   but stays part of the layout: easy to miss, and it competes with neighbouring
-   elements for room on a small screen.
-4. **A window over the app at the moment of action.** Everything is dimmed, the element
-   in question shows through a cutout (a "spotlight"), with a sentence or two next to it.
+2. **A classic "Next → Next" tour.** At first the home is empty, so there's nothing to
+   highlight; the chain breaks on a stray tap; most people press "Skip".
+3. **A bubble next to the element at the moment of action.** Easy to miss, and it
+   competes with its neighbours for room on a small screen.
+4. **Separate windows over the app,** each on its own reason: two items, four, twenty.
+   That was the first version of v1.4. In practice the onboarding fell apart: windows came
+   days apart, the person might never try the main functions, and the "First steps"
+   counter counted things done and hardly moved.
+5. **A short pass in a row in spotlight windows,** where each step waits for its reason,
+   and everything optional comes later as tips.
 
 ## Decision
 
-The fourth option, without a chain.
+The fifth option.
 
-- **Each window is its own moment.** The reason is the state of the home, not an event:
-  sections but no items; an item with a plus; two, four, twenty items; rows in Shopping;
-  the first purchase. So the same order works for someone invited into a full home and
-  after "Show hints and tips again". Skipping one window doesn't mean skipping them all.
-- **One at a time, never in a rush.** A window opens only on a calm screen: no sheet,
-  search, dragging, keyboard, or toast with Undo (the window would cover its button). One
-  caused by the person's action shows as soon as the screen settles; ones that piled up
-  come at most once a minute.
+- **Onboarding is five steps in a row at the start.** Add an item; the item, the plus and
+  the Shopping tab (one window, three cutouts); in Shopping, the tick and "+ Add"; the
+  swipe on Home; "New section" and a section's pencil. The counter is the step number:
+  "Getting started · 3 of 5".
+- **How it differs from the tour in option 2.** A step opens only when its element is on
+  screen: no highlighting of emptiness. Step 3 waits until something is on the shopping
+  list and the person opens it — that is, until they've tried it themselves. There is no
+  "Skip", and a stray tap outside the window does nothing, so one extra touch doesn't
+  break anything. A window closes only by its own button (or Escape, counted as "Got it").
+- **Everyone goes through it,** including long-time users: they already have items, so
+  the tour starts at step 2. "Go through getting started again" is in the settings.
 - **Pressing the lit element.** Under a modal dialog the element can't be tapped, so the
-  window catches a tap in the cutout and follows its rule: press the element (add an item,
-  buy, open search), turn the step (the item, then the plus — pressing would turn the
-  plus into a minus), or just close (gestures — swipe and drag — can't be passed on; the
-  row's own motion shows them).
+  window catches a tap in the cutout and follows the step's rule: press the element (add
+  an item, open Shopping, search), turn the step (the item and the plus: pressing would
+  turn the plus into a minus), or nothing. Gestures — swipe and drag — are shown by the
+  row's own motion.
+- **Feature tips** come after the tour, as soon as there's a reason, at most one window a
+  minute: rearranging items (3 items) and sections (3 sections), search (20 items), and
+  right after the tour, inviting the people you live with.
+- **Habit tips** use the same window, from the third day, at most once a day.
 - **How it's built.** A native `<dialog>` with `showModal()`, like the sheets: top layer,
-  focus inside, Escape. The dimming is the cutout's shadow `0 0 0 100vmax var(--scrim)`,
-  with a `--spot-ring` around it — without it the cutout is barely visible in the dark
-  theme. Where the bubble goes is worked out by a pure function, `placeCoach`: below,
-  above, or as a card over the tab bar.
-- **Ready-made sections** on an empty home are a screen, not a window: there's nothing
-  to highlight there.
-- **"First steps"** is a line in the window, "First steps · 2 of 5", not a separate card.
-- **Tips** use the same window but are about habits rather than buttons: not before the
-  third day, at most once a day, with their own switch in the settings.
+  focus inside. The dimming is the cutout's shadow `0 0 0 100vmax var(--scrim)`, with a
+  `--spot-ring` around it — without it the cutout is barely visible in the dark theme.
+  Where the bubble goes is worked out by a pure function, `placeCoach`: below, above, or
+  as a card over the tab bar. A window opens only on a calm screen: no sheet, search,
+  dragging, keyboard, or toast with Undo.
+- **Ready-made sections** on an empty home are a screen before the tour, not a window.
 - The "How to mark", "Smart list" and account paragraphs are gone.
 
 ## Consequences
 
-- Everything shown is kept on the device (`home-stock:coach-seen`,
-  `home-stock:first-steps`, `home-stock:tip-events`). There's no analytics: nobody but
-  the person's phone knows what they went through and what they skipped.
-- Current users don't see the hint windows: more than three days have passed for them,
-  or hints are off. They do see tips.
-- A new element that needs explaining gets a `data-coach` mark, and its window is
-  described where its reason is known (`useHomeCoach`, `useShoppingCoach`,
-  `useHomeTips`).
-- Every new window is one more stop for the person. Windows are added only when things
-  are unclear without them, not because the mechanism is already there.
+- The tour step and the tips shown are kept on the device (`home-stock:tour`,
+  `home-stock:coach-seen`, `home-stock:tip-events`). There's no analytics.
+- A new element that needs explaining gets a `data-coach` mark. If the app can't be
+  understood without it, it's a tour step (`useHomeCoach`, `useShoppingCoach`);
+  otherwise it's a tip (`useFeatureTips`, `useHomeTips`).
+- Every new step makes the tour longer for everyone. Steps are added only when the basics
+  are unclear without them.

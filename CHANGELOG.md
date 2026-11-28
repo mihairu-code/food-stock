@@ -2,17 +2,18 @@
 
 ## 1.4.0 — unreleased
 
-- Hints as spotlight windows over the app (`CoachHost`, `CoachWindow` on `<dialog>`,
-  `placeCoach`), one at a time, at the moment they're needed: add the first item, the
-  item vs. the plus (two steps), swipe, drag, the Bought tick, invite, search; "First
-  steps · N of 5" inside the windows — decision 0023.
+- Getting started: five spotlight windows in a row (`CoachHost`, `CoachWindow` on
+  `<dialog>`, `placeCoach`, `tour.ts`) — add an item; the item, the plus and the Shopping
+  tab; the tick and "+ Add" in Shopping; the swipe; "New section" and the section pencil.
+  The counter is the step; windows close only by their button; everyone goes through it,
+  "Go through getting started again" restarts it — decision 0023.
 - Ready-made sections on an empty home with multi-select and "Your own section"
   (`SectionSheet` pick mode).
-- Tips 1–8 in the same window: from the third day, at most once a day, conditions in
-  `features/tips`; the account tip repeats after 30 days unless "Don't remind me".
-- Settings: "Hints and tips" group with both switches and "Show hints and tips again".
-- The "How to mark", "Smart list" and account paragraphs are removed; the first plus gets
-  a longer toast about the orange dot, once.
+- Feature tips after the tour (rearranging items and sections, search, invite), at most
+  one a minute; habit tips 1–8 from the third day, at most once a day.
+- Settings: "Getting started and tips" with the tips switch; the hints switch and the
+  "How to mark", "Smart list" and account paragraphs are removed; the first plus gets a
+  longer toast about the orange dot, once.
 
 ## 1.3.2 — unreleased
 
