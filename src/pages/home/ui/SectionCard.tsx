@@ -68,6 +68,7 @@ export const SectionCard = memo(function SectionCard({
     >
       <header
         className="section-head"
+        data-coach={`section-${section.id}`}
         ref={sortable.setActivatorNodeRef}
         {...sortable.attributes}
         {...sortable.listeners}

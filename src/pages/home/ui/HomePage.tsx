@@ -7,6 +7,7 @@ import { useT } from '@/shared/i18n'
 import { rich } from '@/shared/i18n/rich'
 import { AddRow, EmptyState, Hint, openSheet, StatusNote, SummaryBar } from '@/shared/ui'
 import { useHomeCoach } from '../model/useHomeCoach'
+import { useHomeTips } from '../model/useHomeTips'
 import { useSearchAnnouncement } from '../model/useSearchAnnouncement'
 import { ReadySections } from './ReadySections'
 import { SectionBoard } from './SectionBoard'
@@ -31,7 +32,9 @@ export function HomePage() {
     query ? (foundCount > 0 ? t('search.found', { count: foundCount }) : t('search.nothing')) : '',
   )
 
-  useHomeCoach({ hasSections: sections.length > 0, products, loaded: !isLoading && !isError })
+  const loaded = !isLoading && !isError
+  useHomeCoach({ hasSections: sections.length > 0, products, loaded })
+  useHomeTips({ sections, products, loaded })
 
   if (isLoading) return <StatusNote loading>{t('home.loading')}</StatusNote>
   if (isError) return <StatusNote>{t('common.loadError')}</StatusNote>

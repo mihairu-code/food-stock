@@ -33,11 +33,16 @@ const store = createStore<HintsSetting>(read())
 
 export const useHintsSetting = () => useStore(store)
 
+/** Сколько дней человек с приложением: от создания аккаунта, а без него — от первого запуска на устройстве. */
+export function daysSinceStart(userCreatedAt: string | null): number {
+  const since = userCreatedAt ? Date.parse(userCreatedAt) : deviceFirstSeen()
+  return (Date.now() - since) / DAY_MS
+}
+
 /** Показывать ли подсказки: явный выбор в настройках главнее, иначе — только новичку. */
 export function hintsVisible(setting: HintsSetting, userCreatedAt: string | null): boolean {
   if (setting !== 'auto') return setting === 'on'
-  const since = userCreatedAt ? Date.parse(userCreatedAt) : deviceFirstSeen()
-  return Date.now() - since < NEW_USER_DAYS * DAY_MS
+  return daysSinceStart(userCreatedAt) < NEW_USER_DAYS
 }
 
 /** Переключатель в настройках: дальше подсказки включены или выключены независимо от срока. */

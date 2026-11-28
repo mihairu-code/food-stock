@@ -10,7 +10,7 @@ export function ShoppingPage() {
   const t = useT()
   const { isLoading, isError } = useHomeData()
   const entries = useShoppingList()
-  useShoppingCoach({ hasEntries: entries.length > 0, loaded: !isLoading && !isError })
+  useShoppingCoach({ entries: entries.length, loaded: !isLoading && !isError })
 
   if (isLoading) return <StatusNote loading>{t('shopping.loading')}</StatusNote>
   if (isError) return <StatusNote>{t('common.loadError')}</StatusNote>

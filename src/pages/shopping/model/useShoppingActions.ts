@@ -3,6 +3,7 @@ import { PURCHASED, useSetProductState, withToBuy } from '@/entities/product'
 import { useDeleteShoppingItem } from '@/entities/shopping-item'
 import { removeWithUndo, type Product, type ShoppingItem } from '@/shared/api'
 import { markFirstStep } from '@/shared/lib/coach/firstSteps'
+import { noteBought } from '@/shared/lib/coach/tips'
 import { openSheet } from '@/shared/ui'
 
 /** Продукт дома куплен вместе с ручными позициями того же названия — одним тостом. */
@@ -46,6 +47,7 @@ export function useShoppingActions(): ShoppingActions {
     () => ({
       buyProduct(product, manualTwins) {
         markFirstStep('bought')
+        noteBought(product.id)
         removeWithUndo({
           ...asBought(product, manualTwins),
           commit: async () => {
@@ -57,6 +59,7 @@ export function useShoppingActions(): ShoppingActions {
       buyItem(item, homeProduct) {
         if (!homeProduct) return openSheet({ type: 'purchase', item })
         markFirstStep('bought')
+        noteBought(homeProduct.id)
         removeWithUndo({
           ...asBought(homeProduct, [item]),
           commit: async () => {

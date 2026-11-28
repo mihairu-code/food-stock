@@ -28,7 +28,7 @@ export function ShoppingList({ entries: saved }: { entries: ShoppingEntry[] }) {
 
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} accessibility={accessibility} {...handlers}>
-      <div className="card list">
+      <div className="card list" data-coach="shopping-list">
         <SortableContext items={ids} strategy={verticalListSortingStrategy}>
           {entries.map((entry) =>
             entry.type === 'product' ? (

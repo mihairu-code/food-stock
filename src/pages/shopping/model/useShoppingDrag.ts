@@ -3,6 +3,7 @@ import { arrayMove } from '@dnd-kit/sortable'
 import { useMemo } from 'react'
 import { useReorderShopping, type ShoppingEntry } from '@/entities/shopping-list'
 import { useDragDraft } from '@/shared/lib/drag/useDragDraft'
+import { noteShoppingReordered } from '@/shared/lib/coach/tips'
 
 /**
  * Перетаскивание строк в списке покупок. Черновик порядка и его жизнь — в useDragDraft;
@@ -35,6 +36,7 @@ export function useShoppingDrag(entries: ShoppingEntry[]) {
     const next = arrayMove(ids, from, to)
     drag.keepDraftUntilSaved(next)
     reorder(next)
+    noteShoppingReordered()
   }
 
   return {

@@ -4,12 +4,16 @@ import { removeWithUndo, type Product } from '@/shared/api'
 import { useAppearance } from '@/shared/lib/appearance'
 import { isCoachSeen, markCoachSeen } from '@/shared/lib/coach/coach'
 import { markFirstStep } from '@/shared/lib/coach/firstSteps'
+import { noteMarkedOut, noteOneOffDeleted } from '@/shared/lib/coach/tips'
 import { useHintsVisible } from '@/shared/lib/hints/useHintsVisible'
 import { notify } from '@/shared/lib/toast'
 import { openSheet } from '@/shared/ui'
 
 /** Отметка «длинный тост после первого плюса уже был» — в общем списке показанных подсказок. */
 const FIRST_PLUS_TOAST = 'first-plus-toast'
+/** Продукт удалили меньше чем через неделю после добавления — похоже на разовую покупку (совет 1). */
+const ONE_OFF_DAYS = 7
+const DAY_MS = 24 * 60 * 60 * 1000
 
 export interface ProductActions {
   /** Нажатие на иконку: продукт закончился или снова дома. */
@@ -37,7 +41,10 @@ export function useProductActions(): ProductActions {
       toggleStock(product) {
         const available = !product.is_available
         setState({ id: product.id, state: withAvailability(available) })
-        if (!available) markFirstStep('markedOut')
+        if (!available) {
+          markFirstStep('markedOut')
+          noteMarkedOut(product.id)
+        }
         notify(available ? 'toast.backHome' : 'toast.outToList', { name: product.name })
       },
       toggleList(product) {
@@ -55,6 +62,7 @@ export function useProductActions(): ProductActions {
         openSheet({ type: 'edit-product', product })
       },
       deleteProduct(product) {
+        if (Date.now() - Date.parse(product.created_at) < ONE_OFF_DAYS * DAY_MS) noteOneOffDeleted()
         removeWithUndo({
           id: product.id,
           kind: 'product',

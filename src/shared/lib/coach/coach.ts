@@ -2,12 +2,19 @@ import { createStore, useStore } from '../store'
 
 /** Какие окна подсказок и советов уже показаны на этом устройстве. */
 const SEEN_KEY = 'home-stock:coach-seen'
+/** Повторяющиеся советы, отложенные до срока: id → время в мс. */
+const SNOOZED_KEY = 'home-stock:coach-snoozed'
+/** Когда показан последний совет. */
+const LAST_TIP_KEY = 'home-stock:tip-last'
+const DAY_MS = 24 * 60 * 60 * 1000
 /**
  * Окно, повод для которого был ещё до закрытия прошлого (накопились, пока приложение было
  * закрыто, или человека позвали в заполненный дом), ждёт после прошлого окна столько.
  * Окно, вызванное свежим действием человека, ждать не должно.
  */
 export const BACKLOG_GAP_MS = 60_000
+/** Советы — не чаще раза в сутки: они про привычки, а не про кнопки, и не срочные. */
+export const TIP_GAP_MS = DAY_MS
 
 /** Что делает касание в вырезе: нажимает сам элемент, листает шаги или просто закрывает окно. */
 export type CoachTap = 'press' | 'next' | 'close'
@@ -33,6 +40,10 @@ export interface CoachRequest {
   order: number
   steps: CoachStep[]
   tap: CoachTap
+  /** Совет, а не подсказка: не чаще раза в сутки. */
+  kind?: 'tip'
+  /** Закрытый совет вернётся через столько дней, а не исчезнет насовсем («Не напоминать» — насовсем). */
+  repeatDays?: number
   /** Строка над текстом, например «Первые шаги · 2 из 5». */
   progress?: string
   /** Кнопки последнего шага; без них — «Понятно». */
@@ -43,6 +54,14 @@ export interface CoachRequest {
 export interface CoachCandidate {
   request: CoachRequest
   since: number
+}
+
+/** Что очередь помнит о прошлых окнах. */
+export interface CoachMemory {
+  seen: ReadonlySet<string>
+  snoozed: Readonly<Record<string, number>>
+  lastClosedAt: number
+  lastTipAt: number
 }
 
 /** Разбор сохранённого списка: битая или чужая запись не должна ронять приложение. */
@@ -56,19 +75,31 @@ export function parseSeen(raw: string | null): string[] {
   }
 }
 
-function readSeen(): ReadonlySet<string> {
+/** Разбор отложенных советов: только записи «id → число». */
+export function parseSnoozed(raw: string | null): Record<string, number> {
+  if (!raw) return {}
   try {
-    return new Set(parseSeen(localStorage.getItem(SEEN_KEY)))
+    const parsed: unknown = JSON.parse(raw)
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
+    return Object.fromEntries(Object.entries(parsed).filter(([, until]) => typeof until === 'number'))
   } catch {
-    return new Set()
+    return {}
   }
 }
 
-function writeSeen(seen: ReadonlySet<string>): void {
+function readItem(key: string): string | null {
   try {
-    localStorage.setItem(SEEN_KEY, JSON.stringify([...seen]))
+    return localStorage.getItem(key)
   } catch {
-    // хранилище недоступно — окно покажется снова после перезагрузки, это не страшно
+    return null
+  }
+}
+
+function writeItem(key: string, value: string): void {
+  try {
+    localStorage.setItem(key, value)
+  } catch {
+    // хранилище недоступно — окно или совет покажутся снова после перезагрузки, это не страшно
   }
 }
 
@@ -80,25 +111,36 @@ export interface CoachPick {
 
 /**
  * Какое окно показать сейчас. Свежий повод (появился после закрытия прошлого окна) — сразу,
- * накопившийся — не раньше чем через BACKLOG_GAP_MS. Из готовых — с меньшим номером.
+ * накопившийся — не раньше чем через BACKLOG_GAP_MS. Совет — не раньше чем через сутки после
+ * прошлого совета. Отложенный совет ждёт своего срока. Из готовых — с меньшим номером.
  */
-export function pickCoach(
-  candidates: readonly CoachCandidate[],
-  seen: ReadonlySet<string>,
-  lastClosedAt: number,
-  now: number,
-): CoachPick {
-  const waiting = candidates.filter(({ request }) => !seen.has(request.id))
-  const ready = waiting
-    .filter(({ since }) => since > lastClosedAt || now - lastClosedAt >= BACKLOG_GAP_MS)
-    .sort((a, b) => a.request.order - b.request.order)
+export function pickCoach(candidates: readonly CoachCandidate[], memory: CoachMemory, now: number): CoachPick {
+  // Советов ещё не было — первому ждать нечего.
+  const tipsFrom = memory.lastTipAt > 0 ? memory.lastTipAt + TIP_GAP_MS : 0
+  const backlogFrom = memory.lastClosedAt + BACKLOG_GAP_MS
+  let retryAt = Infinity
+  const ready: CoachCandidate[] = []
+  for (const candidate of candidates) {
+    const { id, kind } = candidate.request
+    if (memory.seen.has(id)) continue
+    const from = Math.max(
+      memory.snoozed[id] ?? 0,
+      kind === 'tip' ? tipsFrom : 0,
+      candidate.since > memory.lastClosedAt ? 0 : backlogFrom,
+    )
+    if (from <= now) ready.push(candidate)
+    else retryAt = Math.min(retryAt, from)
+  }
+  ready.sort((a, b) => a.request.order - b.request.order)
   if (ready.length > 0) return { candidate: ready[0], retryAt: null }
-  return { candidate: null, retryAt: waiting.length > 0 ? lastClosedAt + BACKLOG_GAP_MS : null }
+  return { candidate: null, retryAt: Number.isFinite(retryAt) ? retryAt : null }
 }
 
 const candidates = createStore<readonly CoachCandidate[]>([])
-const seen = createStore<ReadonlySet<string>>(readSeen())
+const seen = createStore<ReadonlySet<string>>(new Set(parseSeen(readItem(SEEN_KEY))))
 const active = createStore<CoachRequest | null>(null)
+let snoozed = parseSnoozed(readItem(SNOOZED_KEY))
+let lastTipAt = Number(readItem(LAST_TIP_KEY)) || 0
 let lastClosedAt = 0
 
 /** Экран говорит: повод для окна есть. Повторный вызов обновляет тексты, но не время повода. */
@@ -120,7 +162,7 @@ export function withdrawCoach(id: string): void {
 
 /** Выбрать окно на показ: вызывает CoachHost, когда экран спокоен. */
 export function nextCoach(now = Date.now()): CoachPick {
-  return pickCoach(candidates.get(), seen.get(), lastClosedAt, now)
+  return pickCoach(candidates.get(), { seen: seen.get(), snoozed, lastClosedAt, lastTipAt }, now)
 }
 
 export function startCoach(request: CoachRequest): void {
@@ -128,25 +170,37 @@ export function startCoach(request: CoachRequest): void {
 }
 
 /**
- * Окно закрылось. `seen` — человек его видел и больше показывать не надо; false — окно
- * пропало без участия человека (элемент исчез), и при новом поводе оно покажется снова.
+ * Окно закрылось. `seen` — человек его видел: подсказка больше не покажется, повторяющийся
+ * совет отложится на свой срок. false — окно пропало без участия человека (элемент исчез),
+ * и при новом поводе оно покажется снова.
  */
 export function finishCoach(id: string, { seen: wasSeen }: { seen: boolean }): void {
-  if (active.get()?.id !== id) return
-  if (wasSeen) markCoachSeen(id)
-  lastClosedAt = Date.now()
+  const request = active.get()
+  if (request?.id !== id) return
+  const now = Date.now()
+  if (wasSeen && request.repeatDays) {
+    snoozed = { ...snoozed, [id]: now + request.repeatDays * DAY_MS }
+    writeItem(SNOOZED_KEY, JSON.stringify(snoozed))
+  } else if (wasSeen) {
+    markCoachSeen(id)
+  }
+  if (wasSeen && request.kind === 'tip') {
+    lastTipAt = now
+    writeItem(LAST_TIP_KEY, String(now))
+  }
+  lastClosedAt = now
   active.set(null)
 }
 
 /**
- * Отметить показанным то, что показывается без окна, — например, длинный текст тоста
- * в первый раз. «Показать заново» вернёт и его.
+ * Отметить показанным насовсем: то, что показывается без окна (длинный текст тоста в первый
+ * раз), или повторяющийся совет после «Не напоминать». «Показать заново» вернёт и его.
  */
 export function markCoachSeen(id: string): void {
   if (seen.get().has(id)) return
   const next = new Set(seen.get()).add(id)
   seen.set(next)
-  writeSeen(next)
+  writeItem(SEEN_KEY, JSON.stringify([...next]))
 }
 
 export const isCoachSeen = (id: string): boolean => seen.get().has(id)
@@ -154,7 +208,11 @@ export const isCoachSeen = (id: string): boolean => seen.get().has(id)
 /** «Показать подсказки и советы заново». */
 export function resetCoachSeen(): void {
   seen.set(new Set())
-  writeSeen(new Set())
+  writeItem(SEEN_KEY, '[]')
+  snoozed = {}
+  writeItem(SNOOZED_KEY, '{}')
+  lastTipAt = 0
+  writeItem(LAST_TIP_KEY, '0')
 }
 
 export const useCoachCandidates = () => useStore(candidates)

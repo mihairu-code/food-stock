@@ -13,6 +13,7 @@ import { CoachWindow } from './CoachWindow'
 
 /** Экран успокоился (закрылась шторка, ушёл тост) — окно ждёт ещё столько, чтобы не выскочить вдогонку. */
 const SETTLE_MS = 600
+const MAX_WAIT_MS = 60 * 60 * 1000
 
 /**
  * Место для окон подсказок и советов. Монтируется один раз в каркасе приложения. Окно
@@ -34,7 +35,9 @@ export function CoachHost() {
     if (active || !calm || candidates.length === 0) return
     const { candidate, retryAt } = nextCoach()
     if (!candidate && retryAt === null) return
-    const delay = candidate ? SETTLE_MS : Math.max(SETTLE_MS, retryAt! - Date.now())
+    // Ждать советам бывает и сутки, и месяц, а таймер браузера дольше ~24 дней не держит:
+    // проверяем хотя бы раз в час, очередь сама скажет, рано ли ещё.
+    const delay = candidate ? SETTLE_MS : Math.min(MAX_WAIT_MS, Math.max(SETTLE_MS, retryAt! - Date.now()))
     const timer = window.setTimeout(() => {
       // Пока открыта клавиатура или строку несут пальцем, окно подождёт.
       const busy =

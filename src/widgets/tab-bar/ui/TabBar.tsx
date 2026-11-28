@@ -57,6 +57,7 @@ export function TabBar() {
       <NavLink
         className="tab tab-folding"
         to="/shopping"
+        data-coach="tab-shopping"
         aria-label={shoppingCount > 0 ? t('nav.shoppingCount', { count: shoppingCount }) : t('nav.shopping')}
         inert={searchOpen}
       >
