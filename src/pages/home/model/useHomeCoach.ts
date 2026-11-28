@@ -1,125 +1,132 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useLocation } from 'react-router'
-import { stockState } from '@/entities/product'
-import { useFirstStepsProgress } from '@/features/first-steps'
-import { SEARCH_MIN_PRODUCTS, useHomeSearch } from '@/features/home-search'
-import type { Product } from '@/shared/api'
+import { useHomeSearch } from '@/features/home-search'
+import type { Product, Section } from '@/shared/api'
 import { useT } from '@/shared/i18n'
 import { useAppearance } from '@/shared/lib/appearance'
 import type { CoachRequest } from '@/shared/lib/coach/coach'
+import { completeTourStep, TOUR_STEPS, useTourStep } from '@/shared/lib/coach/tour'
 import { useCoach } from '@/shared/lib/coach/useCoach'
-import { useHintsVisible } from '@/shared/lib/hints/useHintsVisible'
-
-/** Окно про свайп — со второго продукта: после первого уже было окно про продукт и плюс. */
-const SWIPE_MIN_PRODUCTS = 2
-/** Окно про перестановку — с четырёх продуктов: переставлять есть что, и разделов уже несколько. */
-const DRAG_MIN_PRODUCTS = 4
 
 interface HomeCoachInput {
-  hasSections: boolean
+  sections: Section[]
   products: Product[]
   /** Данные загружены: пока идёт загрузка, подсказывать не о чем. */
   loaded: boolean
 }
 
+/** Самый новый продукт: обучение показывает на нём то, что человек только что добавил. */
+const newest = (products: readonly Product[]) =>
+  products.reduce<Product | undefined>(
+    (latest, product) => (!latest || product.created_at > latest.created_at ? product : latest),
+    undefined,
+  )
+
 /**
- * Окна подсказок «Дома» (сценарий в ТЗ обучения, окна 2, 3, 5, 6, 9). Повод — состояние
- * дома, а не событие: тот же порядок работает и у человека, которого позвали в заполненный
- * дом. Предлагаются, только пока подсказки видны (новичку — первые дни), открыт «Дом»
- * и не открыт поиск. Когда показать, решает CoachHost.
+ * Шаги обучения на «Доме» (ТЗ обучения: шаги 1, 2, 4, 5; шаг 3 — в «Покупках»). Обучение
+ * идёт подряд: окно шага предлагается, только когда предыдущие пройдены, и закрытие окна
+ * двигает обучение дальше. Когда показать, решает CoachHost.
  */
-export function useHomeCoach({ hasSections, products, loaded }: HomeCoachInput): void {
+export function useHomeCoach({ sections, products, loaded }: HomeCoachInput): void {
   const t = useT()
   const { pathname } = useLocation()
   const search = useHomeSearch()
-  const hints = useHintsVisible()
-  const progress = useFirstStepsProgress()
   const { colorSafe } = useAppearance()
+  const step = useTourStep()
 
-  const ready = hints && loaded && pathname === '/' && !search.open
+  const onHome = loaded && pathname === '/' && !search.open
   const count = products.length
-  // Окно про продукт и плюс встаёт на продукт, который есть дома и не в покупках: у него плюс.
-  const hasPlus = products.some((product) => stockState(product) === 'in')
+  const progress = t('coach.tourProgress', { step, total: TOUR_STEPS })
+  // На продукте с плюсом (не в покупках) — свежем, который человек только что добавил.
+  const plusId = newest(products.filter((product) => !product.to_buy))?.id
+  const rowId = newest(products)?.id
+  const firstSectionId = sections[0]?.id
+
+  // У того, у кого продукты уже есть (пользуется приложением давно), шаг «добавьте
+  // продукт» засчитывается сам: учить там нечему.
+  useEffect(() => {
+    if (loaded && step === 1 && count > 0) completeTourStep(1)
+  }, [loaded, step, count])
 
   const addFirst = useMemo<CoachRequest | null>(
     () =>
-      ready && hasSections && count === 0
+      onHome && step === 1 && firstSectionId && count === 0
         ? {
-            id: 'add-first',
-            order: 2,
+            id: 'tour-1',
+            kind: 'tour',
+            order: 1,
             tap: 'press',
             progress,
             steps: [{ target: 'add-product', text: t('coach.addFirst') }],
+            onDone: () => completeTourStep(1),
           }
         : null,
-    [ready, hasSections, count, progress, t],
+    [onHome, step, firstSectionId, count, progress, t],
   )
 
-  const productRow = useMemo<CoachRequest | null>(
+  const product = useMemo<CoachRequest | null>(
     () =>
-      ready && hasPlus
+      onHome && step === 2 && plusId
         ? {
-            id: 'product-row',
-            order: 3,
-            // Касание в вырезе листает шаги, а не нажимает: иначе продукт «закончился» бы,
-            // плюс сменился бы минусом, и второй шаг показал бы не то.
+            id: 'tour-2',
+            kind: 'tour',
+            order: 2,
+            // Продукт и плюс касание в вырезе только листает: иначе продукт «закончился» бы,
+            // плюс сменился бы минусом, и второй шаг показал бы не то. Вкладку — нажимает.
             tap: 'next',
             progress,
             steps: [
-              { target: 'product-main', title: t('coach.markOutTitle'), text: t('coach.markOut') },
+              { target: `item-${plusId}-main`, title: t('coach.markOutTitle'), text: t('coach.markOut') },
               {
-                target: 'product-toggle',
+                target: `item-${plusId}-toggle`,
                 title: t('coach.plusTitle'),
                 text: t(colorSafe ? 'coach.plusSafe' : 'coach.plus'),
               },
+              { target: 'tab-shopping', text: t('coach.shoppingTab'), tap: 'press' },
             ],
+            onDone: () => completeTourStep(2),
           }
         : null,
-    [ready, hasPlus, progress, colorSafe, t],
+    [onHome, step, plusId, colorSafe, progress, t],
   )
 
   const swipe = useMemo<CoachRequest | null>(
     () =>
-      ready && hasPlus && count >= SWIPE_MIN_PRODUCTS
+      onHome && step === 4 && rowId
         ? {
-            id: 'swipe',
+            id: 'tour-4',
+            kind: 'tour',
+            order: 4,
+            tap: 'none',
+            progress,
+            steps: [{ target: `item-${rowId}-row`, text: t('coach.swipe'), motion: 'jiggle' }],
+            onDone: () => completeTourStep(4),
+          }
+        : null,
+    [onHome, step, rowId, progress, t],
+  )
+
+  const sectionsStep = useMemo<CoachRequest | null>(
+    () =>
+      onHome && step === 5 && firstSectionId
+        ? {
+            id: 'tour-5',
+            kind: 'tour',
             order: 5,
-            tap: 'none',
-            steps: [{ target: 'product-row', text: t('coach.swipe'), motion: 'jiggle' }],
+            tap: 'next',
+            progress,
+            steps: [
+              { target: 'new-section', text: t('coach.newSection') },
+              { target: `section-edit-${firstSectionId}`, text: t('coach.editSection') },
+            ],
+            onDone: () => completeTourStep(5),
           }
         : null,
-    [ready, hasPlus, count, t],
+    [onHome, step, firstSectionId, progress, t],
   )
 
-  const drag = useMemo<CoachRequest | null>(
-    () =>
-      ready && hasPlus && count >= DRAG_MIN_PRODUCTS
-        ? {
-            id: 'drag',
-            order: 6,
-            tap: 'none',
-            steps: [{ target: 'product-row', text: t('coach.drag'), motion: 'lift' }],
-          }
-        : null,
-    [ready, hasPlus, count, t],
-  )
-
-  const findByName = useMemo<CoachRequest | null>(
-    () =>
-      ready && count >= SEARCH_MIN_PRODUCTS
-        ? {
-            id: 'search',
-            order: 9,
-            tap: 'press',
-            steps: [{ target: 'search', text: t('coach.search'), motion: 'shake' }],
-          }
-        : null,
-    [ready, count, t],
-  )
-
-  useCoach('add-first', addFirst)
-  useCoach('product-row', productRow)
-  useCoach('swipe', swipe)
-  useCoach('drag', drag)
-  useCoach('search', findByName)
+  useCoach('tour-1', addFirst)
+  useCoach('tour-2', product)
+  useCoach('tour-4', swipe)
+  useCoach('tour-5', sectionsStep)
 }

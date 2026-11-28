@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { PURCHASED, useSetProductState, withToBuy } from '@/entities/product'
 import { useDeleteShoppingItem } from '@/entities/shopping-item'
 import { removeWithUndo, type Product, type ShoppingItem } from '@/shared/api'
-import { markFirstStep } from '@/shared/lib/coach/firstSteps'
 import { noteBought } from '@/shared/lib/coach/tips'
 import { openSheet } from '@/shared/ui'
 
@@ -46,7 +45,6 @@ export function useShoppingActions(): ShoppingActions {
   return useMemo<ShoppingActions>(
     () => ({
       buyProduct(product, manualTwins) {
-        markFirstStep('bought')
         noteBought(product.id)
         removeWithUndo({
           ...asBought(product, manualTwins),
@@ -58,7 +56,6 @@ export function useShoppingActions(): ShoppingActions {
       },
       buyItem(item, homeProduct) {
         if (!homeProduct) return openSheet({ type: 'purchase', item })
-        markFirstStep('bought')
         noteBought(homeProduct.id)
         removeWithUndo({
           ...asBought(homeProduct, [item]),

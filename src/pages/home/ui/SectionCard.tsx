@@ -88,6 +88,7 @@ export const SectionCard = memo(function SectionCard({
           className="icon-btn"
           type="button"
           aria-label={t('home.editSection', { name: section.name })}
+          data-coach={`section-edit-${section.id}`}
           onClick={() => openSheet({ type: 'manage-section', section })}
         >
           <Pencil size={16} />

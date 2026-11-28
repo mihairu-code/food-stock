@@ -3,7 +3,6 @@ import { useDeleteProduct, useSetProductState, withAvailability, withToBuy } fro
 import { removeWithUndo, type Product } from '@/shared/api'
 import { useAppearance } from '@/shared/lib/appearance'
 import { isCoachSeen, markCoachSeen } from '@/shared/lib/coach/coach'
-import { markFirstStep } from '@/shared/lib/coach/firstSteps'
 import { noteMarkedOut, noteOneOffDeleted } from '@/shared/lib/coach/tips'
 import { useHintsVisible } from '@/shared/lib/hints/useHintsVisible'
 import { notify } from '@/shared/lib/toast'
@@ -41,10 +40,7 @@ export function useProductActions(): ProductActions {
       toggleStock(product) {
         const available = !product.is_available
         setState({ id: product.id, state: withAvailability(available) })
-        if (!available) {
-          markFirstStep('markedOut')
-          noteMarkedOut(product.id)
-        }
+        if (!available) noteMarkedOut(product.id)
         notify(available ? 'toast.backHome' : 'toast.outToList', { name: product.name })
       },
       toggleList(product) {

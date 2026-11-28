@@ -33,7 +33,7 @@ export function HomePage() {
   )
 
   const loaded = !isLoading && !isError
-  useHomeCoach({ hasSections: sections.length > 0, products, loaded })
+  useHomeCoach({ sections, products, loaded })
   useHomeTips({ sections, products, loaded })
 
   if (isLoading) return <StatusNote loading>{t('home.loading')}</StatusNote>
@@ -73,7 +73,7 @@ export function HomePage() {
       )}
 
       {/* Во время поиска — только найденное: добавлять разделы незачем. */}
-      {!query && <AddRow label={t('section.newTitle')} onClick={addSection} />}
+      {!query && <AddRow label={t('section.newTitle')} onClick={addSection} coach="new-section" />}
     </>
   )
 }

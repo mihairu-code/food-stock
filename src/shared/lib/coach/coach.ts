@@ -45,8 +45,13 @@ export interface CoachRequest {
   order: number
   steps: CoachStep[]
   tap: CoachTap
-  /** Совет, а не подсказка: не чаще раза в сутки. */
-  kind?: 'tip'
+  /**
+   * `tip` — совет по привычке: не чаще раза в сутки. `tour` — шаг обучения: не отмечается
+   * показанным навсегда (обучение можно пройти заново), а по закрытию зовёт `onDone`.
+   */
+  kind?: 'tip' | 'tour'
+  /** Человек закрыл окно сам (кнопкой, Escape или нажав элемент в вырезе). */
+  onDone?: () => void
   /** Закрытый совет вернётся через столько дней, а не исчезнет насовсем («Не напоминать» — насовсем). */
   repeatDays?: number
   /** Строка над текстом, например «Обучение · 2 из 5». */
@@ -183,11 +188,15 @@ export function finishCoach(id: string, { seen: wasSeen }: { seen: boolean }): v
   const request = active.get()
   if (request?.id !== id) return
   const now = Date.now()
-  if (wasSeen && request.repeatDays) {
-    snoozed = { ...snoozed, [id]: now + request.repeatDays * DAY_MS }
-    writeItem(SNOOZED_KEY, JSON.stringify(snoozed))
-  } else if (wasSeen) {
-    markCoachSeen(id)
+  // Шаг обучения не запоминается показанным: его ведёт своё состояние (tour.ts), и
+  // обучение можно пройти заново целиком.
+  if (wasSeen && request.kind !== 'tour') {
+    if (request.repeatDays) {
+      snoozed = { ...snoozed, [id]: now + request.repeatDays * DAY_MS }
+      writeItem(SNOOZED_KEY, JSON.stringify(snoozed))
+    } else {
+      markCoachSeen(id)
+    }
   }
   if (wasSeen && request.kind === 'tip') {
     lastTipAt = now
@@ -195,6 +204,7 @@ export function finishCoach(id: string, { seen: wasSeen }: { seen: boolean }): v
   }
   lastClosedAt = now
   active.set(null)
+  if (wasSeen) request.onDone?.()
 }
 
 /**

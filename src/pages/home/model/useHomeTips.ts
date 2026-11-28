@@ -17,6 +17,7 @@ import { useT } from '@/shared/i18n'
 import { setMinimal, useAppearance } from '@/shared/lib/appearance'
 import { markCoachSeen, type CoachRequest } from '@/shared/lib/coach/coach'
 import { useTipEvents, useTipsEnabled } from '@/shared/lib/coach/tips'
+import { TOUR_DONE, useTourStep } from '@/shared/lib/coach/tour'
 import { useCoach } from '@/shared/lib/coach/useCoach'
 import { useDaysSinceStart } from '@/shared/lib/hints/useDaysSinceStart'
 import { currentInstallTarget } from '@/shared/lib/install/install'
@@ -52,8 +53,10 @@ export function useHomeTips({ sections, products, loaded }: HomeTipsInput): void
   const actions = useProductActions()
   // Сроки советов — дни и недели: время на момент открытия экрана точно хватает.
   const [now] = useState(() => Date.now())
+  const tourDone = useTourStep() === TOUR_DONE
 
-  const ready = enabled && days >= TIPS_FROM_DAY && loaded && pathname === '/' && !search.open
+  // Советы — только после обучения: оно идёт подряд, и совет посреди него сбил бы с шага.
+  const ready = enabled && tourDone && days >= TIPS_FROM_DAY && loaded && pathname === '/' && !search.open
   const count = products.length
   const stale = staleProduct(products, now)
   const crowded = crowdedSection(sections, products)

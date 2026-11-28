@@ -17,7 +17,7 @@ export function ShoppingPage() {
 
   return (
     <>
-      <SummaryBar onAdd={() => openSheet({ type: 'add-item' })}>
+      <SummaryBar onAdd={() => openSheet({ type: 'add-item' })} coach="shopping-add">
         {entries.length === 0 ? t('shopping.nothing') : rich(t('shopping.summary', { count: entries.length }))}
       </SummaryBar>
 

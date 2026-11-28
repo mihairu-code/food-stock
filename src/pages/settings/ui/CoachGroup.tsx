@@ -1,7 +1,7 @@
 import { useT } from '@/shared/i18n'
 import { resetCoachSeen } from '@/shared/lib/coach/coach'
-import { resetFirstSteps } from '@/shared/lib/coach/firstSteps'
 import { setTipsEnabled, useTipsEnabled } from '@/shared/lib/coach/tips'
+import { restartTour } from '@/shared/lib/coach/tour'
 import { setHintsVisible } from '@/shared/lib/hints/hints'
 import { useHintsVisible } from '@/shared/lib/hints/useHintsVisible'
 import { notify } from '@/shared/lib/toast'
@@ -19,7 +19,7 @@ export function CoachGroup() {
 
   function showAgain() {
     resetCoachSeen()
-    resetFirstSteps()
+    restartTour()
     setHintsVisible(true)
     setTipsEnabled(true)
     notify('toast.coachReset')
