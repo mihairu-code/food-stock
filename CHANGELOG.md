@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.1 — unreleased
+
+- Hint windows bring their element to the middle of the screen at once, on open and on
+  every "Next" (the smooth scroll didn't finish on iPhones and left the window off screen).
+- Tour windows point at the first item of the first expanded section, not the newest one;
+  collapsed sections are a shared store.
+- A finished tour stays finished even if a later version has fewer steps.
+
 ## 1.4.0 — unreleased
 
 - Getting started: five spotlight windows in a row (`CoachHost`, `CoachWindow` on
