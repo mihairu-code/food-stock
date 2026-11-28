@@ -222,16 +222,6 @@ export function markCoachSeen(id: string): void {
 
 export const isCoachSeen = (id: string): boolean => seen.get().has(id)
 
-/** «Показать подсказки и советы заново». */
-export function resetCoachSeen(): void {
-  seen.set(new Set())
-  writeItem(SEEN_KEY, '[]')
-  snoozed = {}
-  writeItem(SNOOZED_KEY, '{}')
-  lastTipAt = 0
-  writeItem(LAST_TIP_KEY, '0')
-}
-
 export const useCoachCandidates = () => useStore(candidates)
 export const useCoachSeen = () => useStore(seen)
 export const useActiveCoach = () => useStore(active)

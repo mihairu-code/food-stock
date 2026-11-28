@@ -4,7 +4,6 @@ import { removeWithUndo, type Product } from '@/shared/api'
 import { useAppearance } from '@/shared/lib/appearance'
 import { isCoachSeen, markCoachSeen } from '@/shared/lib/coach/coach'
 import { noteMarkedOut, noteOneOffDeleted } from '@/shared/lib/coach/tips'
-import { useHintsVisible } from '@/shared/lib/hints/useHintsVisible'
 import { notify } from '@/shared/lib/toast'
 import { openSheet } from '@/shared/ui'
 
@@ -32,7 +31,6 @@ export interface ProductActions {
 export function useProductActions(): ProductActions {
   const { mutate: setState } = useSetProductState()
   const { mutateAsync: deleteProductById } = useDeleteProduct()
-  const hints = useHintsVisible()
   const { colorSafe } = useAppearance()
 
   return useMemo(
@@ -47,7 +45,7 @@ export function useProductActions(): ProductActions {
         const toBuy = !product.to_buy
         setState({ id: product.id, state: withToBuy(product, toBuy) })
         // Первый плюс у продукта, который есть дома, объясняет оранжевую точку — один раз.
-        if (toBuy && product.is_available && hints && !isCoachSeen(FIRST_PLUS_TOAST)) {
+        if (toBuy && product.is_available && !isCoachSeen(FIRST_PLUS_TOAST)) {
           markCoachSeen(FIRST_PLUS_TOAST)
           notify(colorSafe ? 'toast.addedToListFirstSafe' : 'toast.addedToListFirst', { name: product.name })
           return
@@ -68,6 +66,6 @@ export function useProductActions(): ProductActions {
         })
       },
     }),
-    [setState, deleteProductById, hints, colorSafe],
+    [setState, deleteProductById, colorSafe],
   )
 }

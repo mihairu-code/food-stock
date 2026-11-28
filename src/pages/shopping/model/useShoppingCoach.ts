@@ -6,7 +6,7 @@ import type { CoachRequest } from '@/shared/lib/coach/coach'
 import { useTipEvents, useTipsEnabled } from '@/shared/lib/coach/tips'
 import { completeTourStep, TOUR_DONE, TOUR_STEPS, useTourStep } from '@/shared/lib/coach/tour'
 import { useCoach } from '@/shared/lib/coach/useCoach'
-import { useDaysSinceStart } from '@/shared/lib/hints/useDaysSinceStart'
+import { useDaysSinceStart } from '@/shared/lib/coach/useDaysSinceStart'
 
 /**
  * Окна «Покупок»: шаг 3 обучения (галочка «Купили», потом «Добавить» прямо в покупках) и,
