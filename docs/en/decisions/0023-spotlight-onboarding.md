@@ -47,7 +47,7 @@ The fifth option.
   turn the plus into a minus), or nothing. Gestures — swipe and drag — are shown by the
   row's own motion.
 - **Feature tips** come after the tour, as soon as there's a reason, at most one window a
-  minute: rearranging items (3 items) and sections (3 sections), search (20 items), and
+  minute: rearranging items (7 items) and sections (3 sections), search (20 items), and
   right after the tour, inviting the people you live with.
 - **Habit tips** use the same window, from the third day, at most once a day.
 - **How it's built.** A native `<dialog>` with `showModal()`, like the sheets: top layer,

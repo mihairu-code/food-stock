@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.2 — unreleased
+
+- The tip about dragging items comes from seven items instead of three.
+
 ## 1.4.1 — unreleased
 
 - Hint windows bring their element to the middle of the screen at once, on open and on
