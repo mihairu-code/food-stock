@@ -7,6 +7,7 @@ import { useT } from '@/shared/i18n'
 import { rich } from '@/shared/i18n/rich'
 import { AddRow, EmptyState, Hint, openSheet, StatusNote, SummaryBar } from '@/shared/ui'
 import { useSearchAnnouncement } from '../model/useSearchAnnouncement'
+import { ReadySections } from './ReadySections'
 import { SectionBoard } from './SectionBoard'
 
 const addSection = () => openSheet({ type: 'add-section' })
@@ -32,15 +33,7 @@ export function HomePage() {
   if (isLoading) return <StatusNote loading>{t('home.loading')}</StatusNote>
   if (isError) return <StatusNote>{t('common.loadError')}</StatusNote>
 
-  if (sections.length === 0) {
-    return (
-      <EmptyState emoji="🏠" title={t('home.emptyTitle')} text={t('home.emptyText')}>
-        <button className="btn" type="button" onClick={addSection}>
-          <Plus size={16} /> {t('home.createSection')}
-        </button>
-      </EmptyState>
-    )
-  }
+  if (sections.length === 0) return <ReadySections />
 
   const atHome = products.filter((product) => product.is_available).length
   const searchedName = nameFromQuery(search.query)
